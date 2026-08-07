@@ -24,35 +24,37 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-
   const { pathname } = request.nextUrl
 
-  // Public routes that don't require auth
-  const publicRoutes = ['/login', '/register']
-  const isPublicRoute = publicRoutes.includes(pathname)
+  // Allowed public paths
+  const isPublicRoute = pathname === '/' || pathname === '/login' || pathname === '/register'
 
-  // If not authenticated and trying to access protected route
+  // If not logged in and accessing protected route -> /login
   if (!user && !isPublicRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    if (pathname !== '/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
   }
 
-  // If authenticated and trying to access auth pages
-  if (user && isPublicRoute) {
-    // Fetch role to redirect correctly
+  // If logged in and visiting /login or /register -> /dashboard or /admin
+  if (user && (pathname === '/login' || pathname === '/register')) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    const url = request.nextUrl.clone()
-    url.pathname = profile?.role === 'admin' ? '/admin' : '/dashboard'
-    return NextResponse.redirect(url)
+    const target = profile?.role === 'admin' ? '/admin' : '/dashboard'
+    if ((pathname as string) !== target) {
+      const url = request.nextUrl.clone()
+      url.pathname = target
+      return NextResponse.redirect(url)
+    }
   }
 
-  // Protect admin routes
+  // Protect admin routes from non-admins
   if (user && pathname.startsWith('/admin')) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -60,7 +62,7 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && pathname !== '/dashboard') {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)

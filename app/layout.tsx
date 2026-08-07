@@ -1,12 +1,19 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAInstallPrompt } from '@/components/pwa/install-prompt'
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
 export const metadata: Metadata = {
   title: {
     default: 'ExpenseTrack — Smart Expense Manager',
-    template: '%s | ExpenseTrack'
+    template: '%s | ExpenseTrack',
   },
   description: 'Track your expenses, income, and projects in one place. Professional expense management for freelancers and teams.',
   manifest: '/manifest.json',
@@ -34,19 +41,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${inter.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="gradient-bg min-h-screen">
+      <body className="gradient-bg min-h-screen font-sans">
         <TooltipProvider>
           {children}
           <PWAInstallPrompt />

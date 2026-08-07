@@ -12,6 +12,7 @@ export async function getEntries(projectId: string) {
     .eq('project_id', projectId)
     .order('date', { ascending: false })
     .order('created_at', { ascending: false })
+    .limit(100)
   if (error) throw error
   return data ?? []
 }

@@ -2,7 +2,9 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,7 +16,9 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({
+            request,
+          })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -23,51 +27,8 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
-  const { pathname } = request.nextUrl
-
-  // Allowed public paths
-  const isPublicRoute = pathname === '/' || pathname === '/login' || pathname === '/register'
-
-  // If not logged in and accessing protected route -> /login
-  if (!user && !isPublicRoute) {
-    if (pathname !== '/login') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      return NextResponse.redirect(url)
-    }
-  }
-
-  // If logged in and visiting /login or /register -> /dashboard or /admin
-  if (user && (pathname === '/login' || pathname === '/register')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    const target = profile?.role === 'admin' ? '/admin' : '/dashboard'
-    if ((pathname as string) !== target) {
-      const url = request.nextUrl.clone()
-      url.pathname = target
-      return NextResponse.redirect(url)
-    }
-  }
-
-  // Protect admin routes from non-admins
-  if (user && pathname.startsWith('/admin')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin' && pathname !== '/dashboard') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
-    }
-  }
+  // Refresh auth token session
+  await supabase.auth.getUser()
 
   return supabaseResponse
 }

@@ -1,0 +1,16 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs every 3 days at 00:00 UTC
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Keep-Alive Endpoint
+        run: |
+          echo "Pinging ExpCal Keep-Alive API..."
+          curl -s -X GET "https://expcal.sreeharim.site/api/keep-alive" | jq .

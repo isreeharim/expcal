@@ -4,7 +4,6 @@ import { getProjects, getUserDashboardStats } from '@/lib/actions/projects'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { CreateProjectDialog } from '@/components/dashboard/create-project-dialog'
 import { ProjectCard } from '@/components/dashboard/project-card'
-import { DashboardChart } from '@/components/dashboard/dashboard-chart'
 import { FolderOpen } from 'lucide-react'
 
 export default async function DashboardPage() {
@@ -48,13 +47,6 @@ export default async function DashboardPage() {
         <StatCard type="expense" value={stats.total_expenses} label="Total Expenses" subLabel="All time spending" />
         <StatCard type="cash" value={stats.net_cash} label="Net Cash" subLabel="Income minus expenses" />
       </div>
-
-      {/* Chart */}
-      {projects.length > 0 && (
-        <div className="mb-8">
-          <DashboardChart userId={user.id} />
-        </div>
-      )}
 
       {/* Projects */}
       <div>

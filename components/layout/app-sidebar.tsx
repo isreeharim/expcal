@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/actions/auth'
 import { Profile } from '@/lib/types'
 import {
-  LayoutDashboard, FolderOpen, Shield, LogOut, TrendingUp, Menu, X, ChevronRight
+  LayoutDashboard, FolderOpen, Shield, LogOut, TrendingUp, Menu, X, ChevronRight, BarChart2
 } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
 import { useState } from 'react'
@@ -22,6 +22,7 @@ interface NavItem {
 const userNavItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/projects', label: 'Projects', icon: FolderOpen },
+  { href: '/analysis', label: 'Analysis', icon: BarChart2 },
 ]
 
 const adminNavItems: NavItem[] = [

@@ -12,11 +12,14 @@ export function ProjectChart({ entries }: ProjectChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    let isMounted = true
     let chart: import('chart.js').Chart | null = null
 
     async function init() {
       const { Chart, registerables } = await import('chart.js')
       Chart.register(...registerables)
+
+      if (!isMounted) return
 
       // Sort entries by date
       const sorted = [...entries]
@@ -31,7 +34,10 @@ export function ProjectChart({ entries }: ProjectChartProps) {
       const expenseData = sorted.map(e => totalExpenses(e.expenses))
       const netData = sorted.map((e, i) => incomeData[i] - expenseData[i])
 
-      if (!canvasRef.current) return
+      if (!canvasRef.current || !isMounted) return
+
+      const existingChart = Chart.getChart(canvasRef.current)
+      if (existingChart) existingChart.destroy()
 
       chart = new Chart(canvasRef.current, {
         type: 'bar',
@@ -96,7 +102,10 @@ export function ProjectChart({ entries }: ProjectChartProps) {
     }
 
     init()
-    return () => { chart?.destroy() }
+    return () => {
+      isMounted = false
+      if (chart) chart.destroy()
+    }
   }, [entries])
 
   return (

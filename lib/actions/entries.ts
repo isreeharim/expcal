@@ -43,6 +43,15 @@ export async function createEntry(formData: FormData) {
   let expenses: ExpenseCategory[] = []
   try { expenses = JSON.parse(expensesJson) } catch { expenses = [] }
 
+  // Verify that the project belongs to the user or user is admin
+  const { data: project } = await supabase
+    .from('projects')
+    .select('id')
+    .eq('id', projectId)
+    .single()
+
+  if (!project) throw new Error('Project not found or unauthorized')
+
   const { data, error } = await supabase
     .from('entries')
     .insert({

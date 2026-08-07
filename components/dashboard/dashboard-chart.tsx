@@ -12,6 +12,7 @@ export function DashboardChart({ userId }: DashboardChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    let isMounted = true
     let chartInstance: import('chart.js').Chart | null = null
 
     async function loadChart() {
@@ -19,7 +20,6 @@ export function DashboardChart({ userId }: DashboardChartProps) {
       Chart.register(...registerables)
 
       const supabase = createClient()
-      // Get last 7 entries grouped by date from all projects
       const { data: entries } = await supabase
         .from('entries')
         .select('date, income, expenses')
@@ -27,7 +27,7 @@ export function DashboardChart({ userId }: DashboardChartProps) {
         .order('date', { ascending: true })
         .limit(30)
 
-      if (!entries || entries.length === 0) return
+      if (!isMounted || !entries || entries.length === 0) return
 
       // Group by date
       const grouped: Record<string, { income: number; expense: number }> = {}
@@ -47,7 +47,10 @@ export function DashboardChart({ userId }: DashboardChartProps) {
         return dt.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })
       }
 
-      if (!canvasRef.current) return
+      if (!canvasRef.current || !isMounted) return
+
+      const existingChart = Chart.getChart(canvasRef.current)
+      if (existingChart) existingChart.destroy()
 
       chartInstance = new Chart(canvasRef.current, {
         type: 'line',
@@ -118,7 +121,10 @@ export function DashboardChart({ userId }: DashboardChartProps) {
     }
 
     loadChart()
-    return () => { chartInstance?.destroy() }
+    return () => {
+      isMounted = false
+      if (chartInstance) chartInstance.destroy()
+    }
   }, [userId])
 
   return (

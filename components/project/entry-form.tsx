@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
-import { Plus, Trash2, Upload, X, Image as ImageIcon, Camera, DollarSign, Clock, Calendar } from 'lucide-react'
+import { Plus, Trash2, Upload, X, Camera, DollarSign, Clock, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 

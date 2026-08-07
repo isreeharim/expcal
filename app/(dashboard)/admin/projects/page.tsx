@@ -61,8 +61,7 @@ export default async function AdminProjectsPage() {
           <TableBody>
             {projects.map((proj) => {
               const projEntries = entries.filter(e => e.project_id === proj.id)
-              // @ts-ignore — joined from profiles
-              const ownerName = proj.profiles?.full_name || 'Unknown Owner'
+              const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown Owner'
               return (
                 <TableRow key={proj.id} className="border-border">
                   <TableCell>

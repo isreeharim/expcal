@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials, formatDate } from '@/lib/utils'
-import { Users, Shield, ArrowLeft } from 'lucide-react'
+import { Users, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminUsersPage() {

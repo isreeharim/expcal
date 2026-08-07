@@ -160,8 +160,7 @@ export default async function AdminPage() {
               <TableBody>
                 {projects.map((proj) => {
                   const projEntries = entries.filter(e => e.project_id === proj.id)
-                  // @ts-ignore — joined from getAllProjects
-                  const ownerName = proj.profiles?.full_name || 'Unknown'
+                  const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
                   return (
                     <TableRow key={proj.id} className="border-border">
                       <TableCell>
@@ -199,10 +198,8 @@ export default async function AdminPage() {
                 {entries.slice(0, 50).map((e) => {
                   const hours = calculateHours(e.start_time, e.end_time)
                   const expTotal = totalExpenses(e.expenses || [])
-                  // @ts-ignore — joined
-                  const userName = e.profiles?.full_name || 'Unknown'
-                  // @ts-ignore — joined
-                  const projectName = e.projects?.title || 'Unknown'
+                  const userName = (e as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
+                  const projectName = (e as { projects?: { title?: string } }).projects?.title || 'Unknown'
                   return (
                     <TableRow key={e.id} className="border-border">
                       <TableCell className="text-sm text-foreground">{formatDate(e.date)}</TableCell>

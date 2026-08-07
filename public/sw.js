@@ -1,8 +1,8 @@
-const CACHE_NAME = 'expensetrack-v1'
+const CACHE_NAME = 'expensetrack-v2'
 const STATIC_ASSETS = [
-  '/',
-  '/dashboard',
   '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
 ]
 
 self.addEventListener('install', (event) => {
@@ -28,44 +28,38 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
-  // Network-first strategy for API calls
-  if (event.request.url.includes('/api/') || event.request.url.includes('supabase')) {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request)
-      })
-    )
+  const url = new URL(event.request.url)
+
+  // Skip non-GET requests, Supabase API calls, and page navigations
+  if (
+    event.request.method !== 'GET' ||
+    url.pathname.startsWith('/_next/data') ||
+    url.hostname.includes('supabase') ||
+    event.request.mode === 'navigate'
+  ) {
     return
   }
 
-  // Cache-first for static assets
-  if (event.request.destination === 'image' || event.request.destination === 'font') {
+  // Cache static assets (images, fonts, scripts, css)
+  if (
+    event.request.destination === 'image' ||
+    event.request.destination === 'font' ||
+    event.request.destination === 'style' ||
+    event.request.destination === 'script'
+  ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
-          return response
-        })
+        return (
+          cached ||
+          fetch(event.request).then((response) => {
+            if (response.ok && response.type === 'basic') {
+              const responseClone = response.clone()
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
+            }
+            return response
+          })
+        )
       })
     )
-    return
   }
-
-  // Network-first with cache fallback for pages
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response.ok) {
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
-        }
-        return response
-      })
-      .catch(() => {
-        return caches.match(event.request).then((cached) => {
-          return cached || caches.match('/')
-        })
-      })
-  )
 })

@@ -39,7 +39,10 @@ export function calculateHours(startTime: string | null, endTime: string | null)
   if (!startTime || !endTime) return 0
   try {
     const start = new Date(`1970-01-01T${startTime}`)
-    const end = new Date(`1970-01-01T${endTime}`)
+    let end = new Date(`1970-01-01T${endTime}`)
+    if (end < start) {
+      end = new Date(`1970-01-02T${endTime}`)
+    }
     const mins = differenceInMinutes(end, start)
     return Math.max(0, mins / 60)
   } catch {

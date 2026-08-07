@@ -41,21 +41,12 @@ export default async function DashboardPage() {
         <CreateProjectDialog />
       </div>
 
-      {/* Stats Section — 3-Row Layout */}
-      <div className="space-y-4 mb-8 stagger-children">
-        {/* Row 1: Total Hours */}
-        <div>
-          <StatCard type="hours" value={stats.total_hours} label="Total Hours" subLabel="Across all projects" />
-        </div>
-        {/* Row 2: Total Income & Total Expenses */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <StatCard type="income" value={stats.total_income} label="Total Income" subLabel="All time earnings" />
-          <StatCard type="expense" value={stats.total_expenses} label="Total Expenses" subLabel="All time spending" />
-        </div>
-        {/* Row 3: Net Cash */}
-        <div>
-          <StatCard type="cash" value={stats.net_cash} label="Net Cash" subLabel="Income minus expenses" />
-        </div>
+      {/* Stats Section — Compact 2x2 Grid on Mobile, 4 Cols on Desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8 stagger-children">
+        <StatCard type="hours" value={stats.total_hours} label="Total Hours" subLabel="Across all projects" />
+        <StatCard type="income" value={stats.total_income} label="Total Income" subLabel="All time earnings" />
+        <StatCard type="expense" value={stats.total_expenses} label="Total Expenses" subLabel="All time spending" />
+        <StatCard type="cash" value={stats.net_cash} label="Net Cash" subLabel="Income minus expenses" />
       </div>
 
       {/* Chart */}

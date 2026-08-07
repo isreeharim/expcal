@@ -56,21 +56,12 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      {/* Global Stats — 3-Row Layout */}
-      <div className="space-y-4 mb-8 stagger-children">
-        {/* Row 1: Total Hours */}
-        <div>
-          <StatCard type="hours" value={totalHours} label="Total Hours" subLabel="All users combined" />
-        </div>
-        {/* Row 2: Total Income & Total Expenses */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <StatCard type="income" value={totalIncome} label="Total Income" subLabel="Platform-wide" />
-          <StatCard type="expense" value={totalExpense} label="Total Expenses" subLabel="Platform-wide" />
-        </div>
-        {/* Row 3: Net Cash */}
-        <div>
-          <StatCard type="cash" value={totalIncome - totalExpense} label="Net Cash" subLabel="Platform-wide" />
-        </div>
+      {/* Global Stats — Compact 2x2 Grid on Mobile, 4 Cols on Desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8 stagger-children">
+        <StatCard type="hours" value={totalHours} label="Total Hours" subLabel="All users combined" />
+        <StatCard type="income" value={totalIncome} label="Total Income" subLabel="Platform-wide" />
+        <StatCard type="expense" value={totalExpense} label="Total Expenses" subLabel="Platform-wide" />
+        <StatCard type="cash" value={totalIncome - totalExpense} label="Net Cash" subLabel="Platform-wide" />
       </div>
 
       {/* Quick counters */}

@@ -71,41 +71,32 @@ export default async function ProjectPage({ params }: PageProps) {
         <AddEntryButton projectId={id} userId={user.id} />
       </div>
 
-      {/* Project Stats — 3-Row Layout */}
-      <div className="space-y-4 mb-8 stagger-children">
-        {/* Row 1: Total Hours */}
-        <div>
-          <StatCard
-            type="hours"
-            value={Number(stats?.total_hours || 0)}
-            label="Project Hours"
-            subLabel="Total time logged"
-          />
-        </div>
-        {/* Row 2: Income & Expenses */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <StatCard
-            type="income"
-            value={Number(stats?.total_income || 0)}
-            label="Project Income"
-            subLabel="Total earned"
-          />
-          <StatCard
-            type="expense"
-            value={Number(stats?.total_expenses || 0)}
-            label="Project Expenses"
-            subLabel="Total spent"
-          />
-        </div>
-        {/* Row 3: Net Cash */}
-        <div>
-          <StatCard
-            type="cash"
-            value={Number(stats?.net_cash || 0)}
-            label="Net Cash"
-            subLabel="Income minus expenses"
-          />
-        </div>
+      {/* Project Stats — Compact 2x2 Grid on Mobile, 4 Cols on Desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8 stagger-children">
+        <StatCard
+          type="hours"
+          value={Number(stats?.total_hours || 0)}
+          label="Project Hours"
+          subLabel="Total time logged"
+        />
+        <StatCard
+          type="income"
+          value={Number(stats?.total_income || 0)}
+          label="Project Income"
+          subLabel="Total earned"
+        />
+        <StatCard
+          type="expense"
+          value={Number(stats?.total_expenses || 0)}
+          label="Project Expenses"
+          subLabel="Total spent"
+        />
+        <StatCard
+          type="cash"
+          value={Number(stats?.net_cash || 0)}
+          label="Net Cash"
+          subLabel="Income minus expenses"
+        />
       </div>
 
       {/* Project Chart */}

@@ -1,5 +1,6 @@
-const CACHE_NAME = 'expensetrack-v2'
+const CACHE_NAME = 'expensetrack-v3'
 const STATIC_ASSETS = [
+  '/offline.html',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
@@ -30,17 +31,17 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url)
 
-  // Skip non-GET requests, Supabase API calls, and page navigations
-  if (
-    event.request.method !== 'GET' ||
-    url.pathname.startsWith('/_next/data') ||
-    url.hostname.includes('supabase') ||
-    event.request.mode === 'navigate'
-  ) {
+  // 1. Handle page navigation requests when offline
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/offline.html')
+      })
+    )
     return
   }
 
-  // Cache static assets (images, fonts, scripts, css)
+  // 2. Cache static assets (images, fonts, styles, scripts)
   if (
     event.request.destination === 'image' ||
     event.request.destination === 'font' ||
@@ -57,6 +58,8 @@ self.addEventListener('fetch', (event) => {
               caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
             }
             return response
+          }).catch(() => {
+            return cached || null
           })
         )
       })

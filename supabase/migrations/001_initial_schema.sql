@@ -158,8 +158,9 @@ CREATE TRIGGER set_entries_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- 7. USEFUL VIEWS
--- Aggregated project stats view
-CREATE OR REPLACE VIEW public.project_stats AS
+-- Aggregated project stats view (security_invoker = true enforces querying user's RLS policies)
+CREATE OR REPLACE VIEW public.project_stats
+WITH (security_invoker = true) AS
 SELECT
   p.id AS project_id,
   p.user_id,

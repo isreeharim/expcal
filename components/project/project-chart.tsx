@@ -109,9 +109,9 @@ export function ProjectChart({ entries }: ProjectChartProps) {
   }, [entries])
 
   return (
-    <div className="glass-card p-5">
+    <div className="glass-card p-4 sm:p-5 overflow-hidden">
       <h3 className="text-sm font-semibold text-foreground mb-4">Project Analysis</h3>
-      <div className="h-[220px] sm:h-[260px] relative">
+      <div className="h-[220px] sm:h-[260px] relative w-full min-w-0">
         <canvas ref={canvasRef} />
       </div>
     </div>

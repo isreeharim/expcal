@@ -22,7 +22,7 @@ export default async function AnalysisPage() {
   ])
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8 animate-fade-in">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -73,9 +73,9 @@ export default async function AnalysisPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map((project) => (
               <div key={project.id} className="glass-card p-5 space-y-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <span className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ background: project.color || '#6366f1' }} />
-                  <span className="font-semibold text-foreground truncate">{project.title}</span>
+                  <span className="font-semibold text-foreground truncate min-w-0">{project.title}</span>
                 </div>
                 {project.description && (
                   <p className="text-xs text-muted-foreground line-clamp-2">{project.description}</p>

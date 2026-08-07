@@ -42,38 +42,35 @@ export function PWAInstallPrompt() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50 animate-fade-in"
+      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-84 z-50 animate-fade-in glass-card p-4 rounded-2xl shadow-2xl border border-white/12 group"
       style={{
-        background: 'oklch(0.14 0.012 260)',
-        border: '1px solid oklch(1 0 0 / 12%)',
-        borderRadius: '1rem',
-        padding: '1rem',
-        backdropFilter: 'blur(16px)',
+        background: 'oklch(0.14 0.012 260 / 92%)',
+        backdropFilter: 'blur(20px)',
         boxShadow: '0 20px 40px oklch(0 0 0 / 40%)',
       }}
     >
       <div className="flex items-start gap-3">
         <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105"
           style={{ background: 'var(--gradient-primary)' }}
         >
           <span className="text-lg">📲</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground">Install ExpCal</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-sm font-bold text-foreground tracking-tight">Install ExpCal</p>
+          <p className="text-xs text-muted-foreground/90 mt-0.5 font-normal leading-relaxed">
             Install as an app for quick access and offline support
           </p>
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleInstall}
-              className="pwa-install-btn flex-1 text-center"
+              className="pwa-install-btn flex-1 text-center font-semibold text-xs py-2 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-primary/25 active:scale-95 cursor-pointer"
             >
               Install App
             </button>
             <button
               onClick={() => setShowBanner(false)}
-              className="text-xs text-muted-foreground hover:text-foreground px-3 transition-colors"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-xl hover:bg-muted/60 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               Later
             </button>

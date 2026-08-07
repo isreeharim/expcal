@@ -108,7 +108,7 @@ export function EntryForm({ projectId, userId, entry, open, onOpenChange, onSucc
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6"
         style={{ background: 'oklch(0.13 0.012 260)', border: '1px solid oklch(1 0 0 / 10%)' }}
       >
         <DialogHeader>
@@ -300,9 +300,9 @@ export function EntryForm({ projectId, userId, entry, open, onOpenChange, onSucc
                 <button
                   type="button"
                   onClick={() => { setPhotoUrl(''); setPhotoPreview('') }}
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive flex items-center justify-center text-white"
+                  className="absolute -top-2.5 -right-2.5 w-7 h-7 rounded-full bg-destructive flex items-center justify-center text-white shadow-md hover:bg-destructive/90 transition-colors"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             ) : (
@@ -349,12 +349,12 @@ export function EntryForm({ projectId, userId, entry, open, onOpenChange, onSucc
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1" disabled={isPending}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1 h-11 sm:h-10" disabled={isPending}>
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 font-semibold"
+              className="flex-1 h-11 sm:h-10 font-semibold"
               disabled={isPending || uploading}
               style={{ background: 'var(--gradient-primary)', border: 'none' }}
             >

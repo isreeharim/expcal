@@ -41,23 +41,23 @@ export function CreateProjectDialog({ className }: CreateProjectDialogProps) {
       <Button
         id="create-project-btn"
         onClick={() => setOpen(true)}
-        className={cn('gap-2 font-semibold', className)}
+        className={cn('gap-2 font-semibold rounded-xl transition-all duration-200 hover:opacity-95 hover:shadow-lg hover:shadow-primary/25 active:scale-95 group cursor-pointer', className)}
         style={{ background: 'var(--gradient-primary)', border: 'none' }}
       >
-        <Plus className="w-4 h-4" />
+        <Plus className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" />
         Create Project
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="w-[92vw] sm:max-w-md p-5 sm:p-6" style={{ background: 'oklch(0.14 0.012 260)', border: '1px solid oklch(1 0 0 / 10%)' }}>
+        <DialogContent className="w-[92vw] sm:max-w-md p-6 rounded-2xl shadow-2xl backdrop-blur-2xl border border-white/12 animate-fade-in" style={{ background: 'oklch(0.14 0.012 260 / 95%)' }}>
           <DialogHeader>
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md shadow-primary/20 flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}>
                 <FolderPlus className="w-5 h-5 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-foreground text-xl">New Project</DialogTitle>
-                <DialogDescription className="text-muted-foreground text-sm">
+                <DialogTitle className="text-foreground text-xl font-bold tracking-tight">New Project</DialogTitle>
+                <DialogDescription className="text-muted-foreground/90 text-sm font-normal">
                   Create a project to track time, income and expenses
                 </DialogDescription>
               </div>
@@ -66,34 +66,34 @@ export function CreateProjectDialog({ className }: CreateProjectDialogProps) {
 
           <form onSubmit={handleSubmit} className="space-y-5 mt-2">
             <div className="space-y-2">
-              <Label htmlFor="project-title" className="text-foreground font-medium">
+              <Label htmlFor="project-title" className="text-foreground/90 font-medium text-sm">
                 Project Title <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="project-title"
                 name="title"
                 placeholder="e.g., Website Redesign"
-                className="bg-muted/50 border-border focus:border-primary h-11"
+                className="bg-muted/40 border-border/80 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-200 h-11 rounded-xl"
                 required
                 autoFocus
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="project-description" className="text-foreground font-medium">
-                Description <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+              <Label htmlFor="project-description" className="text-foreground/90 font-medium text-sm">
+                Description <span className="text-muted-foreground/70 text-xs font-normal">(optional)</span>
               </Label>
               <Input
                 id="project-description"
                 name="description"
                 placeholder="Brief description of this project"
-                className="bg-muted/50 border-border focus:border-primary h-11"
+                className="bg-muted/40 border-border/80 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-200 h-11 rounded-xl"
               />
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                {error}
+              <div className="p-3.5 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive text-sm font-medium animate-fade-in flex items-center gap-2">
+                <span>{error}</span>
               </div>
             )}
 
@@ -102,14 +102,14 @@ export function CreateProjectDialog({ className }: CreateProjectDialogProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="flex-1"
+                className="flex-1 rounded-xl font-medium hover:bg-muted/80 active:scale-[0.98] transition-all cursor-pointer"
                 disabled={isPending}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 font-semibold"
+                className="flex-1 font-semibold rounded-xl transition-all duration-200 hover:opacity-95 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] group cursor-pointer"
                 disabled={isPending}
                 style={{ background: 'var(--gradient-primary)', border: 'none' }}
               >
@@ -120,7 +120,7 @@ export function CreateProjectDialog({ className }: CreateProjectDialogProps) {
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" /> Create Project
+                    <Plus className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90" /> Create Project
                   </span>
                 )}
               </Button>

@@ -89,14 +89,23 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              labels: { color: 'oklch(0.75 0.01 260)', font: { family: 'Inter', size: 12 } }
+              labels: {
+                color: 'oklch(0.85 0.005 260)',
+                font: { family: 'Inter', size: 12, weight: 500 },
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 16
+              }
             },
             tooltip: {
-              backgroundColor: 'oklch(0.16 0.012 260)',
-              borderColor: 'oklch(1 0 0 / 10%)',
+              backgroundColor: 'oklch(0.14 0.012 260 / 95%)',
+              borderColor: 'oklch(1 0 0 / 14%)',
               borderWidth: 1,
-              titleColor: 'oklch(0.95 0.005 260)',
-              bodyColor: 'oklch(0.75 0.01 260)',
+              titleColor: 'oklch(0.98 0 0)',
+              bodyColor: 'oklch(0.85 0.005 260)',
+              padding: 12,
+              boxPadding: 6,
+              cornerRadius: 12,
               callbacks: {
                 label: (ctx) => ` ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y ?? 0)}`
               }
@@ -104,14 +113,14 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           },
           scales: {
             x: {
-              grid: { color: 'oklch(1 0 0 / 5%)' },
-              ticks: { color: 'oklch(0.6 0.01 260)', font: { size: 11 } }
+              grid: { color: 'oklch(1 0 0 / 6%)' },
+              ticks: { color: 'oklch(0.65 0.01 260)', font: { size: 11, family: 'Inter' } }
             },
             y: {
-              grid: { color: 'oklch(1 0 0 / 5%)' },
+              grid: { color: 'oklch(1 0 0 / 6%)' },
               ticks: {
-                color: 'oklch(0.6 0.01 260)',
-                font: { size: 11 },
+                color: 'oklch(0.65 0.01 260)',
+                font: { size: 11, family: 'Inter' },
                 callback: (v) => `₹${Number(v ?? 0).toLocaleString('en-IN')}`
               }
             }
@@ -128,8 +137,8 @@ export function DashboardChart({ userId }: DashboardChartProps) {
   }, [userId])
 
   return (
-    <div className="glass-card p-5">
-      <h3 className="text-sm font-semibold text-foreground mb-4">Income vs Expenses (Last 14 entries)</h3>
+    <div className="glass-card p-6 shadow-xl backdrop-blur-2xl border border-white/10 rounded-3xl">
+      <h3 className="text-sm font-semibold text-foreground/90 tracking-tight mb-4">Income vs Expenses (Last 14 entries)</h3>
       <div className="h-[220px] sm:h-[280px] relative">
         <canvas ref={canvasRef} />
       </div>

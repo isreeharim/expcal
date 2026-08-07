@@ -22,7 +22,7 @@ export function AddEntryButton({ projectId, userId, compact = false }: AddEntryB
         id={compact ? 'add-entry-compact-btn' : 'add-entry-btn'}
         onClick={() => setOpen(true)}
         size={compact ? 'sm' : 'default'}
-        className="gap-2 font-semibold"
+        className="gap-2 font-semibold min-h-[36px]"
         style={{ background: 'var(--gradient-primary)', border: 'none' }}
       >
         <Plus className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />

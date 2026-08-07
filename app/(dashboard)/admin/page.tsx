@@ -44,9 +44,9 @@ export default async function AdminPage() {
   const totalHours = entries.reduce((s, e) => s + calculateHours(e.start_time, e.end_time), 0)
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8 animate-fade-in">
+      <div className="flex items-center gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
           <Shield className="w-6 h-6 text-white" />
         </div>
@@ -65,14 +65,14 @@ export default async function AdminPage() {
       </div>
 
       {/* Quick counters */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
         {[
           { icon: Users, label: 'Total Users', value: allProfiles.length, color: 'var(--gradient-hours)' },
           { icon: FolderOpen, label: 'Total Projects', value: projects.length, color: 'var(--gradient-income)' },
           { icon: Receipt, label: 'Total Entries', value: entries.length, color: 'var(--gradient-expense)' },
         ].map(({ icon: Icon, label, value, color }) => (
           <div key={label} className="glass-card p-4 flex items-center gap-4 animate-fade-in">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: color }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: color }}>
               <Icon className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -85,14 +85,14 @@ export default async function AdminPage() {
 
       {/* Data Tabs */}
       <Tabs defaultValue="users" className="animate-fade-in">
-        <TabsList className="bg-muted/50 mb-6">
-          <TabsTrigger value="users" className="gap-2">
+        <TabsList className="bg-muted/50 mb-6 w-full h-auto flex flex-wrap sm:flex-nowrap justify-start p-1 gap-1">
+          <TabsTrigger value="users" className="gap-2 flex-1 sm:flex-initial">
             <Users className="w-3.5 h-3.5" /> Users ({allProfiles.length})
           </TabsTrigger>
-          <TabsTrigger value="projects" className="gap-2">
+          <TabsTrigger value="projects" className="gap-2 flex-1 sm:flex-initial">
             <FolderOpen className="w-3.5 h-3.5" /> Projects ({projects.length})
           </TabsTrigger>
-          <TabsTrigger value="entries" className="gap-2">
+          <TabsTrigger value="entries" className="gap-2 flex-1 sm:flex-initial">
             <Receipt className="w-3.5 h-3.5" /> Entries ({entries.length})
           </TabsTrigger>
         </TabsList>
@@ -100,7 +100,8 @@ export default async function AdminPage() {
         {/* Users Tab */}
         <TabsContent value="users">
           <div className="glass-card overflow-hidden">
-            <Table className="premium-table">
+            <div className="overflow-x-auto">
+              <Table className="premium-table">
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
                   <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">User</TableHead>
@@ -142,48 +143,52 @@ export default async function AdminPage() {
                 })}
               </TableBody>
             </Table>
+            </div>
           </div>
         </TabsContent>
 
         {/* Projects Tab */}
         <TabsContent value="projects">
           <div className="glass-card overflow-hidden">
-            <Table className="premium-table">
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Project</TableHead>
-                  <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Owner</TableHead>
-                  <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Created</TableHead>
-                  <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Entries</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {projects.map((proj) => {
-                  const projEntries = entries.filter(e => e.project_id === proj.id)
-                  const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
-                  return (
-                    <TableRow key={proj.id} className="border-border">
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="color-dot" style={{ background: proj.color || '#6366f1' }} />
-                          <span className="text-sm font-medium text-foreground">{proj.title}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{ownerName}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{formatDate(proj.created_at)}</TableCell>
-                      <TableCell className="text-sm font-medium text-foreground">{projEntries.length}</TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table className="premium-table">
+                <TableHeader>
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Project</TableHead>
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Owner</TableHead>
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Created</TableHead>
+                    <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Entries</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {projects.map((proj) => {
+                    const projEntries = entries.filter(e => e.project_id === proj.id)
+                    const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
+                    return (
+                      <TableRow key={proj.id} className="border-border">
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="color-dot" style={{ background: proj.color || '#6366f1' }} />
+                            <span className="text-sm font-medium text-foreground">{proj.title}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{ownerName}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{formatDate(proj.created_at)}</TableCell>
+                        <TableCell className="text-sm font-medium text-foreground">{projEntries.length}</TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </TabsContent>
 
         {/* Entries Tab */}
         <TabsContent value="entries">
           <div className="glass-card overflow-hidden">
-            <Table className="premium-table">
+            <div className="overflow-x-auto">
+              <Table className="premium-table">
               <TableHeader>
                 <TableRow className="border-border hover:bg-transparent">
                   <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Date</TableHead>
@@ -219,6 +224,7 @@ export default async function AdminPage() {
                 })}
               </TableBody>
             </Table>
+            </div>
             {entries.length > 50 && (
               <div className="p-4 text-center text-sm text-muted-foreground border-t border-border">
                 Showing 50 of {entries.length} entries

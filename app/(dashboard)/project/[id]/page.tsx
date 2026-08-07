@@ -42,29 +42,29 @@ export default async function ProjectPage({ params }: PageProps) {
   if (!project) notFound()
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 animate-fade-in">
-        <Link href="/dashboard" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm transition-colors">
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground text-sm transition-colors py-1 -my-1">
           <ChevronLeft className="w-4 h-4" /> Dashboard
         </Link>
         <span className="text-muted-foreground/40">/</span>
-        <span className="text-sm text-foreground font-medium">{project.title}</span>
+        <span className="text-sm text-foreground font-medium truncate">{project.title}</span>
       </div>
 
       {/* Project Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 animate-fade-in">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+        <div className="flex items-center gap-4 min-w-0">
           <div
             className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{ background: project.color || 'var(--gradient-primary)' }}
           >
             <Folder className="w-6 h-6 text-white" />
           </div>
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{project.title}</h1>
+          <div className="min-w-0">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground break-words">{project.title}</h1>
             {project.description && (
-              <p className="text-muted-foreground text-sm mt-0.5">{project.description}</p>
+              <p className="text-muted-foreground text-sm mt-0.5 break-words">{project.description}</p>
             )}
           </div>
         </div>

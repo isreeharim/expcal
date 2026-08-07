@@ -31,11 +31,11 @@ export default async function AdminUsersPage() {
   const allProfiles = profiles ?? []
 
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-hours)' }}>
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-hours)' }}>
             <Users className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -43,7 +43,7 @@ export default async function AdminUsersPage() {
             <p className="text-muted-foreground mt-0.5">{allProfiles.length} registered user{allProfiles.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
-        <Link href="/admin" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <Link href="/admin" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-1.5 -my-1.5">
           <ArrowLeft className="w-4 h-4" /> Admin Overview
         </Link>
       </div>

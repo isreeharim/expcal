@@ -97,13 +97,13 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
                   {entry.photo_url && (
                     <button
                       onClick={() => setPhotoEntry(entry)}
-                      className="w-8 h-8 rounded-lg overflow-hidden border border-border"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg overflow-hidden border border-border flex-shrink-0"
                     >
                       <img src={entry.photo_url} alt="receipt" className="w-full h-full object-cover" />
                     </button>
                   )}
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <DropdownMenuTrigger className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50">
                       <MoreVertical className="w-4 h-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" style={{ background: 'oklch(0.16 0.012 260)', border: '1px solid oklch(1 0 0 / 10%)' }}>
@@ -125,17 +125,17 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/50 text-center">
-                <div className="bg-muted/30 p-2 rounded-lg">
-                  <p className="text-[10px] text-muted-foreground uppercase">Hours</p>
-                  <p className="text-xs font-semibold text-foreground mt-0.5">{hours > 0 ? formatHours(hours) : '0h'}</p>
+                <div className="bg-muted/30 p-2 rounded-lg min-w-0">
+                  <p className="text-[10px] text-muted-foreground uppercase truncate">Hours</p>
+                  <p className="text-xs font-semibold text-foreground mt-0.5 truncate">{hours > 0 ? formatHours(hours) : '0h'}</p>
                 </div>
-                <div className="bg-muted/30 p-2 rounded-lg">
-                  <p className="text-[10px] text-muted-foreground uppercase">Income</p>
-                  <p className="text-xs font-semibold text-green-400 mt-0.5">{entry.income > 0 ? formatCurrency(Number(entry.income)) : '₹0'}</p>
+                <div className="bg-muted/30 p-2 rounded-lg min-w-0">
+                  <p className="text-[10px] text-muted-foreground uppercase truncate">Income</p>
+                  <p className="text-xs font-semibold text-green-400 mt-0.5 truncate">{entry.income > 0 ? formatCurrency(Number(entry.income)) : '₹0'}</p>
                 </div>
-                <div className="bg-muted/30 p-2 rounded-lg">
-                  <p className="text-[10px] text-muted-foreground uppercase">Expense</p>
-                  <p className="text-xs font-semibold text-red-400 mt-0.5">{expTotal > 0 ? formatCurrency(expTotal) : '₹0'}</p>
+                <div className="bg-muted/30 p-2 rounded-lg min-w-0">
+                  <p className="text-[10px] text-muted-foreground uppercase truncate">Expense</p>
+                  <p className="text-xs font-semibold text-red-400 mt-0.5 truncate">{expTotal > 0 ? formatCurrency(expTotal) : '₹0'}</p>
                 </div>
               </div>
 

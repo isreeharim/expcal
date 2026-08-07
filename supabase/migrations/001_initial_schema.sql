@@ -188,3 +188,5 @@ SELECT
 FROM public.projects p
 LEFT JOIN public.entries e ON e.project_id = p.id
 GROUP BY p.id, p.user_id, p.title, p.color;
+
+GRANT SELECT ON public.project_stats TO authenticated, anon;

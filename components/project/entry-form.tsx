@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2, Upload, X, Camera, DollarSign, Clock, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils'
+import { cn, compressImage } from '@/lib/utils'
 
 interface EntryFormProps {
   projectId: string
@@ -62,14 +62,21 @@ export function EntryForm({ projectId, userId, entry, open, onOpenChange, onSucc
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    // Show preview immediately
-    const reader = new FileReader()
-    reader.onload = (ev) => setPhotoPreview(ev.target?.result as string)
-    reader.readAsDataURL(file)
-    handlePhotoUpload(file)
+    setUploading(true)
+    try {
+      // Compress image client-side to max 1024x1024 at 65% JPEG quality (~50KB-150KB)
+      const compressed = await compressImage(file, 1024, 1024, 0.65)
+      const reader = new FileReader()
+      reader.onload = (ev) => setPhotoPreview(ev.target?.result as string)
+      reader.readAsDataURL(compressed)
+      await handlePhotoUpload(compressed)
+    } catch {
+      setError('Failed to compress image')
+      setUploading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

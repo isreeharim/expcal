@@ -63,7 +63,7 @@ function SidebarContent({ profile, pathname }: { profile: Profile; pathname: str
           <TrendingUp className="w-4.5 h-4.5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-sidebar-foreground text-sm">ExpenseTrack</p>
+          <p className="font-bold text-sidebar-foreground text-sm">ExpCal</p>
           <p className="text-xs text-muted-foreground capitalize">{profile.role}</p>
         </div>
       </div>
@@ -142,7 +142,7 @@ export function AppSidebar({ profile }: AppSidebarProps) {
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
             <TrendingUp className="w-3.5 h-3.5 text-white" />
           </div>
-          <span className="font-bold text-sm gradient-text">ExpenseTrack</span>
+          <span className="font-bold text-sm gradient-text">ExpCal</span>
         </div>
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">

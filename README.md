@@ -1,4 +1,4 @@
-# ExpenseTrack
+# ExpCal
 
 A modern Progressive Web Application (PWA) and Web Platform for tracking expenses, income, and project time. Built with Next.js 16, Tailwind CSS v4, shadcn/ui, and Supabase.
 
@@ -7,6 +7,7 @@ A modern Progressive Web Application (PWA) and Web Platform for tracking expense
 - **Multi-Role Authentication**: Built-in User and Admin role-based access control.
 - **Project Tracking**: Create and manage multiple projects with individual income, expense, and time tracking.
 - **Detailed Entries**: Log start time, end time, income, itemized expenses (Food, Water, Transport, etc.), and receipt photos.
+- **Financial Analysis**: Dedicated analytics dashboard with interactive charts and breakdowns.
 - **Admin Panel**: System-wide control panel with platform analytics, user management, and project overview.
 - **Progressive Web App (PWA)**: Installable on mobile and desktop with offline support.
 

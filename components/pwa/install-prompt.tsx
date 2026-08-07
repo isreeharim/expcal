@@ -60,7 +60,7 @@ export function PWAInstallPrompt() {
           <span className="text-lg">📲</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground">Install ExpenseTrack</p>
+          <p className="text-sm font-semibold text-foreground">Install ExpCal</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             Install as an app for quick access and offline support
           </p>

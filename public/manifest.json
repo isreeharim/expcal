@@ -1,6 +1,6 @@
 {
-  "name": "ExpenseTrack — Smart Expense Manager",
-  "short_name": "ExpenseTrack",
+  "name": "ExpCal — Smart Expense Manager",
+  "short_name": "ExpCal",
   "description": "Track your expenses, income, and projects across all your work.",
   "start_url": "/",
   "display": "standalone",

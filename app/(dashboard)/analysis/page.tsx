@@ -7,7 +7,7 @@ import { BarChart2, TrendingUp, PieChart, DollarSign } from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Financial Analysis | ExpenseTrack',
+  title: 'Financial Analysis | ExpCal',
   description: 'Visual analytics and financial breakdowns across all your projects.',
 }
 

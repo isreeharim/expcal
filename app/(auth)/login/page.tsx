@@ -54,7 +54,7 @@ export default function LoginPage() {
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold gradient-text">ExpenseTrack</h1>
+              <h1 className="text-2xl font-bold gradient-text">ExpCal</h1>
               <p className="text-xs text-muted-foreground">Smart Expense Manager</p>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'var(--gradient-primary)'}}>
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold gradient-text">ExpenseTrack</h1>
+            <h1 className="text-xl font-bold gradient-text">ExpCal</h1>
           </div>
 
           <div className="glass-card p-8">

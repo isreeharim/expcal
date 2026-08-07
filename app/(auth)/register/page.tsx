@@ -84,7 +84,7 @@ export default function RegisterPage() {
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold gradient-text">ExpenseTrack</h1>
+              <h1 className="text-2xl font-bold gradient-text">ExpCal</h1>
               <p className="text-xs text-muted-foreground">Smart Expense Manager</p>
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function RegisterPage() {
             <span className="gradient-text">projects</span>
           </h2>
           <p className="text-muted-foreground text-lg mb-12">
-            Join thousands of professionals managing their finances with ExpenseTrack.
+            Join thousands of professionals managing their finances with ExpCal.
           </p>
           <ul className="space-y-4">
             {['Track time across multiple projects', 'Categorize income & expenses', 'Photo receipts with every entry', 'Beautiful analytics dashboard'].map(feat => (
@@ -115,7 +115,7 @@ export default function RegisterPage() {
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: 'var(--gradient-primary)'}}>
               <TrendingUp className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold gradient-text">ExpenseTrack</h1>
+            <h1 className="text-xl font-bold gradient-text">ExpCal</h1>
           </div>
 
           <div className="glass-card p-8">

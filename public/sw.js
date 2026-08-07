@@ -1,4 +1,4 @@
-const CACHE_NAME = 'expensetrack-v3'
+const CACHE_NAME = 'expcal-v1'
 const STATIC_ASSETS = [
   '/offline.html',
   '/manifest.json',

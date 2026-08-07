@@ -21,7 +21,7 @@ export default async function DashboardPage() {
     .from('profiles')
     .select('full_name')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'

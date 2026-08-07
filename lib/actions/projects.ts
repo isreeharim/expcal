@@ -35,8 +35,8 @@ export async function getProject(id: string) {
     .from('projects')
     .select('*')
     .eq('id', id)
-    .single()
-  if (error) throw error
+    .maybeSingle()
+  if (error) return null
   return data
 }
 
@@ -46,7 +46,7 @@ export async function getProjectStats(projectId: string) {
     .from('project_stats')
     .select('*')
     .eq('project_id', projectId)
-    .single()
+    .maybeSingle()
   if (error) return null
   return data
 }

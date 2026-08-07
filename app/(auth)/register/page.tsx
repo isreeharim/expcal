@@ -38,7 +38,8 @@ export default function RegisterPage() {
         email,
         password,
         options: {
-          data: { full_name: fullName, role: 'user' }
+          data: { full_name: fullName, role: 'user' },
+          emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/login`,
         }
       })
       if (error) {

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getAllProjects } from '@/lib/actions/projects'
-import { Badge } from '@/components/ui/badge'
+import { UserRoleDialog } from '@/components/admin/user-role-dialog'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table'
@@ -81,13 +81,12 @@ export default async function AdminUsersPage() {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={p.role === 'admin' ? 'default' : 'secondary'}
-                      className="capitalize text-xs font-semibold"
-                      style={p.role === 'admin' ? { background: 'var(--gradient-primary)', color: 'white' } : {}}
-                    >
-                      {p.role}
-                    </Badge>
+                    <UserRoleDialog
+                      userId={p.id}
+                      userName={p.full_name || 'User'}
+                      currentRole={p.role as 'admin' | 'user'}
+                      triggerVariant="badge"
+                    />
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{formatDate(p.created_at)}</TableCell>
                   <TableCell className="text-sm font-medium text-foreground">

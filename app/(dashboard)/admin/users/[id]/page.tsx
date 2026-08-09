@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { getProjects, getProjectStats, getUserDashboardStats } from '@/lib/actions/projects'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { AdminUserProjects } from '@/components/admin/admin-user-projects'
+import { UserRoleDialog } from '@/components/admin/user-role-dialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { getInitials, formatDate } from '@/lib/utils'
@@ -134,6 +135,16 @@ export default async function AdminUserDetailsPage({ params }: PageProps) {
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* Role Change Action Button */}
+          <div className="flex items-center gap-3">
+            <UserRoleDialog
+              userId={targetUserId}
+              userName={userName}
+              currentRole={targetProfile.role as 'admin' | 'user'}
+              triggerVariant="button"
+            />
           </div>
         </div>
       </div>

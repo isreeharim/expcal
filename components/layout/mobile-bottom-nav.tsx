@@ -68,7 +68,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
     <>
       {/* Floating Bottom Navigation Bar for Mobile */}
       <nav
-        className="md:hidden fixed bottom-3 inset-x-3 z-40 bg-[#121422]/90 backdrop-blur-2xl border border-white/12 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-2xl px-2 py-1.5 flex items-center justify-between transition-all duration-300"
+        className="md:hidden fixed bottom-3 inset-x-3 z-40 bg-[#121422]/95 backdrop-blur-2xl border border-white/12 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-3xl px-1 py-1.5 grid grid-cols-5 items-center transition-all duration-300"
         style={{ paddingBottom: 'calc(0.375rem + env(safe-area-inset-bottom, 0px))' }}
         aria-label="Mobile Navigation"
       >
@@ -76,7 +76,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
         <Link
           href="/dashboard"
           className={cn(
-            'flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 relative group',
+            'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
             isHomeActive
               ? 'text-primary font-bold'
               : 'text-muted-foreground hover:text-foreground active:scale-95'
@@ -100,7 +100,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
         <Link
           href="/projects"
           className={cn(
-            'flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 relative group',
+            'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
             isProjectsActive
               ? 'text-primary font-bold'
               : 'text-muted-foreground hover:text-foreground active:scale-95'
@@ -120,12 +120,12 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           )}
         </Link>
 
-        {/* 3. Center Elevated FAB '+' Button */}
-        <div className="flex-1 flex justify-center -mt-6">
+        {/* 3. Center Elevated FAB '+' Button (Strict Dead Center) */}
+        <div className="flex flex-col items-center justify-center -mt-6">
           <button
             onClick={() => setQuickActionOpen(true)}
             aria-label="Quick Actions"
-            className="w-13 h-13 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/40 border-2 border-[#121422] transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
+            className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/45 border-2 border-[#121422] transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)' }}
           >
             <Plus className="w-6 h-6 stroke-[2.5]" />
@@ -136,7 +136,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
         <Link
           href="/analysis"
           className={cn(
-            'flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 relative group',
+            'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
             isAnalysisActive
               ? 'text-primary font-bold'
               : 'text-muted-foreground hover:text-foreground active:scale-95'
@@ -161,7 +161,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           <Link
             href="/admin"
             className={cn(
-              'flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl transition-all duration-200 relative group',
+              'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
               isAdminActive
                 ? 'text-primary font-bold'
                 : 'text-muted-foreground hover:text-foreground active:scale-95'
@@ -183,7 +183,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
         ) : (
           <button
             onClick={() => setQuickActionOpen(true)}
-            className="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-200"
+            className="flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-muted-foreground hover:text-foreground active:scale-95 transition-all duration-200 cursor-pointer"
           >
             <div className="w-8 h-8 rounded-xl flex items-center justify-center">
               <User className="w-5 h-5 text-muted-foreground" />

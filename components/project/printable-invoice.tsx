@@ -93,11 +93,12 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
           ? 'shadow-none border-none rounded-none'
           : 'border-2 border-zinc-300 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.18)]'
       )}
-      // A4 portrait aspect ratio: 210mm × 297mm = 1:1.4142
-      // At 760px wide preview → height ≈ 1075px
+      // A4 portrait: 210mm × 297mm → at 760px wide ≈ 1075px tall
+      // Explicit height is required for flex-1 spacer to fill remaining space
       style={{
         color: '#09090b',
-        minHeight: isPrintMode ? '100vh' : '1075px',
+        height: isPrintMode ? 'auto' : '1075px',
+        minHeight: isPrintMode ? '100vh' : undefined,
       }}
     >
       {/* ── HEADER ── */}

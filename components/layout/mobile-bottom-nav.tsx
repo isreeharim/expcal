@@ -120,17 +120,22 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           )}
         </Link>
 
-        {/* 3. Center Elevated FAB '+' Button (Strict Dead Center) */}
-        <div className="flex flex-col items-center justify-center -mt-6">
-          <button
-            onClick={() => setQuickActionOpen(true)}
-            aria-label="Quick Actions"
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/45 border-2 border-[#121422] transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
+        {/* 3. Center '+' Action Button (In-Line Perfect Alignment) */}
+        <button
+          onClick={() => setQuickActionOpen(true)}
+          aria-label="Quick Actions"
+          className="flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group cursor-pointer active:scale-95"
+        >
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-md shadow-primary/30 transition-all duration-200 group-hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)' }}
           >
-            <Plus className="w-6 h-6 stroke-[2.5]" />
-          </button>
-        </div>
+            <Plus className="w-5 h-5 stroke-[2.5]" />
+          </div>
+          <span className="text-[10px] mt-0.5 tracking-tight font-medium text-muted-foreground group-hover:text-foreground">
+            Add
+          </span>
+        </button>
 
         {/* 4. Analysis */}
         <Link

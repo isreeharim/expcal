@@ -20,8 +20,11 @@ import {
   SlidersHorizontal,
   Eye,
   Sparkles,
-  FileText
+  FileText,
+  FileDown,
+  Loader2
 } from 'lucide-react'
+import { generateInvoicePDF } from '@/lib/pdf-generator'
 import { cn } from '@/lib/utils'
 
 interface BillCustomizerModalProps {
@@ -39,6 +42,7 @@ export function BillCustomizerModal({
 }: BillCustomizerModalProps) {
   // Mobile Tab state ('customize' | 'preview')
   const [activeTab, setActiveTab] = useState<'customize' | 'preview'>('customize')
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
 
   // Minimal Bill Configuration with Direct Total Amount
   const [config, setConfig] = useState<BillConfig>({
@@ -143,6 +147,25 @@ export function BillCustomizerModal({
     })
   }
 
+  // Built-in Client-Side PDF Generator
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true)
+    try {
+      const fileName = `${project.title.replace(/\s+/g, '_')}_Invoice_${config.invoiceNumber}.pdf`
+      await generateInvoicePDF({
+        fileName,
+        elementId: 'printable-invoice-container',
+        scale: 2.5
+      })
+    } catch (err) {
+      console.error('Built-in PDF Generation Error:', err)
+      // Fallback to window print if canvas fails
+      window.print()
+    } finally {
+      setIsGeneratingPDF(false)
+    }
+  }
+
   // Handle Print
   const handlePrint = () => {
     window.print()
@@ -221,7 +244,7 @@ export function BillCustomizerModal({
           </div>
 
           {/* Action Buttons (Desktop & Tablet) */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          <div className="hidden sm:flex items-center gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -240,10 +263,29 @@ export function BillCustomizerModal({
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={handlePrint}
-              className="rounded-xl h-9 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 shadow-md shadow-white/10 cursor-pointer"
+              className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60"
             >
-              <Printer className="w-3.5 h-3.5" /> Print / Save PDF
+              <Printer className="w-3.5 h-3.5" /> Print
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+              className="rounded-xl h-9 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 shadow-lg shadow-white/10 cursor-pointer"
+            >
+              {isGeneratingPDF ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <FileDown className="w-3.5 h-3.5" />
+                  Download PDF
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -578,10 +620,21 @@ export function BillCustomizerModal({
           </Button>
           <Button
             size="sm"
-            onClick={handlePrint}
-            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 cursor-pointer"
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPDF}
+            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 cursor-pointer shadow-md"
           >
-            <Printer className="w-4 h-4" /> Print PDF
+            {isGeneratingPDF ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <FileDown className="w-4 h-4" />
+                Save PDF
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>

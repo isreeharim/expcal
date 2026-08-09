@@ -57,25 +57,28 @@ export default async function AdminUsersPage() {
               <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Role</TableHead>
               <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Joined Date</TableHead>
               <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Total Projects</TableHead>
+              <TableHead className="text-right text-muted-foreground text-xs uppercase tracking-wider">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {allProfiles.map((p) => {
               const userProjects = projects.filter((proj) => proj.user_id === p.id)
               return (
-                <TableRow key={p.id} className="border-border">
+                <TableRow key={p.id} className="border-border group hover:bg-muted/30 transition-colors">
                   <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-8.5 h-8.5">
+                    <Link href={`/admin/users/${p.id}`} className="flex items-center gap-3">
+                      <Avatar className="w-9 h-9 ring-2 ring-primary/20 flex-shrink-0 group-hover:scale-105 transition-transform">
                         <AvatarFallback style={{ background: 'var(--gradient-primary)', color: 'white', fontSize: '0.75rem' }}>
                           {getInitials(p.full_name)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-foreground">{p.full_name || 'Unnamed User'}</p>
-                        <p className="text-xs text-muted-foreground">ID: {p.id.slice(0, 8)}...</p>
+                        <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {p.full_name || 'Unnamed User'}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono">ID: {p.id.slice(0, 8)}...</p>
                       </div>
-                    </div>
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -88,9 +91,17 @@ export default async function AdminUsersPage() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{formatDate(p.created_at)}</TableCell>
                   <TableCell className="text-sm font-medium text-foreground">
-                    <span className="px-2.5 py-1 rounded-lg bg-muted/50 border border-border text-xs">
+                    <span className="px-2.5 py-1 rounded-lg bg-muted/50 border border-border text-xs font-semibold">
                       {userProjects.length} project{userProjects.length !== 1 ? 's' : ''}
                     </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Link
+                      href={`/admin/users/${p.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors"
+                    >
+                      View Projects →
+                    </Link>
                   </TableCell>
                 </TableRow>
               )

@@ -84,13 +84,23 @@ export async function createProject(formData: FormData) {
 
   const title = formData.get('title') as string
   const description = formData.get('description') as string
+  const targetUserId = (formData.get('target_user_id') as string) || user.id
 
   if (!title?.trim()) throw new Error('Project title is required')
+
+  // If assigning to another user, verify admin status
+  let effectiveUserId = user.id
+  if (targetUserId !== user.id) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+    if (profile?.role === 'admin') {
+      effectiveUserId = targetUserId
+    }
+  }
 
   const { data, error } = await supabase
     .from('projects')
     .insert({
-      user_id: user.id,
+      user_id: effectiveUserId,
       title: title.trim(),
       description: description?.trim() || null,
       color: generateProjectColor(),
@@ -100,6 +110,8 @@ export async function createProject(formData: FormData) {
 
   if (error) throw error
   revalidatePath('/dashboard')
+  revalidatePath('/admin/projects')
+  revalidatePath(`/admin/users/${effectiveUserId}`)
   return data
 }
 
@@ -111,14 +123,24 @@ export async function updateProject(id: string, formData: FormData) {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
 
-  const { error } = await supabase
-    .from('projects')
-    .update({ title: title.trim(), description: description?.trim() || null })
-    .eq('id', id)
-    .eq('user_id', user.id)
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
 
+  let query = supabase
+    .from('projects')
+    .update({ title: title.trim(), description: description?.trim() || null, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (!isAdmin) {
+    query = query.eq('user_id', user.id)
+  }
+
+  const { error } = await query
   if (error) throw error
+
   revalidatePath('/dashboard')
+  revalidatePath('/projects')
+  revalidatePath('/admin/projects')
   revalidatePath(`/project/${id}`)
 }
 
@@ -127,12 +149,22 @@ export async function deleteProject(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
-  const { error } = await supabase
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
+
+  let query = supabase
     .from('projects')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id)
 
+  if (!isAdmin) {
+    query = query.eq('user_id', user.id)
+  }
+
+  const { error } = await query
   if (error) throw error
+
   revalidatePath('/dashboard')
+  revalidatePath('/projects')
+  revalidatePath('/admin/projects')
 }

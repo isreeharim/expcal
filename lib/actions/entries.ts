@@ -45,20 +45,28 @@ export async function createEntry(formData: FormData) {
   let expenses: ExpenseCategory[] = []
   try { expenses = JSON.parse(expensesJson) } catch { expenses = [] }
 
-  // Verify that the project belongs to the user or user is admin
+  // Verify project exists
   const { data: project } = await supabase
     .from('projects')
-    .select('id')
+    .select('id, user_id')
     .eq('id', projectId)
     .single()
 
   if (!project) throw new Error('Project not found or unauthorized')
 
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
+
+  // If user is neither the owner nor admin, deny
+  if (project.user_id !== user.id && !isAdmin) {
+    throw new Error('Unauthorized to add entries to this project')
+  }
+
   const { data, error } = await supabase
     .from('entries')
     .insert({
       project_id: projectId,
-      user_id: user.id,
+      user_id: project.user_id, // ensure entry belongs to project owner
       date,
       start_time: startTime || null,
       end_time: endTime || null,
@@ -72,6 +80,8 @@ export async function createEntry(formData: FormData) {
 
   if (error) throw error
   revalidatePath(`/project/${projectId}`)
+  revalidatePath('/dashboard')
+  revalidatePath('/admin')
   return data
 }
 
@@ -92,7 +102,10 @@ export async function updateEntry(id: string, formData: FormData) {
   let expenses: ExpenseCategory[] = []
   try { expenses = JSON.parse(expensesJson) } catch { expenses = [] }
 
-  const { error } = await supabase
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
+
+  let query = supabase
     .from('entries')
     .update({
       date,
@@ -102,12 +115,20 @@ export async function updateEntry(id: string, formData: FormData) {
       expenses,
       notes: notes || null,
       photo_url: photoUrl || null,
+      updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .eq('user_id', user.id)
 
+  if (!isAdmin) {
+    query = query.eq('user_id', user.id)
+  }
+
+  const { error } = await query
   if (error) throw error
+
   revalidatePath(`/project/${projectId}`)
+  revalidatePath('/dashboard')
+  revalidatePath('/admin')
 }
 
 export async function deleteEntry(id: string, projectId: string) {
@@ -115,14 +136,24 @@ export async function deleteEntry(id: string, projectId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
-  const { error } = await supabase
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
+
+  let query = supabase
     .from('entries')
     .delete()
     .eq('id', id)
-    .eq('user_id', user.id)
 
+  if (!isAdmin) {
+    query = query.eq('user_id', user.id)
+  }
+
+  const { error } = await query
   if (error) throw error
+
   revalidatePath(`/project/${projectId}`)
+  revalidatePath('/dashboard')
+  revalidatePath('/admin')
 }
 
 export async function uploadPhoto(file: File, userId: string): Promise<string> {

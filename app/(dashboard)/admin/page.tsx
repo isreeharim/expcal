@@ -129,24 +129,27 @@ export default async function AdminPage() {
                   <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Role</TableHead>
                   <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Joined</TableHead>
                   <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Projects</TableHead>
+                  <TableHead className="text-right text-muted-foreground text-xs uppercase tracking-wider">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {allProfiles.map((p) => {
                   const userProjects = projects.filter((proj) => proj.user_id === p.id)
                   return (
-                    <TableRow key={p.id} className="border-border">
+                    <TableRow key={p.id} className="border-border group hover:bg-muted/30 transition-colors">
                       <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-8 h-8">
+                        <Link href={`/admin/users/${p.id}`} className="flex items-center gap-3">
+                          <Avatar className="w-8 h-8 ring-2 ring-primary/20 flex-shrink-0 group-hover:scale-105 transition-transform">
                             <AvatarFallback style={{ background: 'var(--gradient-primary)', color: 'white', fontSize: '0.7rem' }}>
                               {getInitials(p.full_name)}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="text-sm font-medium text-foreground">{p.full_name || 'Unnamed'}</p>
+                            <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                              {p.full_name || 'Unnamed'}
+                            </p>
                           </div>
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -158,7 +161,19 @@ export default async function AdminPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{formatDate(p.created_at)}</TableCell>
-                      <TableCell className="text-sm font-medium text-foreground">{userProjects.length}</TableCell>
+                      <TableCell className="text-sm font-medium text-foreground">
+                        <span className="px-2 py-0.5 rounded-md bg-muted/50 border border-border text-xs">
+                          {userProjects.length}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link
+                          href={`/admin/users/${p.id}`}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                        >
+                          View Projects →
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   )
                 })}
@@ -179,6 +194,7 @@ export default async function AdminPage() {
                     <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Owner</TableHead>
                     <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Created</TableHead>
                     <TableHead className="text-muted-foreground text-xs uppercase tracking-wider">Entries</TableHead>
+                    <TableHead className="text-right text-muted-foreground text-xs uppercase tracking-wider">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -186,16 +202,26 @@ export default async function AdminPage() {
                     const projEntries = entries.filter(e => e.project_id === proj.id)
                     const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
                     return (
-                      <TableRow key={proj.id} className="border-border">
+                      <TableRow key={proj.id} className="border-border group hover:bg-muted/30 transition-colors">
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <Link href={`/project/${proj.id}`} className="flex items-center gap-2">
                             <span className="color-dot" style={{ background: proj.color || '#6366f1' }} />
-                            <span className="text-sm font-medium text-foreground">{proj.title}</span>
-                          </div>
+                            <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                              {proj.title}
+                            </span>
+                          </Link>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{ownerName}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{formatDate(proj.created_at)}</TableCell>
                         <TableCell className="text-sm font-medium text-foreground">{projEntries.length}</TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            href={`/project/${proj.id}`}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                          >
+                            Open Project →
+                          </Link>
+                        </TableCell>
                       </TableRow>
                     )
                   })}

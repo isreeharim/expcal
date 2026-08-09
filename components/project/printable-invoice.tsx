@@ -101,7 +101,6 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
         // justify-between guarantees footer sits at the very bottom
         height: '1075px',
         boxSizing: 'border-box',
-        overflow: 'hidden',
       }}
     >
       {/* ═══ TOP CONTENT BLOCK ═══ */}

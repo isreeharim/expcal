@@ -403,3 +403,36 @@
     print-color-adjust: exact !important;
   }
 }
+
+/* ============================================================
+   INVOICE PREVIEW SCALE — fits 760px invoice into the panel
+   ============================================================ */
+.invoice-preview-scale {
+  /* On large screens the preview panel is ~900-1000px wide, no scale needed */
+  transform: scale(1);
+}
+
+/* Scale down on medium viewports so the full invoice fits */
+@media (max-width: 1200px) {
+  .invoice-preview-scale {
+    transform: scale(0.82);
+    transform-origin: top center;
+    margin-bottom: -18%;
+  }
+}
+
+@media (max-width: 900px) {
+  .invoice-preview-scale {
+    transform: scale(0.65);
+    transform-origin: top center;
+    margin-bottom: -35%;
+  }
+}
+
+@media (max-width: 700px) {
+  .invoice-preview-scale {
+    transform: scale(0.48);
+    transform-origin: top center;
+    margin-bottom: -52%;
+  }
+}

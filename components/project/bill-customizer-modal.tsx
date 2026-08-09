@@ -228,7 +228,7 @@ export function BillCustomizerModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-[96vw] max-w-7xl h-[92vh] max-h-[92vh] p-0 rounded-3xl shadow-2xl backdrop-blur-3xl border border-white/10 flex flex-col overflow-hidden bg-[#0c0e18] animate-fade-in"
+        className="w-[98vw] max-w-[1400px] h-[96vh] max-h-[96vh] p-0 rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden bg-[#0c0e18]"
       >
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#121422]/90 flex-shrink-0">
@@ -323,11 +323,11 @@ export function BillCustomizerModal({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* LEFT: Streamlined Direct Form with Template Switcher */}
+        <div className="flex-1 flex overflow-hidden min-h-0">
+          {/* LEFT: Form Panel */}
           <div
             className={cn(
-              'w-full md:w-[380px] lg:w-[420px] xl:w-[450px] flex-shrink-0 border-r border-white/10 overflow-y-auto p-5 space-y-5 bg-[#101220]',
+              'w-full sm:w-[360px] lg:w-[400px] flex-shrink-0 border-r border-white/10 overflow-y-auto p-4 space-y-4 bg-[#101220]',
               activeTab === 'preview' && 'hidden sm:block'
             )}
           >
@@ -595,15 +595,27 @@ export function BillCustomizerModal({
             </div>
           </div>
 
-          {/* RIGHT: Live Invoice Canvas — A4 Portrait Preview */}
+          {/* RIGHT: Live Invoice Preview — scales to fit the available height */}
           <div
             className={cn(
-              'flex-1 bg-[#090b14] p-4 md:p-8 lg:p-10 overflow-y-auto flex items-start justify-center',
+              'flex-1 bg-[#090b14] overflow-hidden flex flex-col items-center justify-start',
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            <div className="w-full max-w-[760px] transition-all my-auto py-2">
-              <PrintableInvoice project={project} config={config} />
+            {/* Scrollable zoom container */}
+            <div className="w-full h-full overflow-y-auto flex items-start justify-center p-6">
+              {/* The invoice renders at 760px wide, then we shrink it visually with CSS scale.
+                  origin-top keeps it anchored to the top so scrolling works naturally. */}
+              <div
+                style={{
+                  width: '760px',
+                  flexShrink: 0,
+                  transformOrigin: 'top center',
+                }}
+                className="invoice-preview-scale"
+              >
+                <PrintableInvoice project={project} config={config} />
+              </div>
             </div>
           </div>
         </div>

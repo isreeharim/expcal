@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { AppSidebar } from '@/components/layout/app-sidebar'
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -27,9 +28,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar profile={userProfile} />
-      <main className="flex-1 min-w-0 overflow-y-auto md:pt-0 pt-14">
+      <main className="flex-1 min-w-0 overflow-y-auto md:pt-0 pt-14 pb-28 md:pb-6">
         {children}
       </main>
+      <MobileBottomNav profile={userProfile} />
     </div>
   )
 }

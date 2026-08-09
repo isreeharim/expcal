@@ -179,7 +179,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
           <tbody className="divide-y divide-zinc-100">
             <tr>
               <td className="py-4 pr-4">
-                <p className="font-semibold text-zinc-900">{config.billDescription || 'Project Deliverables & Services'}</p>
+                <p className="font-semibold text-zinc-900">{config.billDescription || project.title || 'Service Item'}</p>
               </td>
               <td className="py-4 px-3 text-center text-zinc-600 font-medium">{qty}</td>
               <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(unitRate)}</td>

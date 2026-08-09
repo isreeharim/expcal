@@ -42,7 +42,7 @@ export function BillCustomizerModal({
   // Minimal Bill Configuration with Direct Total Amount
   const [config, setConfig] = useState<BillConfig>({
     // Document Meta
-    documentTitle: 'TAX INVOICE',
+    documentTitle: 'INVOICE',
     showInvoiceNumber: true,
     invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
     showIssueDate: true,
@@ -68,8 +68,8 @@ export function BillCustomizerModal({
     clientAddress: '',
     clientTaxId: '',
 
-    // Direct Billing Amount & Description
-    billDescription: `${project.title} — Deliverables & Professional Services`,
+    // Direct Billing Amount & Description (No pre-filled description)
+    billDescription: '',
     billAmount: 0,
     billQuantity: 1,
 
@@ -292,11 +292,11 @@ export function BillCustomizerModal({
               </div>
 
               <div>
-                <Label className="text-[11px] text-muted-foreground font-medium">Description / Service Item</Label>
+                <Label className="text-[11px] text-muted-foreground font-medium">Description (Optional)</Label>
                 <Input
                   value={config.billDescription}
                   onChange={(e) => setConfig({ ...config, billDescription: e.target.value })}
-                  placeholder="e.g. Mobile App Development & Consulting"
+                  placeholder="Enter description (optional)"
                   className="mt-1 h-8.5 rounded-xl text-xs bg-muted/80"
                 />
               </div>

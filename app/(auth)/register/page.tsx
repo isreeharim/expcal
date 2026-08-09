@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { TrendingUp, Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle } from 'lucide-react'
+import { TrendingUp, Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle, Inbox, AlertTriangle, ArrowLeft, MailCheck } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -56,18 +56,50 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen auth-bg flex items-center justify-center p-6">
-        <div className="glass-card p-10 text-center max-w-md w-full shadow-2xl backdrop-blur-2xl border border-white/10 rounded-3xl animate-fade-in">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20" style={{background: 'var(--gradient-income)'}}>
-            <CheckCircle className="w-8 h-8 text-white" />
+      <div className="min-h-screen auth-bg flex items-center justify-center p-4 sm:p-6">
+        <div className="glass-card p-6 sm:p-10 text-center max-w-md w-full shadow-2xl backdrop-blur-2xl border border-white/10 rounded-3xl animate-fade-in space-y-5">
+          {/* Brand Icon */}
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/25"
+            style={{ background: 'linear-gradient(135deg, #10b981 0%, #0d9488 100%)' }}
+          >
+            <MailCheck className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">Verification Link Sent!</h2>
-          <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-            We sent a verification link to <strong className="text-foreground">{email}</strong>.
-          </p>
-          <p className="text-xs text-primary font-medium bg-primary/10 py-2.5 px-4 rounded-xl border border-primary/20">
-            ✨ Click the link in your email to be logged in directly to your dashboard!
-          </p>
+
+          <div>
+            <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">Check Your Email</h2>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              We sent a secure verification link to:
+              <br />
+              <strong className="text-foreground font-semibold break-all text-sm mt-1 inline-block">{email}</strong>
+            </p>
+          </div>
+
+          {/* Spam Alert Callout */}
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-left space-y-1.5 animate-fade-in">
+            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs sm:text-sm">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              <span>Can&apos;t find the email? Check your Spam folder</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed pl-6">
+              Verification emails can sometimes land in your <strong>Spam</strong>, <strong>Junk</strong>, or <strong>Promotions</strong> folder. If you find it there, mark it as &quot;Not Spam&quot;.
+            </p>
+          </div>
+
+          {/* Instant Auto-Login Badge */}
+          <div className="p-3 rounded-2xl bg-primary/10 border border-primary/25 text-xs text-primary font-medium text-center">
+            ✨ Clicking the verification link in your email will log you directly into your dashboard!
+          </div>
+
+          {/* Action Link */}
+          <div className="pt-2">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors py-2 px-4 rounded-xl hover:bg-muted/50"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
+            </Link>
+          </div>
         </div>
       </div>
     )

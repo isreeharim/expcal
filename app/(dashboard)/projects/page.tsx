@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getProjects } from '@/lib/actions/projects'
-import { ProjectCard } from '@/components/dashboard/project-card'
 import { CreateProjectDialog } from '@/components/dashboard/create-project-dialog'
-import { FolderOpen } from 'lucide-react'
+import { ProjectSearchList } from '@/components/project/project-search-list'
 
 export default async function ProjectsPage() {
   const supabase = await createClient()
@@ -13,29 +12,18 @@ export default async function ProjectsPage() {
   const projects = await getProjects(user.id)
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Projects</h1>
-          <p className="text-muted-foreground mt-1">{projects.length} project{projects.length !== 1 ? 's' : ''} total</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">Projects</h1>
+          <p className="text-muted-foreground text-sm mt-1">{projects.length} total project{projects.length !== 1 ? 's' : ''}</p>
         </div>
         <CreateProjectDialog />
       </div>
 
-      {projects.length === 0 ? (
-        <div className="glass-card p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--gradient-primary)' }}>
-            <FolderOpen className="w-8 h-8 text-white" />
-          </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">No projects yet</h3>
-          <p className="text-muted-foreground mb-6">Create your first project to get started.</p>
-          <CreateProjectDialog />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 stagger-children">
-          {projects.map(p => <ProjectCard key={p.id} project={p} />)}
-        </div>
-      )}
+      {/* Searchable and Filterable Projects Grid */}
+      <ProjectSearchList projects={projects} />
     </div>
   )
 }

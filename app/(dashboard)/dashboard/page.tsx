@@ -3,8 +3,7 @@ import { redirect } from 'next/navigation'
 import { getProjects, getUserDashboardStats } from '@/lib/actions/projects'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { CreateProjectDialog } from '@/components/dashboard/create-project-dialog'
-import { ProjectCard } from '@/components/dashboard/project-card'
-import { FolderOpen } from 'lucide-react'
+import { ProjectSearchList } from '@/components/project/project-search-list'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -21,14 +20,14 @@ export default async function DashboardPage() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
             {greeting}, <span className="gradient-text">{profile?.full_name?.split(' ')[0] || 'there'}</span> 👋
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm">
             Here&apos;s your financial overview across all projects
           </p>
         </div>
@@ -36,38 +35,25 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Section — Compact 2x2 Grid on Mobile, 4 Cols on Desktop */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8 stagger-children">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 stagger-children">
         <StatCard type="hours" value={stats.total_hours} label="Total Hours" subLabel="Across all projects" />
         <StatCard type="income" value={stats.total_income} label="Total Income" subLabel="All time earnings" />
         <StatCard type="expense" value={stats.total_expenses} label="Total Expenses" subLabel="All time spending" />
         <StatCard type="cash" value={stats.net_cash} label="Net Cash" subLabel="Income minus expenses" />
       </div>
 
-      {/* Projects */}
-      <div>
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold text-foreground">Your Projects</h2>
-          <span className="text-sm text-muted-foreground">{projects.length} project{projects.length !== 1 ? 's' : ''}</span>
+      {/* Projects Section with Live Search */}
+      <div className="space-y-4 pt-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-foreground tracking-tight">Your Projects</h2>
+          <span className="text-xs text-muted-foreground">{projects.length} total project{projects.length !== 1 ? 's' : ''}</span>
         </div>
 
-        {projects.length === 0 ? (
-          <div className="glass-card p-12 text-center animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--gradient-primary)' }}>
-              <FolderOpen className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">No projects yet</h3>
-            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-              Create your first project to start tracking time, income and expenses.
-            </p>
-            <CreateProjectDialog />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 stagger-children">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        )}
+        <ProjectSearchList
+          projects={projects}
+          emptyTitle="No projects yet"
+          emptyDescription="Create your first project to start tracking time, income and expenses."
+        />
       </div>
     </div>
   )

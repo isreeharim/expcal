@@ -76,6 +76,9 @@ export function BillCustomizerModal({
     clientTaxId: '',
 
     // Pricing & Items
+    useCustomTotal: false,
+    customTotalAmount: 0,
+    customTotalDescription: 'Project Deliverables & Services',
     includeHours: true,
     hourlyRate: 500,
     includeExpenses: true,
@@ -165,31 +168,42 @@ export function BillCustomizerModal({
   const handleExportCSV = () => {
     const rows = [['Date', 'Item / Description', 'Category', 'Quantity', 'Rate', 'Amount']]
 
-    if (config.includeHours) {
-      const totalH = entries.reduce((s, e) => {
-        if (e.start_time && e.end_time) {
-          const [sh, sm] = e.start_time.split(':').map(Number)
-          const [eh, em] = e.end_time.split(':').map(Number)
-          return s + Math.max(0, eh - sh + (em - sm) / 60)
+    if (config.useCustomTotal) {
+      rows.push([
+        '',
+        config.customTotalDescription || 'Project Deliverables',
+        'Direct Total Fee',
+        '1',
+        config.customTotalAmount.toString(),
+        config.customTotalAmount.toString()
+      ])
+    } else {
+      if (config.includeHours) {
+        const totalH = entries.reduce((s, e) => {
+          if (e.start_time && e.end_time) {
+            const [sh, sm] = e.start_time.split(':').map(Number)
+            const [eh, em] = e.end_time.split(':').map(Number)
+            return s + Math.max(0, eh - sh + (em - sm) / 60)
+          }
+          return s
+        }, 0)
+        if (totalH > 0) {
+          rows.push(['', 'Work Hours', 'Labor', totalH.toFixed(2), config.hourlyRate.toString(), (totalH * config.hourlyRate).toFixed(2)])
         }
-        return s
-      }, 0)
-      if (totalH > 0) {
-        rows.push(['', 'Work Hours', 'Labor', totalH.toFixed(2), config.hourlyRate.toString(), (totalH * config.hourlyRate).toFixed(2)])
       }
-    }
 
-    if (config.includeFixedFee && config.fixedFeeAmount > 0) {
-      rows.push(['', config.fixedFeeDescription, 'Fee', '1', config.fixedFeeAmount.toString(), config.fixedFeeAmount.toString()])
-    }
+      if (config.includeFixedFee && config.fixedFeeAmount > 0) {
+        rows.push(['', config.fixedFeeDescription, 'Fee', '1', config.fixedFeeAmount.toString(), config.fixedFeeAmount.toString()])
+      }
 
-    if (config.includeExpenses) {
-      entries.forEach((e) => {
-        const expList = Array.isArray(e.expenses) ? e.expenses : []
-        expList.forEach((exp) => {
-          rows.push([e.date, exp.note ? `${exp.category} - ${exp.note}` : exp.category, 'Expense', '1', exp.amount.toString(), exp.amount.toString()])
+      if (config.includeExpenses) {
+        entries.forEach((e) => {
+          const expList = Array.isArray(e.expenses) ? e.expenses : []
+          expList.forEach((exp) => {
+            rows.push([e.date, exp.note ? `${exp.category} - ${exp.note}` : exp.category, 'Expense', '1', exp.amount.toString(), exp.amount.toString()])
+          })
         })
-      })
+      }
     }
 
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.map((c) => `"${c}"`).join(',')).join('\n')
@@ -433,42 +447,101 @@ export function BillCustomizerModal({
 
             {/* 3. Items & Rates */}
             <div className="space-y-3 pt-3 border-t border-white/5">
-              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Items & Pricing</h4>
+              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Items & Billing Amount</h4>
 
-              {/* Hours */}
-              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">Bill Work Hours</span>
-                  <input
-                    type="checkbox"
-                    checked={config.includeHours}
-                    onChange={(e) => setConfig({ ...config, includeHours: e.target.checked })}
-                    className="rounded accent-primary w-4 h-4 cursor-pointer"
-                  />
-                </div>
-                {config.includeHours && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <span className="text-xs text-muted-foreground">Hourly Rate ({config.currencySymbol}/hr):</span>
+              {/* Billing Mode Switcher */}
+              <div className="flex p-1 rounded-xl bg-muted/50 border border-border/60">
+                <button
+                  type="button"
+                  onClick={() => setConfig({ ...config, useCustomTotal: true })}
+                  className={cn(
+                    'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
+                    config.useCustomTotal
+                      ? 'bg-foreground text-background font-bold shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Enter Total Amount
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfig({ ...config, useCustomTotal: false })}
+                  className={cn(
+                    'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
+                    !config.useCustomTotal
+                      ? 'bg-foreground text-background font-bold shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Auto from Hours & Expenses
+                </button>
+              </div>
+
+              {/* Direct Total Amount Inputs */}
+              {config.useCustomTotal ? (
+                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50 space-y-3">
+                  <div>
+                    <Label className="text-[11px] text-muted-foreground font-medium">
+                      Total Bill Amount ({config.currencySymbol}) <span className="text-destructive">*</span>
+                    </Label>
                     <Input
                       type="number"
-                      value={config.hourlyRate}
-                      onChange={(e) => setConfig({ ...config, hourlyRate: parseFloat(e.target.value) || 0 })}
-                      className="h-7.5 w-24 rounded-lg text-xs bg-muted/60 font-semibold"
+                      value={config.customTotalAmount || ''}
+                      onChange={(e) => setConfig({ ...config, customTotalAmount: parseFloat(e.target.value) || 0 })}
+                      placeholder="e.g. 25000"
+                      className="mt-1 h-9 rounded-xl text-sm font-bold bg-muted/60 font-mono text-primary"
                     />
                   </div>
-                )}
-              </div>
+                  <div>
+                    <Label className="text-[11px] text-muted-foreground font-medium">
+                      Description / Line Item Note
+                    </Label>
+                    <Input
+                      value={config.customTotalDescription}
+                      onChange={(e) => setConfig({ ...config, customTotalDescription: e.target.value })}
+                      placeholder="Project Deliverables & Services"
+                      className="mt-1 h-8.5 rounded-xl text-xs bg-muted/60"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Hours */}
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-foreground">Bill Work Hours</span>
+                      <input
+                        type="checkbox"
+                        checked={config.includeHours}
+                        onChange={(e) => setConfig({ ...config, includeHours: e.target.checked })}
+                        className="rounded accent-primary w-4 h-4 cursor-pointer"
+                      />
+                    </div>
+                    {config.includeHours && (
+                      <div className="flex items-center gap-2 pt-1">
+                        <span className="text-xs text-muted-foreground">Hourly Rate ({config.currencySymbol}/hr):</span>
+                        <Input
+                          type="number"
+                          value={config.hourlyRate}
+                          onChange={(e) => setConfig({ ...config, hourlyRate: parseFloat(e.target.value) || 0 })}
+                          className="h-7.5 w-24 rounded-lg text-xs bg-muted/60 font-semibold"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-              {/* Expenses */}
-              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground">Include Project Expenses</span>
-                <input
-                  type="checkbox"
-                  checked={config.includeExpenses}
-                  onChange={(e) => setConfig({ ...config, includeExpenses: e.target.checked })}
-                  className="rounded accent-primary w-4 h-4 cursor-pointer"
-                />
-              </div>
+                  {/* Expenses */}
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border/50 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground">Include Project Expenses</span>
+                    <input
+                      type="checkbox"
+                      checked={config.includeExpenses}
+                      onChange={(e) => setConfig({ ...config, includeExpenses: e.target.checked })}
+                      className="rounded accent-primary w-4 h-4 cursor-pointer"
+                    />
+                  </div>
+                </>
+              )}
 
               {/* Tax */}
               <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">

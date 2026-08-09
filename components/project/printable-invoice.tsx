@@ -33,6 +33,9 @@ export interface BillConfig {
   clientTaxId: string
 
   // Pricing & Items
+  useCustomTotal: boolean
+  customTotalAmount: number
+  customTotalDescription: string
   includeHours: boolean
   hourlyRate: number
   includeExpenses: boolean
@@ -93,11 +96,11 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
     return sum
   }, 0)
 
-  const hoursAmount = config.includeHours ? totalHours * (Number(config.hourlyRate) || 0) : 0
+  const hoursAmount = !config.useCustomTotal && config.includeHours ? totalHours * (Number(config.hourlyRate) || 0) : 0
 
   // 3. Compute Individual Expenses
   const allExpenses: { category: string; amount: number; note?: string; date: string }[] = []
-  if (config.includeExpenses) {
+  if (!config.useCustomTotal && config.includeExpenses) {
     filteredEntries.forEach((e) => {
       const expList = Array.isArray(e.expenses) ? e.expenses : []
       expList.forEach((exp) => {
@@ -112,10 +115,11 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
   }
 
   const totalExpenseAmount = allExpenses.reduce((sum, item) => sum + item.amount, 0)
-  const fixedFeeAmount = config.includeFixedFee ? Number(config.fixedFeeAmount) || 0 : 0
+  const customTotalAmt = config.useCustomTotal ? Number(config.customTotalAmount) || 0 : 0
+  const fixedFeeAmount = !config.useCustomTotal && config.includeFixedFee ? Number(config.fixedFeeAmount) || 0 : 0
 
   // 4. Subtotal & Grand Total
-  const subtotal = hoursAmount + totalExpenseAmount + fixedFeeAmount
+  const subtotal = config.useCustomTotal ? customTotalAmt : hoursAmount + totalExpenseAmount + fixedFeeAmount
 
   const discountAmount = config.showDiscount
     ? config.discountType === 'percentage'
@@ -229,8 +233,21 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            {/* Fixed Fee */}
-            {config.includeFixedFee && fixedFeeAmount > 0 && (
+            {/* Custom Total Amount Direct Mode */}
+            {config.useCustomTotal && (
+              <tr>
+                <td className="py-4 pr-4">
+                  <p className="font-semibold text-zinc-900">{config.customTotalDescription || 'Project Deliverables & Services'}</p>
+                  <p className="text-[11px] text-zinc-400">Agreed project total fee</p>
+                </td>
+                <td className="py-4 px-3 text-center text-zinc-500 font-medium">1</td>
+                <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(customTotalAmt)}</td>
+                <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(customTotalAmt)}</td>
+              </tr>
+            )}
+
+            {/* Fixed Fee (Itemized Mode) */}
+            {!config.useCustomTotal && config.includeFixedFee && fixedFeeAmount > 0 && (
               <tr>
                 <td className="py-4 pr-4">
                   <p className="font-semibold text-zinc-900">{config.fixedFeeDescription || 'Project Professional Fee'}</p>
@@ -241,8 +258,8 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
               </tr>
             )}
 
-            {/* Logged Work Hours */}
-            {config.includeHours && totalHours > 0 && (
+            {/* Logged Work Hours (Itemized Mode) */}
+            {!config.useCustomTotal && config.includeHours && totalHours > 0 && (
               <tr>
                 <td className="py-4 pr-4">
                   <p className="font-semibold text-zinc-900">Work Hours & Time Logged</p>
@@ -254,8 +271,8 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
               </tr>
             )}
 
-            {/* Categorized Expenses */}
-            {config.includeExpenses && allExpenses.length > 0 &&
+            {/* Categorized Expenses (Itemized Mode) */}
+            {!config.useCustomTotal && config.includeExpenses && allExpenses.length > 0 &&
               allExpenses.map((exp, idx) => (
                 <tr key={idx}>
                   <td className="py-3.5 pr-4">
@@ -272,7 +289,7 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
             }
 
             {/* Fallback */}
-            {!config.includeHours && !config.includeExpenses && !config.includeFixedFee && (
+            {!config.useCustomTotal && !config.includeHours && !config.includeExpenses && !config.includeFixedFee && (
               <tr>
                 <td colSpan={4} className="py-8 text-center text-zinc-400">
                   No line items selected for this invoice.

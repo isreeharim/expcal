@@ -73,6 +73,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <DropdownMenuTrigger
               className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
               id={`project-menu-${project.id}`}
+              aria-label={`Open actions for ${project.title}`}
             >
               <MoreVertical className="w-4 h-4" />
             </DropdownMenuTrigger>

@@ -298,6 +298,10 @@ export async function syncGoogleSheetsBackup(customWebhookUrl?: string) {
     throw new Error('No Google Sheets Webhook URL configured. Please paste your Google Apps Script URL in the settings.')
   }
 
+  if (!targetUrl.startsWith('https://script.google.com/macros/s/')) {
+    throw new Error('Invalid Google Apps Script URL for security reasons. It must start with https://script.google.com/macros/s/')
+  }
+
   const payload = await getBackupSnapshot(profile?.full_name || user.email || 'Admin')
 
   // Send POST request to Google Apps Script Web App

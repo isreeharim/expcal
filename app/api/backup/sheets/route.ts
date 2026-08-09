@@ -33,6 +33,12 @@ async function handleSync(req: NextRequest) {
       }, { status: 400 })
     }
 
+    if (!targetUrl.startsWith('https://script.google.com/macros/s/')) {
+      return NextResponse.json({
+        error: 'Invalid Google Apps Script URL for security reasons. It must start with https://script.google.com/macros/s/'
+      }, { status: 400 })
+    }
+
     const payload = await getBackupSnapshot(user?.email || 'Automated Sync')
 
     const res = await fetch(targetUrl, {

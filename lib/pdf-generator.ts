@@ -10,29 +10,28 @@ interface PDFOptions {
 export async function generateInvoicePDF({
   fileName = 'Invoice.pdf',
   elementId = 'printable-invoice-container',
-  scale = 2.5
+  scale = 2.5,
 }: PDFOptions = {}) {
   const originalElement = document.getElementById(elementId)
   if (!originalElement) {
     throw new Error('Invoice container element not found')
   }
 
-  // Create an off-screen clone with exact Landscape width (1000px)
-  // This guarantees perfect capture in Landscape even if triggered on mobile!
+  // Off-screen clone at exact A4 portrait width (794px ≈ 210mm at 96dpi)
+  // This guarantees portrait rendering even when triggered on a narrow mobile screen.
   const clone = originalElement.cloneNode(true) as HTMLElement
-  clone.id = 'temp-pdf-clone-landscape'
+  clone.id = 'temp-pdf-clone-portrait'
   clone.style.position = 'fixed'
   clone.style.top = '0'
   clone.style.left = '-9999px'
-  clone.style.width = '1000px'
-  clone.style.maxWidth = '1000px'
-  clone.style.minWidth = '1000px'
+  clone.style.width = '794px'
+  clone.style.maxWidth = '794px'
+  clone.style.minWidth = '794px'
   clone.style.backgroundColor = '#ffffff'
   clone.style.color = '#09090b'
   clone.style.boxShadow = 'none'
   clone.style.borderRadius = '0'
-  clone.style.border = 'none'
-  clone.style.padding = '28px 36px'
+  clone.style.border = '2px solid #d4d4d8'
   clone.style.zIndex = '-9999'
   clone.style.visibility = 'visible'
   clone.style.display = 'block'
@@ -40,28 +39,28 @@ export async function generateInvoicePDF({
   document.body.appendChild(clone)
 
   try {
-    // Render the clone to high-resolution canvas in landscape
+    // Render at 2.5x retina for crisp text on A4 portrait
     const canvas = await html2canvas(clone, {
       scale: scale,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      width: 1000,
-      windowWidth: 1000
+      width: 794,
+      windowWidth: 794,
     })
 
     const imgData = canvas.toDataURL('image/jpeg', 0.98)
 
-    // ALWAYS A4 Landscape (297mm width x 210mm height)
+    // A4 Portrait: 210mm × 297mm — always portrait regardless of device
     const pdf = new jsPDF({
-      orientation: 'landscape',
+      orientation: 'portrait',
       unit: 'mm',
-      format: 'a4'
+      format: 'a4',
     })
 
-    const pageWidth = 297
-    const pageHeight = 210
-    const margin = 10
+    const pageWidth = 210
+    const pageHeight = 297
+    const margin = 8
 
     const contentWidth = pageWidth - margin * 2
     const contentHeight = (canvas.height * contentWidth) / canvas.width
@@ -69,25 +68,25 @@ export async function generateInvoicePDF({
     if (contentHeight <= pageHeight - margin * 2) {
       pdf.addImage(imgData, 'JPEG', margin, margin, contentWidth, contentHeight)
     } else {
+      // Multi-page: slice canvas across pages
       let heightLeft = contentHeight
       let position = margin
 
       pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight)
-      heightLeft -= pageHeight
+      heightLeft -= pageHeight - margin * 2
 
       while (heightLeft > 0) {
-        position = heightLeft - contentHeight + margin
+        position -= pageHeight - margin * 2
         pdf.addPage()
         pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight)
-        heightLeft -= pageHeight
+        heightLeft -= pageHeight - margin * 2
       }
     }
 
-    // Direct download landscape .pdf
+    // Direct download — no browser print dialog
     pdf.save(fileName)
     return true
   } finally {
-    // Always clean up the clone
     if (clone && clone.parentNode) {
       clone.parentNode.removeChild(clone)
     }

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Project } from '@/lib/types'
 import {
   BillConfig,
-  InvoiceTemplateType,
   PrintableInvoice
 } from '@/components/project/printable-invoice'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,6 @@ import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription
 } from '@/components/ui/dialog'
@@ -26,13 +24,7 @@ import {
   Sparkles,
   FileText,
   FileDown,
-  Loader2,
-  Layout,
-  Briefcase,
-  Building,
-  Minimize2,
-  Palette,
-  Check
+  Loader2
 } from 'lucide-react'
 import { generateInvoicePDF } from '@/lib/pdf-generator'
 import { cn } from '@/lib/utils'
@@ -44,23 +36,6 @@ interface BillCustomizerModalProps {
 }
 
 const STORAGE_KEY_SENDER = 'expcal_bill_sender_info'
-const STORAGE_KEY_TEMPLATE = 'expcal_bill_template_pref'
-
-const ACCENT_COLORS = [
-  { label: 'Slate Dark', value: '#18181b' },
-  { label: 'Indigo', value: '#4f46e5' },
-  { label: 'Royal Blue', value: '#2563eb' },
-  { label: 'Emerald', value: '#059669' },
-  { label: 'Rose Red', value: '#e11d48' },
-  { label: 'Amber Gold', value: '#d97706' }
-]
-
-const TEMPLATE_OPTIONS: { id: InvoiceTemplateType; name: string; desc: string; icon: any }[] = [
-  { id: 'minimal', name: 'Minimal', desc: 'Clean Swiss layout', icon: Layout },
-  { id: 'agency', name: 'Agency', desc: 'Bold banner & accents', icon: Briefcase },
-  { id: 'corporate', name: 'Corporate', desc: 'Formal grid table', icon: Building },
-  { id: 'compact', name: 'Compact', desc: 'High-density voucher', icon: Minimize2 }
-]
 
 export function BillCustomizerModal({
   project,
@@ -74,7 +49,7 @@ export function BillCustomizerModal({
   // Minimal Bill Configuration with Direct Total Amount & Template Selection
   const [config, setConfig] = useState<BillConfig>({
     // Template & Theme
-    template: 'minimal',
+    template: 'compact',
     accentColor: '#18181b',
 
     // Document Meta
@@ -150,51 +125,10 @@ export function BillCustomizerModal({
         }))
       }
 
-      const savedTemplate = localStorage.getItem(STORAGE_KEY_TEMPLATE)
-      if (savedTemplate) {
-        const parsedTpl = JSON.parse(savedTemplate)
-        setConfig((prev) => ({
-          ...prev,
-          template: parsedTpl.template || prev.template,
-          accentColor: parsedTpl.accentColor || prev.accentColor
-        }))
-      }
     } catch {
       // ignore
     }
   }, [])
-
-  // Auto-save template selection
-  const handleTemplateChange = (templateId: InvoiceTemplateType) => {
-    setConfig((prev) => {
-      const updated = { ...prev, template: templateId }
-      try {
-        localStorage.setItem(STORAGE_KEY_TEMPLATE, JSON.stringify({
-          template: updated.template,
-          accentColor: updated.accentColor
-        }))
-      } catch {
-        // ignore
-      }
-      return updated
-    })
-  }
-
-  // Auto-save accent color
-  const handleColorChange = (color: string) => {
-    setConfig((prev) => {
-      const updated = { ...prev, accentColor: color }
-      try {
-        localStorage.setItem(STORAGE_KEY_TEMPLATE, JSON.stringify({
-          template: updated.template,
-          accentColor: updated.accentColor
-        }))
-      } catch {
-        // ignore
-      }
-      return updated
-    })
-  }
 
   // Auto-save sender info to localStorage
   const updateSenderInfo = (field: keyof BillConfig, value: string) => {
@@ -310,7 +244,7 @@ export function BillCustomizerModal({
                 Export Invoice
               </DialogTitle>
               <DialogDescription className="text-muted-foreground text-xs">
-                {project.title} — Choose template & export
+                {project.title} — Customize & export invoice
               </DialogDescription>
             </div>
           </div>
@@ -397,67 +331,7 @@ export function BillCustomizerModal({
               activeTab === 'preview' && 'hidden sm:block'
             )}
           >
-            {/* 0. Template & Style Switcher */}
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs uppercase font-bold text-foreground tracking-wider flex items-center gap-1.5">
-                  <Layout className="w-3.5 h-3.5 text-primary" /> Invoice Template
-                </h4>
-                <span className="text-[10px] text-muted-foreground capitalize">{config.template} Style</span>
-              </div>
 
-              {/* 4 Template Cards */}
-              <div className="grid grid-cols-2 gap-2">
-                {TEMPLATE_OPTIONS.map(({ id, name, desc, icon: Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => handleTemplateChange(id)}
-                    className={cn(
-                      'p-2.5 rounded-xl border text-left transition-all relative cursor-pointer',
-                      config.template === id
-                        ? 'border-primary bg-primary/10 shadow-sm'
-                        : 'border-border/60 bg-muted/30 hover:border-border hover:bg-muted/50'
-                    )}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <Icon className={cn('w-4 h-4', config.template === id ? 'text-primary' : 'text-muted-foreground')} />
-                      {config.template === id && <Check className="w-3.5 h-3.5 text-primary" />}
-                    </div>
-                    <p className="text-xs font-bold text-foreground">{name}</p>
-                    <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">{desc}</p>
-                  </button>
-                ))}
-              </div>
-
-              {/* Accent Color Picker (for Agency & Highlights) */}
-              <div className="pt-2 border-t border-border/50">
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-[11px] text-muted-foreground flex items-center gap-1">
-                    <Palette className="w-3 h-3" /> Accent Color
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  {ACCENT_COLORS.map(({ label, value }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      title={label}
-                      onClick={() => handleColorChange(value)}
-                      className={cn(
-                        'w-6 h-6 rounded-full border-2 transition-all cursor-pointer flex items-center justify-center',
-                        config.accentColor === value
-                          ? 'border-white scale-110 shadow-md'
-                          : 'border-transparent opacity-75 hover:opacity-100'
-                      )}
-                      style={{ backgroundColor: value }}
-                    >
-                      {config.accentColor === value && <Check className="w-3 h-3 text-white" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
 
             {/* 1. Direct Billing Amount & Description */}
             <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-3">
@@ -721,14 +595,14 @@ export function BillCustomizerModal({
             </div>
           </div>
 
-          {/* RIGHT: Live Minimal Paper Canvas (Desktop Studio - Landscape) */}
+          {/* RIGHT: Live Invoice Canvas — A4 Portrait Preview */}
           <div
             className={cn(
-              'flex-1 bg-[#090b14] p-4 md:p-8 lg:p-12 overflow-y-auto flex items-start justify-center',
+              'flex-1 bg-[#090b14] p-4 md:p-8 lg:p-10 overflow-y-auto flex items-start justify-center',
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            <div className="w-full max-w-[960px] transition-all my-auto py-2">
+            <div className="w-full max-w-[760px] transition-all my-auto py-2">
               <PrintableInvoice project={project} config={config} />
             </div>
           </div>

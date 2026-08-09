@@ -27,6 +27,7 @@ export async function generateInvoicePDF({
   clone.style.width = '794px'
   clone.style.maxWidth = '794px'
   clone.style.minWidth = '794px'
+  clone.style.minHeight = '1122px'   // A4 height at 96dpi: 297mm ≈ 1122px
   clone.style.backgroundColor = '#ffffff'
   clone.style.color = '#09090b'
   clone.style.boxShadow = 'none'

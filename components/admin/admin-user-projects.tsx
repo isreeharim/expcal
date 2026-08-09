@@ -61,7 +61,7 @@ export function AdminUserProjects({
 
   // Filter and sort
   const filteredProjects = useMemo(() => {
-    let result = projects.filter((p) => {
+    const result = projects.filter((p) => {
       const q = searchQuery.toLowerCase().trim()
       if (!q) return true
       return (

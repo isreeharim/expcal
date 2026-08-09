@@ -103,7 +103,7 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
                     </button>
                   )}
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <DropdownMenuTrigger className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50" aria-label="Entry options">
                       <MoreVertical className="w-4 h-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" style={{ background: 'oklch(0.16 0.012 260)', border: '1px solid oklch(1 0 0 / 10%)' }}>
@@ -237,6 +237,7 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
                         <DropdownMenuTrigger
                           className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                           id={`entry-menu-${entry.id}`}
+                          aria-label="Entry options"
                         >
                           <MoreVertical className="w-4 h-4" />
                         </DropdownMenuTrigger>

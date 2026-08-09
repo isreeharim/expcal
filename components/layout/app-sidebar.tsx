@@ -10,17 +10,13 @@ import {
   Shield,
   LogOut,
   TrendingUp,
-  Menu,
-  X,
   ChevronRight,
   BarChart2,
   FileSpreadsheet
 } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 interface NavItem {
   href: string
@@ -65,7 +61,6 @@ function NavLink({
     <Link
       href={item.href}
       onClick={(e) => {
-        // Drop sticky touch/focus highlight
         try {
           (e.currentTarget as HTMLElement)?.blur()
         } catch {}
@@ -74,19 +69,14 @@ function NavLink({
       className={cn(
         'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative select-none outline-none',
         isActive
-          ? 'text-white font-semibold shadow-md shadow-indigo-500/25 bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-600'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
+          ? 'text-white font-semibold shadow-md bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-600'
+          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
       )}
     >
-      <Icon
-        className={cn(
-          'w-4 h-4 flex-shrink-0 transition-transform duration-200',
-          isActive ? 'text-white' : 'text-muted-foreground'
-        )}
-      />
-      <span className="truncate">{item.label}</span>
+      <Icon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-white' : 'text-muted-foreground')} />
+      <span className="flex-1 truncate">{item.label}</span>
       {isActive && (
-        <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/90" />
+        <ChevronRight className="w-3.5 h-3.5 opacity-80 flex-shrink-0" />
       )}
     </Link>
   )
@@ -96,46 +86,42 @@ function SidebarContent({
   profile,
   pathname,
   onItemClick,
-  onClose
 }: {
   profile: Profile
   pathname: string
   onItemClick?: () => void
-  onClose?: () => void
 }) {
+  const isAdmin = profile.role === 'admin'
+
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Logo / Header */}
-      <div className="flex items-center justify-between px-4 py-4 sm:py-5 border-b border-sidebar-border/80 flex-shrink-0">
-        <div className="flex items-center gap-3">
+    <div className="flex flex-col h-full">
+      {/* Brand Header */}
+      <div className="p-5 border-b border-sidebar-border/80 flex items-center justify-between flex-shrink-0">
+        <Link
+          href={isAdmin ? '/admin' : '/dashboard'}
+          onClick={onItemClick}
+          className="flex items-center gap-3 group select-none"
+        >
           <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-primary/20 transition-transform duration-300 hover:scale-105"
+            className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 transition-all duration-300 group-hover:scale-105"
             style={{ background: 'var(--gradient-primary)' }}
           >
-            <TrendingUp className="w-4.5 h-4.5 text-white" />
+            <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="font-bold text-sidebar-foreground text-sm tracking-tight">ExpCal</p>
-            <p className="text-xs text-muted-foreground/80 capitalize font-medium">{profile.role}</p>
+            <h1 className="font-bold text-base gradient-text tracking-tight leading-none">ExpCal</h1>
+            <p className="text-[10px] text-muted-foreground/80 font-medium tracking-wide mt-0.5">Smart Expense Manager</p>
           </div>
-        </div>
-
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
-            aria-label="Close navigation"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
+        </Link>
       </div>
 
-      {/* Navigation (Scrollable on small mobile screens) */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto overscroll-contain">
-        {profile.role === 'admin' ? (
+      {/* Navigation Links */}
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto overscroll-contain">
+        {isAdmin ? (
           <>
-            <p className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider px-3 mb-2">Admin</p>
+            <div className="px-3 py-1.5 text-[11px] font-bold text-muted-foreground/60 uppercase tracking-wider">
+              Admin
+            </div>
             {adminNavItems.map(item => (
               <NavLink
                 key={item.href}
@@ -144,8 +130,9 @@ function SidebarContent({
                 onClick={onItemClick}
               />
             ))}
-            <div className="border-t border-sidebar-border/80 my-3" />
-            <p className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider px-3 mb-2">User</p>
+            <div className="px-3 pt-4 pb-1.5 text-[11px] font-bold text-muted-foreground/60 uppercase tracking-wider">
+              User View
+            </div>
             {userNavItems.map(item => (
               <NavLink
                 key={item.href}
@@ -202,9 +189,6 @@ interface AppSidebarProps {
 
 export function AppSidebar({ profile }: AppSidebarProps) {
   const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
-
-  const handleClose = () => setMobileOpen(false)
 
   return (
     <>
@@ -216,12 +200,12 @@ export function AppSidebar({ profile }: AppSidebarProps) {
         <SidebarContent profile={profile} pathname={pathname} />
       </aside>
 
-      {/* Mobile header bar + Drawer */}
+      {/* Clean Minimalist Mobile Top Header (No duplicate hamburger menu) */}
       <div
         className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-14 border-b border-border/80 backdrop-blur-xl"
         style={{ background: 'rgba(13, 15, 26, 0.85)' }}
       >
-        <div className="flex items-center gap-2.5">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center shadow-md shadow-primary/20"
             style={{ background: 'var(--gradient-primary)' }}
@@ -229,29 +213,21 @@ export function AppSidebar({ profile }: AppSidebarProps) {
             <TrendingUp className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="font-bold text-sm gradient-text">ExpCal</span>
-        </div>
+        </Link>
 
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetTrigger
-            className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
-            aria-label="Open menu"
-          >
-            <Menu className="w-5 h-5" />
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            showCloseButton={false}
-            className="w-[280px] max-w-[85vw] p-0 border-r border-sidebar-border shadow-2xl"
-            style={{ background: 'var(--sidebar)' }}
-          >
-            <SidebarContent
-              profile={profile}
-              pathname={pathname}
-              onItemClick={handleClose}
-              onClose={handleClose}
-            />
-          </SheetContent>
-        </Sheet>
+        {/* User avatar indicator */}
+        <div className="flex items-center gap-2">
+          <div className="text-right">
+            <p className="text-xs font-semibold text-foreground leading-none">{profile.full_name?.split(' ')[0] || 'User'}</p>
+            <span className="text-[10px] text-muted-foreground font-medium capitalize">{profile.role}</span>
+          </div>
+          <Avatar className="w-7 h-7 ring-2 ring-primary/25">
+            <AvatarImage src={profile.avatar_url ?? undefined} />
+            <AvatarFallback className="text-[10px] font-bold" style={{ background: 'var(--gradient-primary)', color: 'white' }}>
+              {getInitials(profile.full_name)}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </div>
     </>
   )

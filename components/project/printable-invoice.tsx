@@ -107,7 +107,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
       <div
         id="printable-invoice-container"
         className={cn(
-          'w-full max-w-[760px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border overflow-hidden',
+          'w-full max-w-[960px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border overflow-hidden',
           isPrintMode
             ? 'p-0 shadow-none border-none rounded-none'
             : 'shadow-[0_25px_60px_rgba(0,0,0,0.35)] rounded-2xl border border-zinc-200/90 my-auto'
@@ -265,7 +265,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
       <div
         id="printable-invoice-container"
         className={cn(
-          'w-full max-w-[760px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
+          'w-full max-w-[960px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
           isPrintMode
             ? 'p-0 shadow-none border-none rounded-none'
             : 'p-8 sm:p-12 shadow-[0_25px_60px_rgba(0,0,0,0.35)] rounded-2xl border-2 border-zinc-300'
@@ -397,7 +397,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
       <div
         id="printable-invoice-container"
         className={cn(
-          'w-full max-w-[760px] mx-auto bg-white text-zinc-900 font-sans leading-normal transition-all box-border',
+          'w-full max-w-[960px] mx-auto bg-white text-zinc-900 font-sans leading-normal transition-all box-border',
           isPrintMode
             ? 'p-0 shadow-none border-none rounded-none'
             : 'p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-xl border border-zinc-200 my-auto'
@@ -486,7 +486,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
     <div
       id="printable-invoice-container"
       className={cn(
-        'w-full max-w-[760px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
+        'w-full max-w-[960px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
         isPrintMode
           ? 'p-0 shadow-none border-none rounded-none'
           : 'p-8 sm:p-14 shadow-[0_25px_60px_rgba(0,0,0,0.35)] rounded-2xl border border-zinc-200/90 my-auto'

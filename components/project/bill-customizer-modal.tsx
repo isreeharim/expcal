@@ -721,14 +721,14 @@ export function BillCustomizerModal({
             </div>
           </div>
 
-          {/* RIGHT: Live Minimal Paper Canvas (Desktop Studio) */}
+          {/* RIGHT: Live Minimal Paper Canvas (Desktop Studio - Landscape) */}
           <div
             className={cn(
               'flex-1 bg-[#090b14] p-4 md:p-8 lg:p-12 overflow-y-auto flex items-start justify-center',
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            <div className="w-full max-w-[760px] transition-all my-auto py-2">
+            <div className="w-full max-w-[960px] transition-all my-auto py-2">
               <PrintableInvoice project={project} config={config} />
             </div>
           </div>

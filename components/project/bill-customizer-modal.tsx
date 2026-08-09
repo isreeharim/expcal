@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Project, Entry } from '@/lib/types'
+import { Project } from '@/lib/types'
 import { BillConfig, PrintableInvoice } from '@/components/project/printable-invoice'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,18 +19,12 @@ import {
   Share2,
   SlidersHorizontal,
   Eye,
-  FileText,
-  Building,
-  User,
-  DollarSign,
-  CreditCard,
   Sparkles
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface BillCustomizerModalProps {
   project: Project
-  entries: Entry[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -39,14 +33,13 @@ const STORAGE_KEY_SENDER = 'expcal_bill_sender_info'
 
 export function BillCustomizerModal({
   project,
-  entries,
   open,
   onOpenChange
 }: BillCustomizerModalProps) {
   // Mobile Tab state ('customize' | 'preview')
   const [activeTab, setActiveTab] = useState<'customize' | 'preview'>('customize')
 
-  // Default Minimal Bill Configuration
+  // Minimal Bill Configuration with Direct Total Amount
   const [config, setConfig] = useState<BillConfig>({
     // Document Meta
     documentTitle: 'TAX INVOICE',
@@ -75,28 +68,18 @@ export function BillCustomizerModal({
     clientAddress: '',
     clientTaxId: '',
 
-    // Pricing & Items
-    useCustomTotal: false,
-    customTotalAmount: 0,
-    customTotalDescription: 'Project Deliverables & Services',
-    includeHours: true,
-    hourlyRate: 500,
-    includeExpenses: true,
-    includeFixedFee: false,
-    fixedFeeAmount: 0,
-    fixedFeeDescription: 'Project Fee',
+    // Direct Billing Amount & Description
+    billDescription: `${project.title} — Deliverables & Professional Services`,
+    billAmount: 0,
+    billQuantity: 1,
+
+    // Tax & Discount
     showTax: false,
     taxName: 'GST',
     taxRate: 18,
     showDiscount: false,
     discountType: 'percentage',
     discountValue: 0,
-
-    // Scope & Filters
-    dateRangeType: 'all',
-    startDate: '',
-    endDate: '',
-    includeReceipts: false,
 
     // Payment Details & Terms
     showPaymentDetails: true,
@@ -166,45 +149,14 @@ export function BillCustomizerModal({
 
   // Handle CSV Export
   const handleExportCSV = () => {
-    const rows = [['Date', 'Item / Description', 'Category', 'Quantity', 'Rate', 'Amount']]
+    const qty = Number(config.billQuantity) || 1
+    const unitRate = Number(config.billAmount) || 0
+    const total = qty * unitRate
 
-    if (config.useCustomTotal) {
-      rows.push([
-        '',
-        config.customTotalDescription || 'Project Deliverables',
-        'Direct Total Fee',
-        '1',
-        config.customTotalAmount.toString(),
-        config.customTotalAmount.toString()
-      ])
-    } else {
-      if (config.includeHours) {
-        const totalH = entries.reduce((s, e) => {
-          if (e.start_time && e.end_time) {
-            const [sh, sm] = e.start_time.split(':').map(Number)
-            const [eh, em] = e.end_time.split(':').map(Number)
-            return s + Math.max(0, eh - sh + (em - sm) / 60)
-          }
-          return s
-        }, 0)
-        if (totalH > 0) {
-          rows.push(['', 'Work Hours', 'Labor', totalH.toFixed(2), config.hourlyRate.toString(), (totalH * config.hourlyRate).toFixed(2)])
-        }
-      }
-
-      if (config.includeFixedFee && config.fixedFeeAmount > 0) {
-        rows.push(['', config.fixedFeeDescription, 'Fee', '1', config.fixedFeeAmount.toString(), config.fixedFeeAmount.toString()])
-      }
-
-      if (config.includeExpenses) {
-        entries.forEach((e) => {
-          const expList = Array.isArray(e.expenses) ? e.expenses : []
-          expList.forEach((exp) => {
-            rows.push([e.date, exp.note ? `${exp.category} - ${exp.note}` : exp.category, 'Expense', '1', exp.amount.toString(), exp.amount.toString()])
-          })
-        })
-      }
-    }
+    const rows = [
+      ['Date', 'Item / Description', 'Quantity', 'Rate', 'Amount'],
+      [config.issueDate, config.billDescription, qty.toString(), unitRate.toString(), total.toString()]
+    ]
 
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.map((c) => `"${c}"`).join(',')).join('\n')
     const encodedUri = encodeURI(csvContent)
@@ -221,6 +173,7 @@ export function BillCustomizerModal({
     const summaryText = `📄 *${config.documentTitle}*\n` +
       `Project: *${project.title}*\n` +
       `Invoice #: ${config.invoiceNumber}\n` +
+      `Total: ${config.currencySymbol} ${(Number(config.billAmount) || 0).toLocaleString('en-IN')}\n` +
       `Date: ${config.issueDate}\n` +
       (config.clientCompany ? `Client: ${config.clientCompany}\n` : '') +
       `\n🔗 Generated via ExpCal (${window.location.origin})`
@@ -247,14 +200,14 @@ export function BillCustomizerModal({
       <DialogContent
         className="w-[98vw] max-w-7xl h-[94vh] p-0 rounded-3xl shadow-2xl backdrop-blur-3xl border border-white/10 flex flex-col overflow-hidden bg-[#0e101a] animate-fade-in"
       >
-        {/* Clean Header Bar */}
+        {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#141624] flex-shrink-0">
           <div>
             <DialogTitle className="text-foreground text-base font-bold tracking-tight">
               Export Bill & Invoice
             </DialogTitle>
             <DialogDescription className="text-muted-foreground text-xs">
-              {project.title} — Customize and print minimal invoice.
+              {project.title} — Enter amount and export clean invoice.
             </DialogDescription>
           </div>
 
@@ -279,7 +232,7 @@ export function BillCustomizerModal({
             <Button
               size="sm"
               onClick={handlePrint}
-              className="rounded-xl h-9 text-xs font-semibold gap-1.5 bg-foreground text-background hover:bg-foreground/90 font-bold"
+              className="rounded-xl h-9 text-xs font-semibold gap-1.5 bg-foreground text-background hover:bg-foreground/90 font-bold cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" /> Print / Save PDF
             </Button>
@@ -297,7 +250,7 @@ export function BillCustomizerModal({
                 : 'text-muted-foreground'
             )}
           >
-            <SlidersHorizontal className="w-3.5 h-3.5" /> Edit Options
+            <SlidersHorizontal className="w-3.5 h-3.5" /> Edit Invoice
           </button>
           <button
             onClick={() => setActiveTab('preview')}
@@ -308,22 +261,76 @@ export function BillCustomizerModal({
                 : 'text-muted-foreground'
             )}
           >
-            <Eye className="w-3.5 h-3.5" /> Preview Bill
+            <Eye className="w-3.5 h-3.5" /> Preview
           </button>
         </div>
 
-        {/* Modal Body: Split view on Desktop / Tabs on Mobile */}
+        {/* Modal Body */}
         <div className="flex-1 flex overflow-hidden">
-          {/* LEFT: Streamlined Customizer Form */}
+          {/* LEFT: Streamlined Direct Form */}
           <div
             className={cn(
               'w-full lg:w-[420px] flex-shrink-0 border-r border-white/10 overflow-y-auto p-5 space-y-5 bg-[#121422]',
               activeTab === 'preview' && 'hidden sm:block'
             )}
           >
-            {/* 1. Header & Meta */}
-            <div className="space-y-3">
-              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Document Details</h4>
+            {/* 1. Direct Billing Amount & Description */}
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-3">
+              <h4 className="text-xs uppercase font-bold text-foreground tracking-wider">Bill Amount</h4>
+              <div>
+                <Label className="text-[11px] text-muted-foreground font-medium">
+                  Total Amount ({config.currencySymbol}) <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  type="number"
+                  value={config.billAmount || ''}
+                  onChange={(e) => setConfig({ ...config, billAmount: parseFloat(e.target.value) || 0 })}
+                  placeholder="e.g. 25000"
+                  className="mt-1 h-10 rounded-xl text-base font-bold bg-muted/80 font-mono text-primary focus:border-primary"
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px] text-muted-foreground font-medium">Description / Service Item</Label>
+                <Input
+                  value={config.billDescription}
+                  onChange={(e) => setConfig({ ...config, billDescription: e.target.value })}
+                  placeholder="e.g. Mobile App Development & Consulting"
+                  className="mt-1 h-8.5 rounded-xl text-xs bg-muted/80"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <div>
+                  <Label className="text-[11px] text-muted-foreground">Currency</Label>
+                  <select
+                    value={config.currencySymbol}
+                    onChange={(e) => setConfig({ ...config, currencySymbol: e.target.value })}
+                    className="w-full mt-1 h-8.5 px-2 rounded-xl text-xs bg-muted/80 border border-border/70 text-foreground cursor-pointer"
+                  >
+                    <option value="₹">₹ INR</option>
+                    <option value="$">$ USD</option>
+                    <option value="€">€ EUR</option>
+                    <option value="£">£ GBP</option>
+                    <option value="AED">AED</option>
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-[11px] text-muted-foreground">Quantity</Label>
+                  <Input
+                    type="number"
+                    value={config.billQuantity}
+                    onChange={(e) => setConfig({ ...config, billQuantity: parseFloat(e.target.value) || 1 })}
+                    className="mt-1 h-8.5 rounded-xl text-xs bg-muted/80"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Document Meta */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Invoice Meta</h4>
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <Label className="text-[11px] text-muted-foreground">Title</Label>
@@ -338,26 +345,12 @@ export function BillCustomizerModal({
                   <Input
                     value={config.invoiceNumber}
                     onChange={(e) => setConfig({ ...config, invoiceNumber: e.target.value })}
-                    className="h-8.5 rounded-xl text-xs bg-muted/40 mt-1"
+                    className="h-8.5 rounded-xl text-xs bg-muted/40 mt-1 font-mono"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2.5">
-                <div className="col-span-1">
-                  <Label className="text-[11px] text-muted-foreground">Currency</Label>
-                  <select
-                    value={config.currencySymbol}
-                    onChange={(e) => setConfig({ ...config, currencySymbol: e.target.value })}
-                    className="w-full mt-1 h-8.5 px-2 rounded-xl text-xs bg-muted/40 border border-border/70 text-foreground"
-                  >
-                    <option value="₹">₹ INR</option>
-                    <option value="$">$ USD</option>
-                    <option value="€">€ EUR</option>
-                    <option value="£">£ GBP</option>
-                    <option value="AED">AED</option>
-                  </select>
-                </div>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <Label className="text-[11px] text-muted-foreground">Date</Label>
                   <Input
@@ -379,7 +372,73 @@ export function BillCustomizerModal({
               </div>
             </div>
 
-            {/* 2. From & To */}
+            {/* 3. Tax & Discounts */}
+            <div className="space-y-3 pt-3 border-t border-white/5">
+              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Taxes & Discounts</h4>
+
+              {/* Tax */}
+              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground">Apply Tax / GST / VAT</span>
+                  <input
+                    type="checkbox"
+                    checked={config.showTax}
+                    onChange={(e) => setConfig({ ...config, showTax: e.target.checked })}
+                    className="rounded accent-primary w-4 h-4 cursor-pointer"
+                  />
+                </div>
+                {config.showTax && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <Input
+                      value={config.taxName}
+                      onChange={(e) => setConfig({ ...config, taxName: e.target.value })}
+                      placeholder="GST / VAT"
+                      className="h-7.5 w-24 rounded-lg text-xs bg-muted/60"
+                    />
+                    <Input
+                      type="number"
+                      value={config.taxRate}
+                      onChange={(e) => setConfig({ ...config, taxRate: parseFloat(e.target.value) || 0 })}
+                      className="h-7.5 w-20 rounded-lg text-xs bg-muted/60 font-semibold"
+                    />
+                    <span className="text-xs text-muted-foreground">%</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Discount */}
+              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground">Discount</span>
+                  <input
+                    type="checkbox"
+                    checked={config.showDiscount}
+                    onChange={(e) => setConfig({ ...config, showDiscount: e.target.checked })}
+                    className="rounded accent-primary w-4 h-4 cursor-pointer"
+                  />
+                </div>
+                {config.showDiscount && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <select
+                      value={config.discountType}
+                      onChange={(e) => setConfig({ ...config, discountType: e.target.value as 'percentage' | 'fixed' })}
+                      className="h-7.5 px-2 rounded-lg text-xs bg-muted/60 border border-border"
+                    >
+                      <option value="percentage">%</option>
+                      <option value="fixed">Fixed</option>
+                    </select>
+                    <Input
+                      type="number"
+                      value={config.discountValue}
+                      onChange={(e) => setConfig({ ...config, discountValue: parseFloat(e.target.value) || 0 })}
+                      className="h-7.5 w-24 rounded-lg text-xs bg-muted/60 font-semibold"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4. Sender & Client Info */}
             <div className="space-y-3 pt-3 border-t border-white/5">
               <div className="flex items-center justify-between">
                 <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Your Info (From)</h4>
@@ -445,167 +504,7 @@ export function BillCustomizerModal({
               />
             </div>
 
-            {/* 3. Items & Rates */}
-            <div className="space-y-3 pt-3 border-t border-white/5">
-              <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Items & Billing Amount</h4>
-
-              {/* Billing Mode Switcher */}
-              <div className="flex p-1 rounded-xl bg-muted/50 border border-border/60">
-                <button
-                  type="button"
-                  onClick={() => setConfig({ ...config, useCustomTotal: true })}
-                  className={cn(
-                    'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
-                    config.useCustomTotal
-                      ? 'bg-foreground text-background font-bold shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  Enter Total Amount
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfig({ ...config, useCustomTotal: false })}
-                  className={cn(
-                    'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
-                    !config.useCustomTotal
-                      ? 'bg-foreground text-background font-bold shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  Auto from Hours & Expenses
-                </button>
-              </div>
-
-              {/* Direct Total Amount Inputs */}
-              {config.useCustomTotal ? (
-                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/50 space-y-3">
-                  <div>
-                    <Label className="text-[11px] text-muted-foreground font-medium">
-                      Total Bill Amount ({config.currencySymbol}) <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      type="number"
-                      value={config.customTotalAmount || ''}
-                      onChange={(e) => setConfig({ ...config, customTotalAmount: parseFloat(e.target.value) || 0 })}
-                      placeholder="e.g. 25000"
-                      className="mt-1 h-9 rounded-xl text-sm font-bold bg-muted/60 font-mono text-primary"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[11px] text-muted-foreground font-medium">
-                      Description / Line Item Note
-                    </Label>
-                    <Input
-                      value={config.customTotalDescription}
-                      onChange={(e) => setConfig({ ...config, customTotalDescription: e.target.value })}
-                      placeholder="Project Deliverables & Services"
-                      className="mt-1 h-8.5 rounded-xl text-xs bg-muted/60"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {/* Hours */}
-                  <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-foreground">Bill Work Hours</span>
-                      <input
-                        type="checkbox"
-                        checked={config.includeHours}
-                        onChange={(e) => setConfig({ ...config, includeHours: e.target.checked })}
-                        className="rounded accent-primary w-4 h-4 cursor-pointer"
-                      />
-                    </div>
-                    {config.includeHours && (
-                      <div className="flex items-center gap-2 pt-1">
-                        <span className="text-xs text-muted-foreground">Hourly Rate ({config.currencySymbol}/hr):</span>
-                        <Input
-                          type="number"
-                          value={config.hourlyRate}
-                          onChange={(e) => setConfig({ ...config, hourlyRate: parseFloat(e.target.value) || 0 })}
-                          className="h-7.5 w-24 rounded-lg text-xs bg-muted/60 font-semibold"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Expenses */}
-                  <div className="p-3 rounded-xl bg-muted/30 border border-border/50 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-foreground">Include Project Expenses</span>
-                    <input
-                      type="checkbox"
-                      checked={config.includeExpenses}
-                      onChange={(e) => setConfig({ ...config, includeExpenses: e.target.checked })}
-                      className="rounded accent-primary w-4 h-4 cursor-pointer"
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* Tax */}
-              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">Tax / GST / VAT</span>
-                  <input
-                    type="checkbox"
-                    checked={config.showTax}
-                    onChange={(e) => setConfig({ ...config, showTax: e.target.checked })}
-                    className="rounded accent-primary w-4 h-4 cursor-pointer"
-                  />
-                </div>
-                {config.showTax && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <Input
-                      value={config.taxName}
-                      onChange={(e) => setConfig({ ...config, taxName: e.target.value })}
-                      placeholder="GST / VAT"
-                      className="h-7.5 w-24 rounded-lg text-xs bg-muted/60"
-                    />
-                    <Input
-                      type="number"
-                      value={config.taxRate}
-                      onChange={(e) => setConfig({ ...config, taxRate: parseFloat(e.target.value) || 0 })}
-                      className="h-7.5 w-20 rounded-lg text-xs bg-muted/60 font-semibold"
-                    />
-                    <span className="text-xs text-muted-foreground">%</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Discount */}
-              <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-foreground">Discount</span>
-                  <input
-                    type="checkbox"
-                    checked={config.showDiscount}
-                    onChange={(e) => setConfig({ ...config, showDiscount: e.target.checked })}
-                    className="rounded accent-primary w-4 h-4 cursor-pointer"
-                  />
-                </div>
-                {config.showDiscount && (
-                  <div className="flex items-center gap-2 pt-1">
-                    <select
-                      value={config.discountType}
-                      onChange={(e) => setConfig({ ...config, discountType: e.target.value as 'percentage' | 'fixed' })}
-                      className="h-7.5 px-2 rounded-lg text-xs bg-muted/60 border border-border"
-                    >
-                      <option value="percentage">%</option>
-                      <option value="fixed">Fixed</option>
-                    </select>
-                    <Input
-                      type="number"
-                      value={config.discountValue}
-                      onChange={(e) => setConfig({ ...config, discountValue: parseFloat(e.target.value) || 0 })}
-                      className="h-7.5 w-24 rounded-lg text-xs bg-muted/60 font-semibold"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 4. Payment Details */}
+            {/* 5. Payment Details */}
             <div className="space-y-3 pt-3 border-t border-white/5">
               <h4 className="text-xs uppercase font-bold text-muted-foreground tracking-wider">Payment Info</h4>
               <Input
@@ -637,7 +536,7 @@ export function BillCustomizerModal({
             </div>
           </div>
 
-          {/* RIGHT: Minimal Paper Sheet Preview */}
+          {/* RIGHT: Live Minimal Paper Preview */}
           <div
             className={cn(
               'flex-1 bg-[#090a12] p-4 sm:p-8 overflow-y-auto flex items-start justify-center',
@@ -645,7 +544,7 @@ export function BillCustomizerModal({
             )}
           >
             <div className="w-full max-w-[210mm] scale-[0.88] sm:scale-100 origin-top transition-transform">
-              <PrintableInvoice project={project} entries={entries} config={config} />
+              <PrintableInvoice project={project} config={config} />
             </div>
           </div>
         </div>
@@ -671,7 +570,7 @@ export function BillCustomizerModal({
           <Button
             size="sm"
             onClick={handlePrint}
-            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-foreground text-background hover:bg-foreground/90"
+            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
           >
             <Printer className="w-4 h-4" /> Print PDF
           </Button>

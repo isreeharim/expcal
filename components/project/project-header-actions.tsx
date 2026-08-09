@@ -109,7 +109,6 @@ export function ProjectHeaderActions({ project, entries, isAdmin, isOwner }: Pro
       {/* Bill Customizer Modal */}
       <BillCustomizerModal
         project={project}
-        entries={entries}
         open={billModalOpen}
         onOpenChange={setBillModalOpen}
       />

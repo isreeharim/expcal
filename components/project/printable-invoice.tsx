@@ -1,7 +1,7 @@
 'use client'
 
 import { Project, Entry } from '@/lib/types'
-import { formatDate, formatHours } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 export interface BillConfig {
@@ -32,28 +32,18 @@ export interface BillConfig {
   clientAddress: string
   clientTaxId: string
 
-  // Pricing & Items
-  useCustomTotal: boolean
-  customTotalAmount: number
-  customTotalDescription: string
-  includeHours: boolean
-  hourlyRate: number
-  includeExpenses: boolean
-  includeFixedFee: boolean
-  fixedFeeAmount: number
-  fixedFeeDescription: string
+  // Direct Billing Amount & Description
+  billDescription: string
+  billAmount: number
+  billQuantity: number
+
+  // Tax & Discount
   showTax: boolean
   taxName: string
   taxRate: number
   showDiscount: boolean
   discountType: 'percentage' | 'fixed'
   discountValue: number
-
-  // Scope & Filters
-  dateRangeType: 'all' | 'custom'
-  startDate?: string
-  endDate?: string
-  includeReceipts: boolean
 
   // Payment & Notes
   showPaymentDetails: boolean
@@ -70,56 +60,15 @@ export interface BillConfig {
 
 interface PrintableInvoiceProps {
   project: Project
-  entries: Entry[]
+  entries?: Entry[]
   config: BillConfig
   isPrintMode?: boolean
 }
 
-export function PrintableInvoice({ project, entries, config, isPrintMode = false }: PrintableInvoiceProps) {
-  // 1. Filter entries based on date range
-  const filteredEntries = entries.filter((e) => {
-    if (config.dateRangeType === 'custom') {
-      if (config.startDate && e.date < config.startDate) return false
-      if (config.endDate && e.date > config.endDate) return false
-    }
-    return true
-  })
-
-  // 2. Compute Hours Labor
-  const totalHours = filteredEntries.reduce((sum, e) => {
-    if (e.start_time && e.end_time) {
-      const [sh, sm] = e.start_time.split(':').map(Number)
-      const [eh, em] = e.end_time.split(':').map(Number)
-      const h = eh - sh + (em - sm) / 60
-      return sum + (h > 0 ? h : 0)
-    }
-    return sum
-  }, 0)
-
-  const hoursAmount = !config.useCustomTotal && config.includeHours ? totalHours * (Number(config.hourlyRate) || 0) : 0
-
-  // 3. Compute Individual Expenses
-  const allExpenses: { category: string; amount: number; note?: string; date: string }[] = []
-  if (!config.useCustomTotal && config.includeExpenses) {
-    filteredEntries.forEach((e) => {
-      const expList = Array.isArray(e.expenses) ? e.expenses : []
-      expList.forEach((exp) => {
-        allExpenses.push({
-          category: exp.category || 'Expense',
-          amount: Number(exp.amount) || 0,
-          note: exp.note,
-          date: e.date
-        })
-      })
-    })
-  }
-
-  const totalExpenseAmount = allExpenses.reduce((sum, item) => sum + item.amount, 0)
-  const customTotalAmt = config.useCustomTotal ? Number(config.customTotalAmount) || 0 : 0
-  const fixedFeeAmount = !config.useCustomTotal && config.includeFixedFee ? Number(config.fixedFeeAmount) || 0 : 0
-
-  // 4. Subtotal & Grand Total
-  const subtotal = config.useCustomTotal ? customTotalAmt : hoursAmount + totalExpenseAmount + fixedFeeAmount
+export function PrintableInvoice({ project, config, isPrintMode = false }: PrintableInvoiceProps) {
+  const qty = Number(config.billQuantity) > 0 ? Number(config.billQuantity) : 1
+  const unitRate = Number(config.billAmount) || 0
+  const subtotal = qty * unitRate
 
   const discountAmount = config.showDiscount
     ? config.discountType === 'percentage'
@@ -138,11 +87,6 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
     })}`
   }
 
-  // Receipt photos list
-  const receiptPhotos = config.includeReceipts
-    ? filteredEntries.filter((e) => Boolean(e.photo_url)).map((e) => ({ date: e.date, url: e.photo_url! }))
-    : []
-
   return (
     <div
       id="printable-invoice-container"
@@ -152,7 +96,7 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
       )}
       style={{ minHeight: '297mm', color: '#18181b' }}
     >
-      {/* Top Header: Brand/Project & Title */}
+      {/* Top Header: Title & Meta */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-8 border-b border-zinc-200">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 uppercase">
@@ -227,75 +171,20 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
           <thead>
             <tr className="border-b-2 border-zinc-900 text-zinc-900 font-bold uppercase text-[10px] tracking-wider">
               <th className="pb-3 pr-4">Description</th>
-              <th className="pb-3 px-3 text-center">Qty / Time</th>
-              <th className="pb-3 px-3 text-right">Rate</th>
+              <th className="pb-3 px-3 text-center">Qty</th>
+              <th className="pb-3 px-3 text-right">Unit Rate</th>
               <th className="pb-3 pl-4 text-right">Amount</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            {/* Custom Total Amount Direct Mode */}
-            {config.useCustomTotal && (
-              <tr>
-                <td className="py-4 pr-4">
-                  <p className="font-semibold text-zinc-900">{config.customTotalDescription || 'Project Deliverables & Services'}</p>
-                  <p className="text-[11px] text-zinc-400">Agreed project total fee</p>
-                </td>
-                <td className="py-4 px-3 text-center text-zinc-500 font-medium">1</td>
-                <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(customTotalAmt)}</td>
-                <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(customTotalAmt)}</td>
-              </tr>
-            )}
-
-            {/* Fixed Fee (Itemized Mode) */}
-            {!config.useCustomTotal && config.includeFixedFee && fixedFeeAmount > 0 && (
-              <tr>
-                <td className="py-4 pr-4">
-                  <p className="font-semibold text-zinc-900">{config.fixedFeeDescription || 'Project Professional Fee'}</p>
-                </td>
-                <td className="py-4 px-3 text-center text-zinc-500">1</td>
-                <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(fixedFeeAmount)}</td>
-                <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(fixedFeeAmount)}</td>
-              </tr>
-            )}
-
-            {/* Logged Work Hours (Itemized Mode) */}
-            {!config.useCustomTotal && config.includeHours && totalHours > 0 && (
-              <tr>
-                <td className="py-4 pr-4">
-                  <p className="font-semibold text-zinc-900">Work Hours & Time Logged</p>
-                  <p className="text-[11px] text-zinc-400">{filteredEntries.length} logged sessions</p>
-                </td>
-                <td className="py-4 px-3 text-center text-zinc-700 font-medium">{formatHours(totalHours)}</td>
-                <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(Number(config.hourlyRate) || 0)}/hr</td>
-                <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(hoursAmount)}</td>
-              </tr>
-            )}
-
-            {/* Categorized Expenses (Itemized Mode) */}
-            {!config.useCustomTotal && config.includeExpenses && allExpenses.length > 0 &&
-              allExpenses.map((exp, idx) => (
-                <tr key={idx}>
-                  <td className="py-3.5 pr-4">
-                    <p className="font-medium text-zinc-800">
-                      {exp.category} {exp.note ? `— ${exp.note}` : ''}
-                    </p>
-                    <p className="text-[10px] text-zinc-400">{formatDate(exp.date)}</p>
-                  </td>
-                  <td className="py-3.5 px-3 text-center text-zinc-400">1</td>
-                  <td className="py-3.5 px-3 text-right text-zinc-600 font-mono">{formatMoney(exp.amount)}</td>
-                  <td className="py-3.5 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(exp.amount)}</td>
-                </tr>
-              ))
-            }
-
-            {/* Fallback */}
-            {!config.useCustomTotal && !config.includeHours && !config.includeExpenses && !config.includeFixedFee && (
-              <tr>
-                <td colSpan={4} className="py-8 text-center text-zinc-400">
-                  No line items selected for this invoice.
-                </td>
-              </tr>
-            )}
+            <tr>
+              <td className="py-4 pr-4">
+                <p className="font-semibold text-zinc-900">{config.billDescription || 'Project Deliverables & Services'}</p>
+              </td>
+              <td className="py-4 px-3 text-center text-zinc-600 font-medium">{qty}</td>
+              <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(unitRate)}</td>
+              <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(subtotal)}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -376,28 +265,6 @@ export function PrintableInvoice({ project, entries, config, isPrintMode = false
             <div className="h-10 border-b border-zinc-400 mb-2" />
             <p className="font-bold text-zinc-900">{config.signatoryName || 'Authorized Signatory'}</p>
             {config.signatoryTitle && <p className="text-[10px] text-zinc-500">{config.signatoryTitle}</p>}
-          </div>
-        </div>
-      )}
-
-      {/* Receipt Appendix */}
-      {config.includeReceipts && receiptPhotos.length > 0 && (
-        <div className="mt-12 pt-8 border-t border-zinc-200 page-break-before">
-          <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-4">
-            Receipt Attachments ({receiptPhotos.length})
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {receiptPhotos.map((item, idx) => (
-              <div key={idx} className="rounded-xl border border-zinc-200 p-2 text-center bg-zinc-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.url}
-                  alt={`Receipt ${idx + 1}`}
-                  className="w-full h-36 object-contain rounded-lg bg-white mb-2"
-                />
-                <span className="text-[10px] text-zinc-500 font-medium">Date: {formatDate(item.date)}</span>
-              </div>
-            ))}
           </div>
         </div>
       )}

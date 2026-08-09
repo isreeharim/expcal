@@ -8,13 +8,8 @@ import { deleteProject, updateProject } from '@/lib/actions/projects'
 import { cn, formatDate } from '@/lib/utils'
 import { Folder, MoreVertical, Pencil, Trash2, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
-} from '@/components/ui/alert-dialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,119 +44,81 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <>
-      <div
-        className={cn('glass-card p-5 flex flex-col gap-4 group cursor-pointer animate-fade-in relative overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 rounded-2xl')}
-      >
-        {/* Card header */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md shadow-primary/20 transition-transform duration-300 group-hover:scale-105"
-              style={{ background: project.color || 'var(--gradient-primary)' }}
-            >
-              <Folder className="w-5 h-5 text-white" />
+      <div className={cn('group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 transition-colors duration-200 hover:border-primary/30 hover:bg-muted/[0.18] animate-fade-in')}>
+        <div className="flex items-start justify-between gap-3">
+          <Link href={`/project/${project.id}`} className="flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm" style={{ background: project.color || 'var(--gradient-primary)' }}>
+              <Folder className="h-5 w-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-bold text-foreground text-sm truncate tracking-tight group-hover:text-primary transition-colors">{project.title}</h3>
-              <p className="text-xs text-muted-foreground/80 mt-0.5 font-medium">
-                Created {formatDate(project.created_at)}
-              </p>
+              <h3 className="truncate text-sm font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">{project.title}</h3>
+              <p className="mt-0.5 text-xs font-medium text-muted-foreground">Created {formatDate(project.created_at)}</p>
             </div>
-          </div>
+          </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer"
-              id={`project-menu-${project.id}`}
-            >
-              <MoreVertical className="w-4 h-4" />
+            <DropdownMenuTrigger className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary/50 sm:opacity-0 sm:group-hover:opacity-100" id={`project-menu-${project.id}`}>
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Project actions</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 rounded-xl p-1.5 shadow-xl border border-white/12 backdrop-blur-2xl animate-fade-in" style={{ background: 'oklch(0.14 0.012 260 / 95%)' }}>
-              <DropdownMenuItem
-                onClick={() => setEditOpen(true)}
-                className="gap-2 cursor-pointer rounded-lg text-xs font-medium focus:bg-muted/80"
-              >
-                <Pencil className="w-3.5 h-3.5" /> Edit
+            <DropdownMenuContent align="end" className="w-40 rounded-xl p-1.5 shadow-xl border border-border/80 backdrop-blur-xl" style={{ background: 'oklch(0.14 0.012 260 / 96%)' }}>
+              <DropdownMenuItem onClick={() => setEditOpen(true)} className="gap-2 cursor-pointer rounded-lg text-xs font-medium focus:bg-muted/80">
+                <Pencil className="h-3.5 w-3.5" /> Edit
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/60" />
-              <DropdownMenuItem
-                onClick={() => setDeleteOpen(true)}
-                className="gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/15 rounded-lg text-xs font-medium"
-              >
-                <Trash2 className="w-3.5 h-3.5" /> Delete
+              <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="gap-2 rounded-lg text-xs font-medium text-destructive focus:bg-destructive/15 focus:text-destructive cursor-pointer">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         {project.description && (
-          <p className="text-muted-foreground/90 text-xs line-clamp-2 leading-relaxed font-normal">{project.description}</p>
+          <Link href={`/project/${project.id}`} className="line-clamp-2 text-xs leading-relaxed text-muted-foreground hover:text-foreground transition-colors">
+            {project.description}
+          </Link>
         )}
 
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/60">
-          <Badge variant="secondary" className="text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2.5 py-0.5 rounded-full">Active</Badge>
-          <Link
-            href={`/project/${project.id}`}
-            className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors group/link"
-            id={`open-project-${project.id}`}
-          >
-            Open <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1" />
+        <div className="mt-auto flex items-center justify-between border-t border-border/60 pt-3">
+          <Badge variant="secondary" className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">Active</Badge>
+          <Link href={`/project/${project.id}`} className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
+            Open <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>
 
-      {/* Delete confirmation */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="rounded-2xl p-6 shadow-2xl backdrop-blur-2xl border border-white/12 animate-fade-in" style={{ background: 'oklch(0.14 0.012 260 / 95%)' }}>
+        <AlertDialogContent className="rounded-2xl border border-border/80 bg-card p-6 shadow-2xl animate-fade-in">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground text-xl font-bold tracking-tight">Delete &quot;{project.title}&quot;?</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground/90 text-sm font-normal">
-              This will permanently delete the project and all its entries. This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle className="text-xl font-bold tracking-tight text-foreground">Delete &quot;{project.title}&quot;?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-normal text-muted-foreground">This will permanently delete the project and all its entries. This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4">
-            <AlertDialogCancel disabled={isPending} className="rounded-xl font-medium hover:bg-muted/80 active:scale-[0.98] transition-all cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isPending}
-              className="bg-destructive hover:bg-destructive/90 text-white rounded-xl font-semibold active:scale-[0.98] transition-all cursor-pointer shadow-lg shadow-destructive/20"
-            >
+            <AlertDialogCancel disabled={isPending} className="rounded-xl font-medium transition-colors hover:bg-muted">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isPending} className="rounded-xl bg-destructive font-semibold text-white shadow-lg shadow-destructive/20 hover:bg-destructive/90">
               {isPending ? 'Deleting...' : 'Delete Project'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Edit dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="rounded-2xl p-6 shadow-2xl backdrop-blur-2xl border border-white/12 animate-fade-in" style={{ background: 'oklch(0.14 0.012 260 / 95%)' }}>
+        <DialogContent className="rounded-2xl border border-border/80 bg-card p-6 shadow-2xl animate-fade-in">
           <DialogHeader>
-            <DialogTitle className="text-foreground text-xl font-bold tracking-tight">Edit Project</DialogTitle>
+            <DialogTitle className="text-xl font-bold tracking-tight text-foreground">Edit Project</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEdit} className="space-y-4 mt-2">
+          <form onSubmit={handleEdit} className="mt-2 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor={`edit-title-${project.id}`} className="text-foreground/90 font-medium text-sm">Project Title</Label>
-              <Input
-                id={`edit-title-${project.id}`}
-                name="title"
-                defaultValue={project.title}
-                className="bg-muted/40 border-border/80 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-200 h-11 rounded-xl"
-                required
-              />
+              <Label htmlFor={`edit-title-${project.id}`} className="text-sm font-medium text-foreground/90">Project Title</Label>
+              <Input id={`edit-title-${project.id}`} name="title" defaultValue={project.title} className="h-11 rounded-xl border-border/80 bg-muted/40 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`edit-desc-${project.id}`} className="text-foreground/90 font-medium text-sm">Description</Label>
-              <Input
-                id={`edit-desc-${project.id}`}
-                name="description"
-                defaultValue={project.description ?? ''}
-                className="bg-muted/40 border-border/80 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 transition-all duration-200 h-11 rounded-xl"
-              />
+              <Label htmlFor={`edit-desc-${project.id}`} className="text-sm font-medium text-foreground/90">Description</Label>
+              <Input id={`edit-desc-${project.id}`} name="description" defaultValue={project.description ?? ''} className="h-11 rounded-xl border-border/80 bg-muted/40 focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30" />
             </div>
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setEditOpen(false)} className="flex-1 rounded-xl font-medium hover:bg-muted/80 active:scale-[0.98] transition-all cursor-pointer" disabled={isPending}>Cancel</Button>
-              <Button type="submit" className="flex-1 rounded-xl font-semibold transition-all duration-200 hover:opacity-95 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] cursor-pointer" disabled={isPending} style={{ background: 'var(--gradient-primary)', border: 'none' }}>
+              <Button type="button" variant="outline" onClick={() => setEditOpen(false)} className="flex-1 rounded-xl font-medium" disabled={isPending}>Cancel</Button>
+              <Button type="submit" className="flex-1 rounded-xl font-semibold" disabled={isPending} style={{ background: 'var(--gradient-primary)', border: 'none' }}>
                 {isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>

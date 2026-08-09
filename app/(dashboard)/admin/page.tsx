@@ -10,7 +10,8 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getInitials, formatCurrency, formatDate, formatHours, calculateHours, totalExpenses } from '@/lib/utils'
-import { Shield, Users, FolderOpen, Receipt } from 'lucide-react'
+import { Shield, Users, FolderOpen, Receipt, FileSpreadsheet, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -81,6 +82,26 @@ export default async function AdminPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Google Sheets Backup Quick Banner */}
+      <div className="glass-card p-5 sm:p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/10 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-500/20 text-emerald-400">
+            <FileSpreadsheet className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-bold text-foreground text-base">Google Sheets Live Backup</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Automated sync of all Supabase projects, entries, and users to Google Sheets</p>
+          </div>
+        </div>
+        <Link
+          href="/admin/backup"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:opacity-95 shadow-md flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
+        >
+          Manage & Sync Sheets <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* Data Tabs */}

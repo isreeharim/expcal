@@ -4,27 +4,33 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { generateProjectColor } from '@/lib/utils'
 
-export async function getProjects() {
+export async function getProjects(userId?: string, limit: number = 100) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return []
+  let targetUserId = userId
+  if (!targetUserId) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+    targetUserId = user.id
+  }
 
   const { data, error } = await supabase
     .from('projects')
-    .select('*')
-    .eq('user_id', user.id)
+    .select('id, user_id, title, description, color, created_at, updated_at')
+    .eq('user_id', targetUserId)
     .order('created_at', { ascending: false })
+    .limit(limit)
   if (error) throw error
   return data ?? []
 }
 
-export async function getAllProjects() {
+export async function getAllProjects(limit: number = 200) {
   // Admin only
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(full_name, role)')
+    .select('id, title, description, color, created_at, user_id, profiles(full_name, role)')
     .order('created_at', { ascending: false })
+    .limit(limit)
   if (error) throw error
   return data ?? []
 }
@@ -33,7 +39,7 @@ export async function getProject(id: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('projects')
-    .select('*')
+    .select('id, user_id, title, description, color, created_at, updated_at')
     .eq('id', id)
     .maybeSingle()
   if (error) return null
@@ -44,7 +50,7 @@ export async function getProjectStats(projectId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('project_stats')
-    .select('*')
+    .select('project_id, user_id, title, color, entry_count, total_income, total_expenses, net_cash, total_hours')
     .eq('project_id', projectId)
     .maybeSingle()
   if (error) return null

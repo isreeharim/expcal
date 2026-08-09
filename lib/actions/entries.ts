@@ -4,25 +4,26 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { ExpenseCategory } from '@/lib/types'
 
-export async function getEntries(projectId: string) {
+export async function getEntries(projectId: string, limit: number = 100) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('entries')
-    .select('*')
+    .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at, updated_at')
     .eq('project_id', projectId)
     .order('date', { ascending: false })
     .order('created_at', { ascending: false })
-    .limit(100)
+    .limit(limit)
   if (error) throw error
   return data ?? []
 }
 
-export async function getAllEntries() {
+export async function getAllEntries(limit: number = 200) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('entries')
-    .select('*, projects(title), profiles(full_name)')
+    .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at, projects(title), profiles(full_name)')
     .order('date', { ascending: false })
+    .limit(limit)
   if (error) throw error
   return data ?? []
 }
@@ -66,7 +67,7 @@ export async function createEntry(formData: FormData) {
       notes: notes || null,
       photo_url: photoUrl || null,
     })
-    .select()
+    .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at')
     .single()
 
   if (error) throw error

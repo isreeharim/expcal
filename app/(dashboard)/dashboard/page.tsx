@@ -11,16 +11,11 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [projects, stats] = await Promise.all([
-    getProjects(),
+  const [projects, stats, { data: profile }] = await Promise.all([
+    getProjects(user.id),
     getUserDashboardStats(user.id),
+    supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle(),
   ])
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name')
-    .eq('id', user.id)
-    .maybeSingle()
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'

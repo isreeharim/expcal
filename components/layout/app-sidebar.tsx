@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/actions/auth'
 import { Profile } from '@/lib/types'
 import {
-  LayoutDashboard, FolderOpen, Shield, LogOut, TrendingUp, Menu, X, ChevronRight, BarChart2
+  LayoutDashboard, FolderOpen, Shield, LogOut, TrendingUp, Menu, X, ChevronRight, BarChart2, FileSpreadsheet
 } from 'lucide-react'
 import { cn, getInitials } from '@/lib/utils'
 import { useState } from 'react'
@@ -29,6 +29,7 @@ const adminNavItems: NavItem[] = [
   { href: '/admin', label: 'Admin Panel', icon: Shield },
   { href: '/admin/users', label: 'Users', icon: LayoutDashboard },
   { href: '/admin/projects', label: 'All Projects', icon: FolderOpen },
+  { href: '/admin/backup', label: 'Sheets Backup', icon: FileSpreadsheet },
 ]
 
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {

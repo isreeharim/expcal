@@ -17,7 +17,7 @@ export default async function AnalysisPage() {
   if (!user) redirect('/login')
 
   const [projects, stats] = await Promise.all([
-    getProjects(),
+    getProjects(user.id),
     getUserDashboardStats(user.id),
   ])
 

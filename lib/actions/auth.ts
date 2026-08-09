@@ -24,8 +24,9 @@ export async function getUserProfile() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, full_name, role, avatar_url, created_at, updated_at')
     .eq('id', user.id)
     .maybeSingle()
   return profile
 }
+

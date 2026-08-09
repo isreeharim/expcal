@@ -10,7 +10,7 @@ export default async function ProjectsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const projects = await getProjects()
+  const projects = await getProjects(user.id)
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">

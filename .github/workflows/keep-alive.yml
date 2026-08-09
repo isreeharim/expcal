@@ -1,4 +1,4 @@
-name: Keep Supabase Alive
+name: Keep Supabase Alive & Auto-Backup
 
 on:
   schedule:
@@ -7,10 +7,15 @@ on:
   workflow_dispatch: # Allows manual trigger anytime from GitHub UI
 
 jobs:
-  ping:
+  ping-and-backup:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase Keep-Alive Endpoint
         run: |
           echo "Pinging ExpCal Keep-Alive API..."
           curl -s -X GET "https://expcal.sreeharim.site/api/keep-alive" | jq .
+
+      - name: Trigger Google Sheets Automated Backup
+        run: |
+          echo "Triggering Google Sheets automated backup..."
+          curl -s -X GET "https://expcal.sreeharim.site/api/backup/sheets" || true

@@ -3,6 +3,7 @@
 import { Project, Entry } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { Building2, User, CreditCard, ShieldCheck } from 'lucide-react'
 
 export interface BillConfig {
   // Document Meta
@@ -87,74 +88,87 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
     })}`
   }
 
+  const senderDisplayName = config.senderName || 'Service Provider'
+  const clientDisplayName = config.clientCompany || config.clientName || 'Client'
+
   return (
     <div
       id="printable-invoice-container"
       className={cn(
-        'w-full max-w-[210mm] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
+        'w-full max-w-[760px] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
         isPrintMode
           ? 'p-0 shadow-none border-none rounded-none'
-          : 'p-8 sm:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-2xl border border-zinc-200/80 my-auto'
+          : 'p-8 sm:p-14 shadow-[0_25px_60px_rgba(0,0,0,0.35)] rounded-2xl border border-zinc-200/90'
       )}
-      style={{ color: '#18181b' }}
+      style={{ color: '#09090b' }}
     >
-      {/* Top Header: Title & Meta */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 sm:pb-8 border-b border-zinc-200">
+      {/* Top Header: Brand Name / Project & Invoice Meta */}
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-6 pb-8 border-b border-zinc-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 uppercase">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">
             {config.documentTitle || 'INVOICE'}
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1 font-medium">
-            Project: <strong className="text-zinc-800">{project.title}</strong>
-          </p>
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950">
+            {config.senderName ? config.senderName : project.title}
+          </h2>
+          {config.senderName && (
+            <p className="text-xs text-zinc-500 mt-0.5 font-medium">
+              Project: <span className="text-zinc-800">{project.title}</span>
+            </p>
+          )}
         </div>
 
-        <div className="text-left sm:text-right space-y-1 text-xs">
+        {/* Invoice Metadata Pill Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-1 gap-x-6 gap-y-1.5 text-xs text-left sm:text-right">
           {config.showInvoiceNumber && config.invoiceNumber && (
-            <p className="text-zinc-600">
-              <span className="text-zinc-400">Invoice No:</span>{' '}
-              <strong className="font-mono text-zinc-900 font-bold">{config.invoiceNumber}</strong>
-            </p>
+            <div>
+              <span className="text-zinc-400 text-[11px] block sm:inline mr-1.5">Invoice No:</span>
+              <strong className="font-mono font-bold text-zinc-950 text-sm">{config.invoiceNumber}</strong>
+            </div>
           )}
           {config.showIssueDate && config.issueDate && (
-            <p className="text-zinc-600">
-              <span className="text-zinc-400">Date:</span>{' '}
-              <span className="text-zinc-800 font-medium">{formatDate(config.issueDate)}</span>
-            </p>
+            <div>
+              <span className="text-zinc-400 text-[11px] block sm:inline mr-1.5">Issue Date:</span>
+              <span className="font-semibold text-zinc-800">{formatDate(config.issueDate)}</span>
+            </div>
           )}
           {config.showDueDate && config.dueDate && (
-            <p className="text-zinc-600">
-              <span className="text-zinc-400">Due Date:</span>{' '}
-              <span className="text-zinc-800 font-medium">{formatDate(config.dueDate)}</span>
-            </p>
+            <div>
+              <span className="text-zinc-400 text-[11px] block sm:inline mr-1.5">Due Date:</span>
+              <span className="font-semibold text-zinc-800">{formatDate(config.dueDate)}</span>
+            </div>
           )}
         </div>
       </div>
 
-      {/* From & To Addresses */}
+      {/* From & To Cards Grid */}
       {(config.showSender || config.showClient) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 py-6 sm:py-8 border-b border-zinc-100 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-7 border-b border-zinc-100 text-xs">
           {/* Billed From */}
           {config.showSender && (
-            <div className="space-y-1">
-              <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-1.5">From</p>
-              {config.senderName && <p className="font-bold text-sm text-zinc-900">{config.senderName}</p>}
+            <div className="p-4 rounded-xl bg-zinc-50/60 border border-zinc-100 space-y-1">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block mb-1">
+                Issued By
+              </span>
+              <p className="font-bold text-sm text-zinc-900">{senderDisplayName}</p>
               {config.senderAddress && <p className="text-zinc-600 whitespace-pre-line leading-relaxed">{config.senderAddress}</p>}
               {config.senderEmail && <p className="text-zinc-600">{config.senderEmail}</p>}
               {config.senderPhone && <p className="text-zinc-600">{config.senderPhone}</p>}
               {config.senderTaxId && (
-                <p className="text-zinc-700 font-mono text-[11px] pt-1">GST/Tax: {config.senderTaxId}</p>
+                <p className="text-zinc-700 font-mono text-[11px] pt-1">GST/Tax ID: {config.senderTaxId}</p>
               )}
             </div>
           )}
 
           {/* Billed To */}
           {config.showClient && (
-            <div className="space-y-1 sm:text-right">
-              <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mb-1.5">Billed To</p>
-              {config.clientCompany && <p className="font-bold text-sm text-zinc-900">{config.clientCompany}</p>}
+            <div className="p-4 rounded-xl bg-zinc-50/60 border border-zinc-100 space-y-1">
+              <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block mb-1">
+                Billed To
+              </span>
+              <p className="font-bold text-sm text-zinc-900">{clientDisplayName}</p>
               {config.clientName && config.clientName !== config.clientCompany && (
-                <p className="text-zinc-800 font-medium">{config.clientName}</p>
+                <p className="text-zinc-700 font-medium">Attn: {config.clientName}</p>
               )}
               {config.clientAddress && <p className="text-zinc-600 whitespace-pre-line leading-relaxed">{config.clientAddress}</p>}
               {config.clientEmail && <p className="text-zinc-600">{config.clientEmail}</p>}
@@ -167,100 +181,105 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
         </div>
       )}
 
-      {/* Clean Minimal Table */}
+      {/* Modern Line Items Table */}
       <div className="py-6">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b-2 border-zinc-900 text-zinc-900 font-bold uppercase text-[10px] tracking-wider">
-              <th className="pb-3 pr-4">Description</th>
-              <th className="pb-3 px-3 text-center">Qty</th>
-              <th className="pb-3 px-3 text-right">Unit Rate</th>
-              <th className="pb-3 pl-4 text-right">Amount</th>
+            <tr className="border-b border-zinc-200 text-zinc-500 font-bold uppercase text-[10px] tracking-wider">
+              <th className="pb-3 pr-4 font-bold">Item Description</th>
+              <th className="pb-3 px-3 text-center font-bold">Qty</th>
+              <th className="pb-3 px-3 text-right font-bold">Rate</th>
+              <th className="pb-3 pl-4 text-right font-bold">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            <tr>
-              <td className="py-4 pr-4">
-                <p className="font-semibold text-zinc-900">{config.billDescription || project.title || 'Service Item'}</p>
+            <tr className="group">
+              <td className="py-4 sm:py-5 pr-4">
+                <p className="font-bold text-zinc-950 text-sm">
+                  {config.billDescription || project.title || 'Professional Services'}
+                </p>
+                <p className="text-[11px] text-zinc-400 mt-0.5">Agreed deliverable & services</p>
               </td>
-              <td className="py-4 px-3 text-center text-zinc-600 font-medium">{qty}</td>
-              <td className="py-4 px-3 text-right text-zinc-600 font-mono">{formatMoney(unitRate)}</td>
-              <td className="py-4 pl-4 text-right font-bold text-zinc-900 font-mono">{formatMoney(subtotal)}</td>
+              <td className="py-4 sm:py-5 px-3 text-center text-zinc-600 font-medium">{qty}</td>
+              <td className="py-4 sm:py-5 px-3 text-right text-zinc-600 font-mono font-medium">{formatMoney(unitRate)}</td>
+              <td className="py-4 sm:py-5 pl-4 text-right font-bold text-zinc-950 font-mono text-sm">{formatMoney(subtotal)}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      {/* Financial Summary Calculation */}
-      <div className="pt-4 border-t-2 border-zinc-900 flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-8 text-xs">
-        {/* Payment Notes */}
-        <div className="flex-1 space-y-3 max-w-sm">
+      {/* Summary & Payment Grid */}
+      <div className="pt-6 border-t border-zinc-200 grid grid-cols-1 sm:grid-cols-2 gap-8 text-xs items-start">
+        {/* Left: Payment Notes Card */}
+        <div className="space-y-3">
           {config.showPaymentDetails && (config.bankName || config.accountNumber || config.upiId) && (
-            <div className="space-y-1 text-zinc-600">
-              <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Payment Information</p>
+            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1.5">
+              <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider flex items-center gap-1">
+                <CreditCard className="w-3 h-3 text-zinc-700" /> Payment Details
+              </span>
               {config.upiId && (
-                <p>
-                  <span className="text-zinc-500">UPI ID:</span>{' '}
-                  <strong className="font-mono text-zinc-900">{config.upiId}</strong>
+                <p className="text-zinc-700">
+                  <span className="text-zinc-400">UPI ID:</span>{' '}
+                  <strong className="font-mono text-zinc-950">{config.upiId}</strong>
                 </p>
               )}
               {config.bankName && (
-                <p>
-                  <span className="text-zinc-500">Bank:</span> {config.bankName}
+                <p className="text-zinc-700">
+                  <span className="text-zinc-400">Bank:</span> {config.bankName}
                 </p>
               )}
               {config.accountNumber && (
-                <p>
-                  <span className="text-zinc-500">Account:</span>{' '}
-                  <strong className="font-mono text-zinc-900">{config.accountNumber}</strong>
+                <p className="text-zinc-700">
+                  <span className="text-zinc-400">Account No:</span>{' '}
+                  <strong className="font-mono text-zinc-950">{config.accountNumber}</strong>
                 </p>
               )}
               {config.ifscCode && (
-                <p>
-                  <span className="text-zinc-500">IFSC:</span>{' '}
-                  <strong className="font-mono text-zinc-900">{config.ifscCode}</strong>
+                <p className="text-zinc-700">
+                  <span className="text-zinc-400">IFSC / Code:</span>{' '}
+                  <strong className="font-mono text-zinc-950">{config.ifscCode}</strong>
                 </p>
               )}
             </div>
           )}
 
           {config.showTerms && config.termsAndConditions && (
-            <p className="text-[11px] text-zinc-500 leading-relaxed pt-2">
-              <span className="font-semibold text-zinc-700">Note: </span>
+            <div className="text-[11px] text-zinc-500 leading-relaxed pt-1">
+              <span className="font-bold text-zinc-700">Note: </span>
               {config.termsAndConditions}
-            </p>
+            </div>
           )}
         </div>
 
-        {/* Totals Table */}
-        <div className="w-full sm:w-64 space-y-2 text-right text-xs">
-          <div className="flex justify-between py-1 text-zinc-600">
+        {/* Right: Calculations Summary Card */}
+        <div className="p-4 rounded-xl bg-zinc-50/70 border border-zinc-200/80 space-y-2.5">
+          <div className="flex justify-between py-1 text-zinc-600 text-xs">
             <span>Subtotal</span>
             <span className="font-mono font-semibold text-zinc-900">{formatMoney(subtotal)}</span>
           </div>
 
           {config.showDiscount && discountAmount > 0 && (
-            <div className="flex justify-between py-1 text-zinc-600">
+            <div className="flex justify-between py-1 text-emerald-600 text-xs">
               <span>Discount {config.discountType === 'percentage' ? `(${config.discountValue}%)` : ''}</span>
-              <span className="font-mono font-semibold text-zinc-900">-{formatMoney(discountAmount)}</span>
+              <span className="font-mono font-semibold">-{formatMoney(discountAmount)}</span>
             </div>
           )}
 
           {config.showTax && (
-            <div className="flex justify-between py-1 text-zinc-600">
+            <div className="flex justify-between py-1 text-zinc-600 text-xs">
               <span>{config.taxName || 'Tax'} ({config.taxRate}%)</span>
               <span className="font-mono font-semibold text-zinc-900">{formatMoney(taxAmount)}</span>
             </div>
           )}
 
-          <div className="flex justify-between py-3 border-t-2 border-zinc-900 text-sm font-bold text-zinc-950 mt-2">
+          <div className="flex justify-between pt-3 border-t border-zinc-300/80 text-base font-extrabold text-zinc-950">
             <span>Total Due</span>
-            <span className="font-mono text-base font-extrabold text-zinc-950">{formatMoney(grandTotal)}</span>
+            <span className="font-mono text-lg text-zinc-950">{formatMoney(grandTotal)}</span>
           </div>
         </div>
       </div>
 
-      {/* Signature */}
+      {/* Signature Block */}
       {config.showSignature && (config.signatoryName || config.signatoryTitle) && (
         <div className="mt-12 pt-6 flex justify-end text-right text-xs">
           <div className="w-48 space-y-1">

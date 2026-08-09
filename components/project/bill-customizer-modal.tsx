@@ -552,7 +552,7 @@ export function BillCustomizerModal({
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            <div className="w-full max-w-[210mm] transition-all my-auto">
+            <div className="w-full max-w-[760px] transition-all my-auto py-2">
               <PrintableInvoice project={project} config={config} />
             </div>
           </div>

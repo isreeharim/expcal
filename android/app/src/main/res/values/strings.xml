@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ExpCal</string>
+    <string name="title_activity_main">ExpCal</string>
+    <string name="package_name">site.sreeharim.expcal</string>
+    <string name="custom_url_scheme">site.sreeharim.expcal</string>
+</resources>

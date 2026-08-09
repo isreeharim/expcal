@@ -39,7 +39,7 @@ export default function RegisterPage() {
         password,
         options: {
           data: { full_name: fullName, role: 'user' },
-          emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/login`,
+          emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback?next=/dashboard`,
         }
       })
       if (error) {
@@ -47,7 +47,6 @@ export default function RegisterPage() {
         return
       }
       setSuccess(true)
-      setTimeout(() => router.push('/login'), 3000)
     } catch {
       setError('An unexpected error occurred')
     } finally {
@@ -62,9 +61,13 @@ export default function RegisterPage() {
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20" style={{background: 'var(--gradient-income)'}}>
             <CheckCircle className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">Account Created!</h2>
-          <p className="text-muted-foreground mb-2 text-sm font-medium">Check your email to confirm your account.</p>
-          <p className="text-xs text-muted-foreground/70">Redirecting to login...</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight mb-3">Verification Link Sent!</h2>
+          <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+            We sent a verification link to <strong className="text-foreground">{email}</strong>.
+          </p>
+          <p className="text-xs text-primary font-medium bg-primary/10 py-2.5 px-4 rounded-xl border border-primary/20">
+            ✨ Click the link in your email to be logged in directly to your dashboard!
+          </p>
         </div>
       </div>
     )

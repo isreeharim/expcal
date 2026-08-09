@@ -23,12 +23,27 @@ export default function LoginPage() {
     setError(null)
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) {
         setError(error.message)
         return
       }
-      router.push('/')
+
+      if (authData?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', authData.user.id)
+          .maybeSingle()
+
+        if (profile?.role === 'admin') {
+          router.push('/admin')
+        } else {
+          router.push('/dashboard')
+        }
+      } else {
+        router.push('/dashboard')
+      }
       router.refresh()
     } catch {
       setError('An unexpected error occurred')

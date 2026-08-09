@@ -41,6 +41,16 @@ const adminNavItems: NavItem[] = [
   { href: '/admin/backup', label: 'Sheets Backup', icon: FileSpreadsheet },
 ]
 
+function isItemActive(itemHref: string, currentPath: string): boolean {
+  if (itemHref === '/dashboard' || itemHref === '/admin') {
+    return currentPath === itemHref
+  }
+  if (itemHref === '/projects') {
+    return currentPath === '/projects' || currentPath.startsWith('/project/')
+  }
+  return currentPath === itemHref || currentPath.startsWith(itemHref + '/')
+}
+
 function NavLink({
   item,
   isActive,
@@ -54,18 +64,30 @@ function NavLink({
   return (
     <Link
       href={item.href}
-      onClick={onClick}
+      onClick={(e) => {
+        // Drop sticky touch/focus highlight
+        try {
+          (e.currentTarget as HTMLElement)?.blur()
+        } catch {}
+        onClick?.()
+      }}
       className={cn(
-        'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden',
+        'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative select-none outline-none',
         isActive
-          ? 'text-white shadow-md shadow-primary/20 font-semibold'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-[0.98]'
+          ? 'text-white font-semibold shadow-md shadow-indigo-500/25 bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-600'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 active:bg-muted/70'
       )}
-      style={isActive ? { background: 'var(--gradient-primary)' } : {}}
     >
-      <Icon className={cn('w-4 h-4 flex-shrink-0 transition-transform duration-200 group-hover:scale-110', isActive && 'text-white')} />
+      <Icon
+        className={cn(
+          'w-4 h-4 flex-shrink-0 transition-transform duration-200',
+          isActive ? 'text-white' : 'text-muted-foreground'
+        )}
+      />
       <span className="truncate">{item.label}</span>
-      {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto transition-transform duration-200 group-hover:translate-x-0.5" />}
+      {isActive && (
+        <ChevronRight className="w-3.5 h-3.5 ml-auto text-white/90" />
+      )}
     </Link>
   )
 }
@@ -101,7 +123,7 @@ function SidebarContent({
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
             aria-label="Close navigation"
           >
             <X className="w-4 h-4" />
@@ -118,7 +140,7 @@ function SidebarContent({
               <NavLink
                 key={item.href}
                 item={item}
-                isActive={pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))}
+                isActive={isItemActive(item.href, pathname)}
                 onClick={onItemClick}
               />
             ))}
@@ -128,7 +150,7 @@ function SidebarContent({
               <NavLink
                 key={item.href}
                 item={item}
-                isActive={pathname === item.href || pathname.startsWith(item.href + '/')}
+                isActive={isItemActive(item.href, pathname)}
                 onClick={onItemClick}
               />
             ))}
@@ -138,7 +160,7 @@ function SidebarContent({
             <NavLink
               key={item.href}
               item={item}
-              isActive={pathname === item.href || pathname.startsWith(item.href + '/')}
+              isActive={isItemActive(item.href, pathname)}
               onClick={onItemClick}
             />
           ))

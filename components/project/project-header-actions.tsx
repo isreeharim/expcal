@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Project } from '@/lib/types'
+import { Project, Entry } from '@/lib/types'
 import { updateProject, deleteProject } from '@/lib/actions/projects'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,22 +18,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
-import { Pencil, Trash2 } from 'lucide-react'
+import { BillCustomizerModal } from '@/components/project/bill-customizer-modal'
+import { Pencil, Trash2, FileSpreadsheet, FileText } from 'lucide-react'
 
 interface ProjectHeaderActionsProps {
   project: Project
+  entries: Entry[]
   isAdmin: boolean
   isOwner: boolean
 }
 
-export function ProjectHeaderActions({ project, isAdmin, isOwner }: ProjectHeaderActionsProps) {
+export function ProjectHeaderActions({ project, entries, isAdmin, isOwner }: ProjectHeaderActionsProps) {
   const router = useRouter()
+  const [billModalOpen, setBillModalOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
-
-  if (!isAdmin && !isOwner) return null
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -71,24 +72,47 @@ export function ProjectHeaderActions({ project, isAdmin, isOwner }: ProjectHeade
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
+      {/* Export Bill / Invoice Button */}
       <Button
         variant="outline"
         size="sm"
-        onClick={() => setEditOpen(true)}
-        className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60"
+        onClick={() => setBillModalOpen(true)}
+        className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60 text-foreground"
       >
-        <Pencil className="w-3.5 h-3.5" /> Edit Project
+        <FileText className="w-3.5 h-3.5 text-primary" /> Export Bill
       </Button>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setDeleteOpen(true)}
-        className="rounded-xl h-9 text-xs font-semibold gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/15"
-      >
-        <Trash2 className="w-3.5 h-3.5" />
-      </Button>
+      {/* Edit & Delete Controls (Authorized) */}
+      {(isAdmin || isOwner) && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEditOpen(true)}
+            className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60"
+          >
+            <Pencil className="w-3.5 h-3.5" /> Edit
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setDeleteOpen(true)}
+            className="rounded-xl h-9 text-xs font-semibold gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/15"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </>
+      )}
+
+      {/* Bill Customizer Modal */}
+      <BillCustomizerModal
+        project={project}
+        entries={entries}
+        open={billModalOpen}
+        onOpenChange={setBillModalOpen}
+      />
 
       {/* Edit Modal */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>

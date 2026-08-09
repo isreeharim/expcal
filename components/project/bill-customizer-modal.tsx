@@ -19,7 +19,8 @@ import {
   Share2,
   SlidersHorizontal,
   Eye,
-  Sparkles
+  Sparkles,
+  FileText
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -155,7 +156,7 @@ export function BillCustomizerModal({
 
     const rows = [
       ['Date', 'Item / Description', 'Quantity', 'Rate', 'Amount'],
-      [config.issueDate, config.billDescription, qty.toString(), unitRate.toString(), total.toString()]
+      [config.issueDate, config.billDescription || project.title || 'Service Item', qty.toString(), unitRate.toString(), total.toString()]
     ]
 
     const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.map((c) => `"${c}"`).join(',')).join('\n')
@@ -198,26 +199,34 @@ export function BillCustomizerModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="w-[98vw] max-w-7xl h-[94vh] p-0 rounded-3xl shadow-2xl backdrop-blur-3xl border border-white/10 flex flex-col overflow-hidden bg-[#0e101a] animate-fade-in"
+        className="w-[96vw] max-w-7xl h-[92vh] max-h-[92vh] p-0 rounded-3xl shadow-2xl backdrop-blur-3xl border border-white/10 flex flex-col overflow-hidden bg-[#0c0e18] animate-fade-in"
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#141624] flex-shrink-0">
-          <div>
-            <DialogTitle className="text-foreground text-base font-bold tracking-tight">
-              Export Bill & Invoice
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground text-xs">
-              {project.title} — Enter amount and export clean invoice.
-            </DialogDescription>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#121422]/90 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md flex-shrink-0"
+              style={{ background: 'var(--gradient-primary)' }}
+            >
+              <FileText className="w-5 h-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-foreground text-base font-bold tracking-tight">
+                Export Invoice
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground text-xs">
+                {project.title}
+              </DialogDescription>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Action Buttons (Desktop & Tablet) */}
+          <div className="hidden sm:flex items-center gap-2.5">
             <Button
               size="sm"
               variant="outline"
               onClick={handleExportCSV}
-              className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80"
+              className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60"
             >
               <Download className="w-3.5 h-3.5" /> CSV
             </Button>
@@ -225,14 +234,14 @@ export function BillCustomizerModal({
               size="sm"
               variant="outline"
               onClick={handleShare}
-              className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80"
+              className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border/80 hover:bg-muted/60"
             >
               <Share2 className="w-3.5 h-3.5" /> Share
             </Button>
             <Button
               size="sm"
               onClick={handlePrint}
-              className="rounded-xl h-9 text-xs font-semibold gap-1.5 bg-foreground text-background hover:bg-foreground/90 font-bold cursor-pointer"
+              className="rounded-xl h-9 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 shadow-md shadow-white/10 cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" /> Print / Save PDF
             </Button>
@@ -265,12 +274,12 @@ export function BillCustomizerModal({
           </button>
         </div>
 
-        {/* Modal Body */}
+        {/* Modal Body: Split view on Desktop / Tabs on Mobile */}
         <div className="flex-1 flex overflow-hidden">
           {/* LEFT: Streamlined Direct Form */}
           <div
             className={cn(
-              'w-full lg:w-[420px] flex-shrink-0 border-r border-white/10 overflow-y-auto p-5 space-y-5 bg-[#121422]',
+              'w-full md:w-[380px] lg:w-[420px] xl:w-[450px] flex-shrink-0 border-r border-white/10 overflow-y-auto p-5 space-y-5 bg-[#101220]',
               activeTab === 'preview' && 'hidden sm:block'
             )}
           >
@@ -536,14 +545,14 @@ export function BillCustomizerModal({
             </div>
           </div>
 
-          {/* RIGHT: Live Minimal Paper Preview */}
+          {/* RIGHT: Live Minimal Paper Canvas (Desktop Studio) */}
           <div
             className={cn(
-              'flex-1 bg-[#090a12] p-4 sm:p-8 overflow-y-auto flex items-start justify-center',
+              'flex-1 bg-[#090b14] p-4 md:p-8 lg:p-12 overflow-y-auto flex items-start justify-center',
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            <div className="w-full max-w-[210mm] scale-[0.88] sm:scale-100 origin-top transition-transform">
+            <div className="w-full max-w-[210mm] transition-all my-auto">
               <PrintableInvoice project={project} config={config} />
             </div>
           </div>
@@ -570,7 +579,7 @@ export function BillCustomizerModal({
           <Button
             size="sm"
             onClick={handlePrint}
-            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
+            className="flex-[1.5] rounded-xl h-11 text-xs font-bold gap-1.5 bg-white text-zinc-950 hover:bg-zinc-100 cursor-pointer"
           >
             <Printer className="w-4 h-4" /> Print PDF
           </Button>

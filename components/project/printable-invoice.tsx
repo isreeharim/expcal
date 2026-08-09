@@ -91,15 +91,17 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
     <div
       id="printable-invoice-container"
       className={cn(
-        'w-full max-w-[210mm] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all',
-        isPrintMode ? 'p-0 shadow-none' : 'p-8 sm:p-12 shadow-xl rounded-2xl border border-zinc-200/80'
+        'w-full max-w-[210mm] mx-auto bg-white text-zinc-900 font-sans leading-relaxed transition-all box-border',
+        isPrintMode
+          ? 'p-0 shadow-none border-none rounded-none'
+          : 'p-8 sm:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-2xl border border-zinc-200/80 my-auto'
       )}
-      style={{ minHeight: '297mm', color: '#18181b' }}
+      style={{ color: '#18181b' }}
     >
       {/* Top Header: Title & Meta */}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-8 border-b border-zinc-200">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 pb-6 sm:pb-8 border-b border-zinc-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 uppercase">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 uppercase">
             {config.documentTitle || 'INVOICE'}
           </h1>
           <p className="text-xs text-zinc-500 mt-1 font-medium">
@@ -131,7 +133,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
 
       {/* From & To Addresses */}
       {(config.showSender || config.showClient) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-8 border-b border-zinc-100 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 py-6 sm:py-8 border-b border-zinc-100 text-xs">
           {/* Billed From */}
           {config.showSender && (
             <div className="space-y-1">
@@ -190,7 +192,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
       </div>
 
       {/* Financial Summary Calculation */}
-      <div className="pt-4 border-t-2 border-zinc-900 flex flex-col sm:flex-row justify-between items-start gap-8 text-xs">
+      <div className="pt-4 border-t-2 border-zinc-900 flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-8 text-xs">
         {/* Payment Notes */}
         <div className="flex-1 space-y-3 max-w-sm">
           {config.showPaymentDetails && (config.bankName || config.accountNumber || config.upiId) && (
@@ -260,7 +262,7 @@ export function PrintableInvoice({ project, config, isPrintMode = false }: Print
 
       {/* Signature */}
       {config.showSignature && (config.signatoryName || config.signatoryTitle) && (
-        <div className="mt-14 pt-6 flex justify-end text-right text-xs">
+        <div className="mt-12 pt-6 flex justify-end text-right text-xs">
           <div className="w-48 space-y-1">
             <div className="h-10 border-b border-zinc-400 mb-2" />
             <p className="font-bold text-zinc-900">{config.signatoryName || 'Authorized Signatory'}</p>

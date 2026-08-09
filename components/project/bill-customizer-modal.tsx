@@ -55,11 +55,11 @@ export function BillCustomizerModal({
     // Document Meta
     documentTitle: 'INVOICE',
     showInvoiceNumber: true,
-    invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    invoiceNumber: '',
     showIssueDate: true,
     issueDate: new Date().toISOString().split('T')[0],
     showDueDate: true,
-    dueDate: new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0],
+    dueDate: '',
     currencySymbol: '₹',
 
     // Billed From (Sender)
@@ -108,23 +108,27 @@ export function BillCustomizerModal({
   // Load saved sender details and template preferences from localStorage on mount
   useEffect(() => {
     try {
-      const savedSender = localStorage.getItem(STORAGE_KEY_SENDER)
-      if (savedSender) {
-        const parsed = JSON.parse(savedSender)
-        setConfig((prev) => ({
-          ...prev,
-          senderName: parsed.senderName || prev.senderName,
-          senderEmail: parsed.senderEmail || prev.senderEmail,
-          senderPhone: parsed.senderPhone || prev.senderPhone,
-          senderAddress: parsed.senderAddress || prev.senderAddress,
-          senderTaxId: parsed.senderTaxId || prev.senderTaxId,
-          bankName: parsed.bankName || prev.bankName,
-          accountNumber: parsed.accountNumber || prev.accountNumber,
-          ifscCode: parsed.ifscCode || prev.ifscCode,
-          upiId: parsed.upiId || prev.upiId
-        }))
-      }
+      const generatedInvoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+      const generatedDueDate = new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0]
 
+      const savedSender = localStorage.getItem(STORAGE_KEY_SENDER)
+      const parsed = savedSender ? JSON.parse(savedSender) : {}
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setConfig((prev) => ({
+        ...prev,
+        invoiceNumber: generatedInvoiceNumber,
+        dueDate: generatedDueDate,
+        senderName: parsed.senderName || prev.senderName,
+        senderEmail: parsed.senderEmail || prev.senderEmail,
+        senderPhone: parsed.senderPhone || prev.senderPhone,
+        senderAddress: parsed.senderAddress || prev.senderAddress,
+        senderTaxId: parsed.senderTaxId || prev.senderTaxId,
+        bankName: parsed.bankName || prev.bankName,
+        accountNumber: parsed.accountNumber || prev.accountNumber,
+        ifscCode: parsed.ifscCode || prev.ifscCode,
+        upiId: parsed.upiId || prev.upiId
+      }))
     } catch {
       // ignore
     }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Project } from '@/lib/types'
 import {
   BillConfig,
@@ -36,6 +36,9 @@ interface BillCustomizerModalProps {
 }
 
 const STORAGE_KEY_SENDER = 'expcal_bill_sender_info'
+const DEFAULT_INVOICE_NUMBER = 'INV-0000-0000'
+const INVOICE_WIDTH = 760
+const INVOICE_HEIGHT = 1075
 
 export function BillCustomizerModal({
   project,
@@ -45,6 +48,8 @@ export function BillCustomizerModal({
   // Mobile Tab state ('customize' | 'preview')
   const [activeTab, setActiveTab] = useState<'customize' | 'preview'>('customize')
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const previewViewportRef = useRef<HTMLDivElement>(null)
+  const [previewScale, setPreviewScale] = useState(1)
 
   // Minimal Bill Configuration with Direct Total Amount & Template Selection
   const [config, setConfig] = useState<BillConfig>({
@@ -55,9 +60,9 @@ export function BillCustomizerModal({
     // Document Meta
     documentTitle: 'INVOICE',
     showInvoiceNumber: true,
-    invoiceNumber: '',
+    invoiceNumber: DEFAULT_INVOICE_NUMBER,
     showIssueDate: true,
-    issueDate: new Date().toISOString().split('T')[0],
+    issueDate: '',
     showDueDate: true,
     dueDate: '',
     currencySymbol: '₹',
@@ -107,30 +112,62 @@ export function BillCustomizerModal({
 
   // Load saved sender details and template preferences from localStorage on mount
   useEffect(() => {
-    try {
-      const generatedInvoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
-      const generatedDueDate = new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0]
+    const frame = requestAnimationFrame(() => {
+      const now = new Date()
+      const issueDate = now.toISOString().split('T')[0]
+      const dueDateValue = new Date(now)
+      dueDateValue.setDate(dueDateValue.getDate() + 15)
 
-      const savedSender = localStorage.getItem(STORAGE_KEY_SENDER)
-      const parsed = savedSender ? JSON.parse(savedSender) : {}
+      let savedSender: Partial<BillConfig> = {}
+      try {
+        const savedValue = localStorage.getItem(STORAGE_KEY_SENDER)
+        if (savedValue) savedSender = JSON.parse(savedValue)
+      } catch {
+        // Ignore invalid or unavailable local storage data.
+      }
 
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConfig((prev) => ({
         ...prev,
-        invoiceNumber: generatedInvoiceNumber,
-        dueDate: generatedDueDate,
-        senderName: parsed.senderName || prev.senderName,
-        senderEmail: parsed.senderEmail || prev.senderEmail,
-        senderPhone: parsed.senderPhone || prev.senderPhone,
-        senderAddress: parsed.senderAddress || prev.senderAddress,
-        senderTaxId: parsed.senderTaxId || prev.senderTaxId,
-        bankName: parsed.bankName || prev.bankName,
-        accountNumber: parsed.accountNumber || prev.accountNumber,
-        ifscCode: parsed.ifscCode || prev.ifscCode,
-        upiId: parsed.upiId || prev.upiId
+        invoiceNumber: prev.invoiceNumber === DEFAULT_INVOICE_NUMBER
+          ? `INV-${now.getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+          : prev.invoiceNumber,
+        issueDate: prev.issueDate || issueDate,
+        dueDate: prev.dueDate || dueDateValue.toISOString().split('T')[0],
+        senderName: savedSender.senderName || prev.senderName,
+        senderEmail: savedSender.senderEmail || prev.senderEmail,
+        senderPhone: savedSender.senderPhone || prev.senderPhone,
+        senderAddress: savedSender.senderAddress || prev.senderAddress,
+        senderTaxId: savedSender.senderTaxId || prev.senderTaxId,
+        bankName: savedSender.bankName || prev.bankName,
+        accountNumber: savedSender.accountNumber || prev.accountNumber,
+        ifscCode: savedSender.ifscCode || prev.ifscCode,
+        upiId: savedSender.upiId || prev.upiId
       }))
-    } catch {
-      // ignore
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  // Keep the preview fully visible at every viewport width without changing
+  // the invoice's fixed A4 proportions.
+  useEffect(() => {
+    const viewport = previewViewportRef.current
+    if (!viewport) return
+
+    const updatePreviewScale = () => {
+      const availableWidth = Math.max(0, viewport.clientWidth - 48)
+      setPreviewScale(Math.min(1, availableWidth / INVOICE_WIDTH || 1))
+    }
+
+    const frame = requestAnimationFrame(updatePreviewScale)
+    const observer = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(updatePreviewScale)
+      : null
+
+    observer?.observe(viewport)
+    return () => {
+      cancelAnimationFrame(frame)
+      observer?.disconnect()
     }
   }, [])
 
@@ -185,21 +222,44 @@ export function BillCustomizerModal({
   const handleExportCSV = () => {
     const qty = Number(config.billQuantity) || 1
     const unitRate = Number(config.billAmount) || 0
-    const total = qty * unitRate
+    const subtotal = qty * unitRate
+    const discountAmount = config.showDiscount
+      ? config.discountType === 'percentage'
+        ? (subtotal * (Number(config.discountValue) || 0)) / 100
+        : Number(config.discountValue) || 0
+      : 0
+    const taxableAmount = Math.max(0, subtotal - discountAmount)
+    const taxAmount = config.showTax
+      ? (taxableAmount * (Number(config.taxRate) || 0)) / 100
+      : 0
+    const total = taxableAmount + taxAmount
 
     const rows = [
-      ['Date', 'Item / Description', 'Quantity', 'Rate', 'Amount'],
-      [config.issueDate, config.billDescription || project.title || 'Service Item', qty.toString(), unitRate.toString(), total.toString()]
+      ['Invoice Number', 'Date', 'Item / Description', 'Quantity', 'Rate', 'Subtotal', 'Discount', 'Tax', 'Total'],
+      [
+        config.invoiceNumber,
+        config.issueDate,
+        config.billDescription || project.title || 'Service Item',
+        qty.toString(),
+        unitRate.toFixed(2),
+        subtotal.toFixed(2),
+        discountAmount.toFixed(2),
+        taxAmount.toFixed(2),
+        total.toFixed(2),
+      ]
     ]
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((e) => e.map((c) => `"${c}"`).join(',')).join('\n')
-    const encodedUri = encodeURI(csvContent)
+    const escapeCSV = (value: string) => `"${value.replace(/"/g, '""')}"`
+    const csvContent = rows.map((row) => row.map(escapeCSV).join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' })
+    const downloadUrl = URL.createObjectURL(blob)
     const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
+    link.setAttribute('href', downloadUrl)
     link.setAttribute('download', `${project.title.replace(/\s+/g, '_')}_Invoice_${config.invoiceNumber}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    URL.revokeObjectURL(downloadUrl)
   }
 
   // Handle WhatsApp / Share
@@ -601,22 +661,26 @@ export function BillCustomizerModal({
 
           {/* RIGHT: Live Invoice Preview — scales to fit the available height */}
           <div
+            ref={previewViewportRef}
             className={cn(
-              'flex-1 bg-[#090b14] overflow-hidden flex flex-col items-center justify-start',
+              'flex-1 bg-[#090b14] overflow-y-auto overflow-x-hidden flex items-start justify-center p-6',
               activeTab === 'customize' && 'hidden sm:flex'
             )}
           >
-            {/* Scrollable zoom container */}
-            <div className="w-full h-full overflow-y-auto flex items-start justify-center p-6">
-              {/* The invoice renders at 760px wide, then we shrink it visually with CSS scale.
-                  origin-top keeps it anchored to the top so scrolling works naturally. */}
+            <div
+              className="flex-shrink-0"
+              style={{
+                width: `${INVOICE_WIDTH * previewScale}px`,
+                height: `${INVOICE_HEIGHT * previewScale}px`,
+              }}
+            >
               <div
                 style={{
-                  width: '760px',
-                  flexShrink: 0,
-                  transformOrigin: 'top center',
+                  width: `${INVOICE_WIDTH}px`,
+                  height: `${INVOICE_HEIGHT}px`,
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: 'top left',
                 }}
-                className="invoice-preview-scale"
               >
                 <PrintableInvoice project={project} config={config} />
               </div>

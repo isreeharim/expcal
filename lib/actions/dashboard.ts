@@ -101,3 +101,36 @@ export async function getDashboardChartData(userId: string, days: number = 7) {
     return []
   }
 }
+
+export async function getUserEntries(userId: string, limit: number = 100): Promise<RecentEntry[]> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('entries')
+      .select(`
+        *,
+        projects!inner(
+          title,
+          color
+        )
+      `)
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error || !data) {
+      console.error('Error fetching user entries:', error)
+      return []
+    }
+
+    return (data as Array<Entry & { projects: { title: string; color: string } | null }>).map((entry) => ({
+      ...entry,
+      project_title: entry.projects?.title || 'Unknown',
+      project_color: entry.projects?.color || 'blue'
+    }))
+  } catch (error) {
+    console.error('Failed to get user entries:', error)
+    return []
+  }
+}

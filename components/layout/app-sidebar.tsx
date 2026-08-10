@@ -5,8 +5,10 @@ import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/actions/auth'
 import { Profile } from '@/lib/types'
 import {
-  LayoutDashboard,
-  FolderOpen,
+  Home,
+  WalletCards,
+  ReceiptText,
+  Target,
   Shield,
   LogOut,
   TrendingUp,
@@ -24,15 +26,17 @@ interface NavItem {
 }
 
 const userNavItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/projects', label: 'Projects', icon: FolderOpen },
-  { href: '/analysis', label: 'Analysis', icon: BarChart2 },
+  { href: '/dashboard', label: 'Home', icon: Home },
+  { href: '/money', label: 'Money', icon: WalletCards },
+  { href: '/transactions', label: 'Transactions', icon: ReceiptText },
+  { href: '/analysis', label: 'Analytics', icon: BarChart2 },
+  { href: '/goals', label: 'Goals', icon: Target },
 ]
 
 const adminNavItems: NavItem[] = [
   { href: '/admin', label: 'Admin Panel', icon: Shield },
-  { href: '/admin/users', label: 'Users', icon: LayoutDashboard },
-  { href: '/admin/projects', label: 'All Projects', icon: FolderOpen },
+  { href: '/admin/users', label: 'Users', icon: Home },
+  { href: '/admin/projects', label: 'All Projects', icon: WalletCards },
   { href: '/admin/backup', label: 'Sheets Backup', icon: FileSpreadsheet },
 ]
 
@@ -40,8 +44,11 @@ function isItemActive(itemHref: string, currentPath: string): boolean {
   if (itemHref === '/dashboard' || itemHref === '/admin') {
     return currentPath === itemHref
   }
-  if (itemHref === '/projects') {
-    return currentPath === '/projects' || currentPath.startsWith('/project/')
+  if (itemHref === '/money') {
+    return currentPath === '/money' || currentPath === '/projects' || currentPath.startsWith('/project/')
+  }
+  if (itemHref === '/transactions') {
+    return currentPath === '/transactions'
   }
   return currentPath === itemHref || currentPath.startsWith(itemHref + '/')
 }
@@ -106,7 +113,7 @@ function SidebarContent({
           </div>
           <div>
             <h1 className="font-bold text-base gradient-text tracking-tighter leading-none">ExpCal</h1>
-            <p className="text-[10px] text-muted-foreground/80 font-medium tracking-wide mt-0.5">Smart Expense Manager</p>
+            <p className="text-[10px] text-muted-foreground/80 font-medium tracking-wide mt-0.5">Financial Control Center</p>
           </div>
         </Link>
       </div>

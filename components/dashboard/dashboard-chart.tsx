@@ -6,9 +6,10 @@ import { formatCurrency } from '@/lib/utils'
 
 interface DashboardChartProps {
   userId: string
+  compact?: boolean
 }
 
-export function DashboardChart({ userId }: DashboardChartProps) {
+export function DashboardChart({ userId, compact = false }: DashboardChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -61,25 +62,25 @@ export function DashboardChart({ userId }: DashboardChartProps) {
               label: 'Gross Inflow',
               data: incomeData,
               borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              backgroundColor: compact ? 'rgba(16, 185, 129, 0.06)' : 'rgba(16, 185, 129, 0.10)',
               fill: true,
-              tension: 0.35,
-              pointRadius: 4,
-              pointHoverRadius: 6,
+              tension: 0.4,
+              pointRadius: compact ? 0 : 3,
+              pointHoverRadius: compact ? 0 : 5,
               pointBackgroundColor: '#10b981',
-              borderWidth: 2.5,
+              borderWidth: compact ? 1.5 : 2,
             },
             {
               label: 'Total Outflow',
               data: expenseData,
               borderColor: '#f43f5e',
-              backgroundColor: 'rgba(244, 63, 94, 0.08)',
+              backgroundColor: compact ? 'rgba(244, 63, 94, 0.04)' : 'rgba(244, 63, 94, 0.06)',
               fill: true,
-              tension: 0.35,
-              pointRadius: 4,
-              pointHoverRadius: 6,
+              tension: 0.4,
+              pointRadius: compact ? 0 : 3,
+              pointHoverRadius: compact ? 0 : 5,
               pointBackgroundColor: '#f43f5e',
-              borderWidth: 2.5,
+              borderWidth: compact ? 1.5 : 2,
             },
           ],
         },
@@ -88,24 +89,25 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
+            legend: { display: false },
+            tooltip: compact ? { enabled: false } : {
               backgroundColor: 'rgba(18, 22, 34, 0.96)',
-              borderColor: 'rgba(255, 255, 255, 0.12)',
+              borderColor: 'rgba(255, 255, 255, 0.10)',
               borderWidth: 1,
               titleColor: '#ffffff',
               bodyColor: '#cbd5e1',
-              padding: 12,
-              boxPadding: 6,
-              cornerRadius: 12,
+              padding: 10,
+              boxPadding: 5,
+              cornerRadius: 10,
               callbacks: {
                 label: (ctx) => ` ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y ?? 0)}`
               }
             }
           },
-          scales: {
+          scales: compact ? {
+            x: { display: false },
+            y: { display: false },
+          } : {
             x: {
               grid: { color: 'rgba(255, 255, 255, 0.04)' },
               ticks: { color: '#64748b', font: { size: 11, family: 'Inter' } }
@@ -128,25 +130,33 @@ export function DashboardChart({ userId }: DashboardChartProps) {
       isMounted = false
       if (chartInstance) chartInstance.destroy()
     }
-  }, [userId])
+  }, [userId, compact])
+
+  if (compact) {
+    return (
+      <div className="w-full h-full relative">
+        <canvas ref={canvasRef} />
+      </div>
+    )
+  }
 
   return (
-    <div className="glass-card p-6 border border-white/10 rounded-3xl">
+    <div className="card-elevated p-5 sm:p-6">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div>
-          <h3 className="text-sm font-bold text-foreground tracking-tight">Cash Flow Dynamics</h3>
-          <p className="text-xs text-muted-foreground">Inflow vs Outflow over recent transaction timeline</p>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">Cash Flow Trends</h3>
+          <p className="text-xs text-muted-foreground/70">Income vs Expenses over recent entries</p>
         </div>
         <div className="flex items-center gap-3 text-xs font-semibold">
           <span className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span> Inflow
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Inflow
           </span>
           <span className="flex items-center gap-1.5 text-rose-400">
-            <span className="w-2 h-2 rounded-full bg-rose-400 shadow-sm shadow-rose-400/50"></span> Outflow
+            <span className="w-2 h-2 rounded-full bg-rose-400"></span> Outflow
           </span>
         </div>
       </div>
-      <div className="h-[220px] sm:h-[280px] relative">
+      <div className="h-[200px] sm:h-[260px] relative">
         <canvas ref={canvasRef} />
       </div>
     </div>

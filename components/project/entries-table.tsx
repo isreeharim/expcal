@@ -54,16 +54,16 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
 
   if (entries.length === 0) {
     return (
-      <div className="glass-card p-12 text-center">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--gradient-hours)' }}>
-          <Clock className="w-7 h-7 text-white" />
+      <div className="card-elevated p-10 sm:p-12 text-center">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-muted/60 border border-border/50 text-muted-foreground">
+          <Clock className="w-6 h-6 text-primary" />
         </div>
-        <h3 className="text-base font-semibold text-foreground mb-2">No entries yet</h3>
-        <p className="text-muted-foreground text-sm mb-5">Add your first entry to start tracking.</p>
+        <h3 className="text-base font-bold text-foreground mb-1">No entries yet</h3>
+        <p className="text-muted-foreground text-xs max-w-xs mx-auto mb-5 leading-relaxed">Log time, income, and itemized expenses to track this project.</p>
         <Button
           onClick={() => setAddOpen(true)}
           id="add-first-entry-btn"
-          className="gap-2"
+          className="gap-2 text-xs font-semibold rounded-xl"
           style={{ background: 'var(--gradient-primary)', border: 'none' }}
         >
           <Plus className="w-4 h-4" /> Add First Entry
@@ -93,7 +93,7 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
           return (
             <div
               key={entry.id}
-              className="glass-card p-3.5 space-y-2.5 relative border border-border/70 transition-all duration-150"
+              className="card-elevated p-3.5 space-y-2.5 relative border border-border/70 transition-all duration-150"
             >
               {/* Header: Date + Net Balance Badge */}
               <div className="flex items-center justify-between gap-2">
@@ -210,7 +210,7 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
       </div>
 
       {/* Desktop Table (>= sm screens) */}
-      <div className="hidden sm:block glass-card overflow-hidden">
+      <div className="hidden sm:block card-elevated overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="premium-table">
             <TableHeader>
@@ -375,7 +375,7 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
 
       {/* Photo Viewer */}
       <Dialog open={!!photoEntry} onOpenChange={(o) => !o && setPhotoEntry(null)}>
-        <DialogContent className="max-w-lg" style={{ background: 'oklch(0.13 0.012 260)', border: '1px solid oklch(1 0 0 / 10%)' }}>
+        <DialogContent className="max-w-lg card-elevated border border-border/80">
           <DialogHeader>
             <DialogTitle>Receipt Photo</DialogTitle>
           </DialogHeader>

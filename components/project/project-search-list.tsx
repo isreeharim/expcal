@@ -41,12 +41,12 @@ export function ProjectSearchList({
 
   if (projects.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-card/60 p-10 text-center animate-fade-in sm:p-12">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-muted/50 text-muted-foreground">
+      <div className="card-elevated p-10 sm:p-14 text-center animate-fade-in border border-dashed border-border/80">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-muted/40 text-primary shadow-sm">
           <FolderOpen className="h-7 w-7" />
         </div>
-        <h3 className="mb-2 text-base font-bold text-foreground">{emptyTitle}</h3>
-        <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">{emptyDescription}</p>
+        <h3 className="mb-1 text-base font-bold text-foreground">{emptyTitle}</h3>
+        <p className="mx-auto mb-6 max-w-sm text-xs leading-relaxed text-muted-foreground">{emptyDescription}</p>
         <CreateProjectDialog />
       </div>
     )
@@ -95,13 +95,13 @@ export function ProjectSearchList({
       )}
 
       {filteredProjects.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center animate-fade-in sm:p-12">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted/50 text-muted-foreground">
+        <div className="card-elevated p-10 sm:p-12 text-center animate-fade-in border border-dashed border-border/80">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted/40 text-muted-foreground">
             <SearchX className="h-6 w-6" />
           </div>
-          <h3 className="mb-1 text-base font-bold text-foreground">No matching projects</h3>
-          <p className="mx-auto mb-5 max-w-xs text-xs leading-relaxed text-muted-foreground">Try a different project name or description.</p>
-          <button onClick={() => setSearchQuery('')} className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15">
+          <h3 className="mb-1 text-sm font-bold text-foreground">No matching projects</h3>
+          <p className="mx-auto mb-5 max-w-xs text-xs leading-relaxed text-muted-foreground">Try a different project name or search term.</p>
+          <button onClick={() => setSearchQuery('')} className="inline-flex items-center gap-1.5 rounded-xl bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/15">
             <X className="h-3.5 w-3.5" /> Clear search
           </button>
         </div>

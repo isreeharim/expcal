@@ -179,7 +179,7 @@ export function AdminUserProjects({
 
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
-        <div className="glass-card p-10 text-center rounded-3xl border border-white/10 space-y-3">
+        <div className="card-elevated p-10 text-center rounded-3xl border border-white/10 space-y-3">
           <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto text-muted-foreground">
             {searchQuery ? <SearchX className="w-6 h-6" /> : <FolderOpen className="w-6 h-6" />}
           </div>
@@ -211,7 +211,7 @@ export function AdminUserProjects({
             return (
               <div
                 key={project.id}
-                className="glass-card p-5 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-200 flex flex-col justify-between group relative"
+                className="card-elevated p-5 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-200 flex flex-col justify-between group relative"
               >
                 <div>
                   {/* Top Bar with Color Pill and Actions */}

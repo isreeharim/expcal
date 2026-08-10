@@ -91,7 +91,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           </div>
           <span className="text-[10px] mt-0.5 tracking-tight font-medium">Home</span>
           {isHomeActive && (
-            <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary shadow-sm shadow-primary" />
+            <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
           )}
         </Link>
 
@@ -115,7 +115,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           </div>
           <span className="text-[10px] mt-0.5 tracking-tight font-medium">Projects</span>
           {isProjectsActive && (
-            <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary shadow-sm shadow-primary" />
+            <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
           )}
         </Link>
 
@@ -126,8 +126,8 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           className="flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group cursor-pointer active:scale-95"
         >
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-md shadow-primary/30 transition-all duration-200 group-hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)' }}
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-white transition-all duration-200 group-hover:scale-105"
+            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #3b82f6 100%)' }}
           >
             <Plus className="w-5 h-5 stroke-[2.5]" />
           </div>
@@ -156,7 +156,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           </div>
           <span className="text-[10px] mt-0.5 tracking-tight font-medium">Analysis</span>
           {isAnalysisActive && (
-            <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary shadow-sm shadow-primary" />
+            <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
           )}
         </Link>
 
@@ -181,7 +181,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
             </div>
             <span className="text-[10px] mt-0.5 tracking-tight font-medium">Admin</span>
             {isAdminActive && (
-              <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary shadow-sm shadow-primary" />
+              <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
             )}
           </Link>
         ) : (
@@ -200,8 +200,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
       {/* Quick Action Bottom Sheet Modal */}
       <Dialog open={quickActionOpen} onOpenChange={setQuickActionOpen}>
         <DialogContent
-          className="w-[92vw] sm:max-w-md p-6 rounded-3xl shadow-2xl backdrop-blur-2xl border border-white/12 animate-fade-in"
-          style={{ background: 'rgba(18, 20, 34, 0.96)' }}
+          className="w-[92vw] sm:max-w-md p-6 rounded-3xl animate-fade-in card-elevated"
         >
           <DialogHeader className="text-left">
             <div className="flex items-center justify-between">
@@ -219,7 +218,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
                 setQuickActionOpen(false)
                 setNewProjectOpen(true)
               }}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border/60 transition-all duration-200 active:scale-[0.98] text-left group cursor-pointer"
+              className="flex items-center gap-3.5 p-3.5 rounded-2xl card-interactive text-left group cursor-pointer"
             >
               <div
                 className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-md shadow-primary/20 transition-transform group-hover:scale-105"
@@ -237,7 +236,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
             <Link
               href="/projects"
               onClick={() => setQuickActionOpen(false)}
-              className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border/60 transition-all duration-200 active:scale-[0.98] text-left group"
+              className="flex items-center gap-3.5 p-3.5 rounded-2xl card-interactive text-left group"
             >
               <div
                 className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-md shadow-emerald-500/20 transition-transform group-hover:scale-105"
@@ -256,7 +255,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
               <Link
                 href="/admin/backup"
                 onClick={() => setQuickActionOpen(false)}
-                className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-muted/40 hover:bg-muted/70 border border-border/60 transition-all duration-200 active:scale-[0.98] text-left group"
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl card-interactive text-left group"
               >
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-md shadow-teal-500/20 transition-transform group-hover:scale-105"
@@ -288,8 +287,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
       {/* Direct Create Project Dialog */}
       <Dialog open={newProjectOpen} onOpenChange={setNewProjectOpen}>
         <DialogContent
-          className="w-[92vw] sm:max-w-md p-6 rounded-3xl shadow-2xl backdrop-blur-2xl border border-white/12 animate-fade-in"
-          style={{ background: 'rgba(18, 20, 34, 0.96)' }}
+          className="w-[92vw] sm:max-w-md p-6 rounded-3xl animate-fade-in card-elevated"
         >
           <DialogHeader>
             <div className="flex items-center gap-3 mb-1">

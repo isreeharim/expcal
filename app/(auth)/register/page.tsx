@@ -55,7 +55,7 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-screen auth-bg flex items-center justify-center p-4 sm:p-6">
-        <div className="glass-card p-6 sm:p-10 text-center max-w-md w-full shadow-2xl backdrop-blur-2xl border border-white/10 rounded-3xl animate-fade-in space-y-5">
+        <div className="card-elevated p-6 sm:p-10 text-center max-w-md w-full shadow-2xl border border-white/10 rounded-3xl animate-fade-in space-y-5">
           {/* Brand Icon */}
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/25"
@@ -118,7 +118,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold gradient-text tracking-tight">ExpCal</h1>
-              <p className="text-xs text-muted-foreground/90 font-medium">Smart Expense Manager</p>
+              <p className="text-xs text-muted-foreground/90 font-medium">Personal Financial Control Center</p>
             </div>
           </div>
           <h2 className="text-4xl font-extrabold text-foreground mb-4 leading-tight tracking-tight">
@@ -151,10 +151,10 @@ export default function RegisterPage() {
             <h1 className="text-xl font-bold gradient-text tracking-tight">ExpCal</h1>
           </div>
 
-          <div className="glass-card p-8 shadow-2xl backdrop-blur-2xl border border-white/10 rounded-3xl">
+          <div className="card-elevated p-8 shadow-2xl border border-white/10 rounded-3xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">Create your account</h2>
-              <p className="text-muted-foreground text-sm">Start managing your finances today</p>
+              <p className="text-muted-foreground text-sm">Start managing your personal wealth today</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

@@ -83,7 +83,7 @@ export function AdminProjectsTable({ projects, entries }: AdminProjectsTableProp
       )}
 
       {/* Table */}
-      <div className="glass-card overflow-x-auto w-full rounded-2xl border border-border/80 shadow-xl">
+      <div className="card-elevated overflow-x-auto w-full rounded-2xl border border-border/80 shadow-xl">
         {filteredProjects.length === 0 ? (
           <div className="p-10 text-center">
             <SearchX className="w-8 h-8 text-muted-foreground mx-auto mb-2" />

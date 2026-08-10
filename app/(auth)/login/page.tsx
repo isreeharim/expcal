@@ -79,7 +79,7 @@ export default function LoginPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold gradient-text tracking-tight">ExpCal</h1>
-              <p className="text-xs text-muted-foreground/90 font-medium">Smart Expense Manager</p>
+              <p className="text-xs text-muted-foreground/90 font-medium">Personal Financial Control Center</p>
             </div>
           </div>
 
@@ -98,13 +98,13 @@ export default function LoginPage() {
               { icon: DollarSign, label: 'Total Income', value: '₹1,24,500', gradient: 'var(--gradient-income)' },
               { icon: PieChart, label: 'Net Cash', value: '₹89,200', gradient: 'var(--gradient-cash)' },
             ].map(({ icon: Icon, label, value, gradient }) => (
-              <div key={label} className="glass-card flex items-center gap-4 p-4 transition-all duration-200 hover:translate-x-1.5 hover:border-white/15 cursor-default">
+              <div key={label} className="card-elevated flex items-center gap-4 p-4 transition-all duration-200 hover:translate-x-1 hover:border-primary/30 cursor-default">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md flex-shrink-0" style={{background: gradient}}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground/80">{label}</p>
-                  <p className="text-lg font-bold text-foreground tracking-tight">{value}</p>
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+                  <p className="text-lg font-bold text-foreground tracking-tight tabular-nums">{value}</p>
                 </div>
               </div>
             ))}
@@ -123,10 +123,10 @@ export default function LoginPage() {
             <h1 className="text-xl font-bold gradient-text tracking-tight">ExpCal</h1>
           </div>
 
-          <div className="glass-card p-8 shadow-2xl backdrop-blur-2xl border border-white/10 rounded-3xl">
+          <div className="card-elevated p-8 shadow-2xl border border-white/10 rounded-3xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">Welcome back</h2>
-              <p className="text-muted-foreground text-sm">Sign in to your account to continue</p>
+              <p className="text-muted-foreground text-sm">Sign in to your financial command center</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">

@@ -80,27 +80,25 @@ export default async function AdminPage() {
         </Link>
       </div>
 
-      {/* Primary Financial Overview — 4 Cards with Net Cash Prominence */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 stagger-children">
-        <StatCard type="hours" value={totalHours} label="Total Hours" subLabel="All users combined" />
-        <StatCard type="income" value={totalIncome} label="Total Income" subLabel="Platform-wide" />
-        <StatCard type="expense" value={totalExpense} label="Total Expenses" subLabel="Platform-wide" />
-        <StatCard type="cash" value={totalIncome - totalExpense} label="Net Cash" subLabel="Platform-wide" />
+        <StatCard type="hours" value={totalHours} label="Total Hours" compact />
+        <StatCard type="income" value={totalIncome} label="Total Income" compact />
+        <StatCard type="expense" value={totalExpense} label="Total Expenses" compact />
+        <StatCard type="cash" value={totalIncome - totalExpense} label="Net Cash" compact />
       </div>
 
-      {/* Quick counters */}
       <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
         {[
           { icon: Users, label: 'Total Users', value: allProfiles.length },
           { icon: FolderOpen, label: 'Total Projects', value: projects.length },
           { icon: Receipt, label: 'Total Entries', value: entries.length },
         ].map(({ icon: Icon, label, value }) => (
-          <div key={label} className="bg-card border border-border/60 p-3.5 sm:p-4 rounded-xl flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
+          <div key={label} className="card-elevated p-3.5 sm:p-4 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center text-muted-foreground flex-shrink-0">
               <Icon className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-lg sm:text-xl font-bold text-foreground font-mono">{value}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground tabular-nums">{value}</p>
               <p className="text-[11px] text-muted-foreground">{label}</p>
             </div>
           </div>
@@ -123,7 +121,7 @@ export default async function AdminPage() {
 
         {/* Users Tab */}
         <TabsContent value="users">
-          <div className="glass-card overflow-hidden">
+          <div className="card-elevated overflow-hidden">
             <div className="overflow-x-auto">
               <Table className="premium-table">
               <TableHeader>
@@ -188,7 +186,7 @@ export default async function AdminPage() {
 
         {/* Projects Tab */}
         <TabsContent value="projects">
-          <div className="glass-card overflow-hidden">
+          <div className="card-elevated overflow-hidden">
             <div className="overflow-x-auto">
               <Table className="premium-table">
                 <TableHeader>
@@ -236,7 +234,7 @@ export default async function AdminPage() {
 
         {/* Entries Tab */}
         <TabsContent value="entries">
-          <div className="glass-card overflow-hidden">
+          <div className="card-elevated overflow-hidden">
             <div className="overflow-x-auto">
               <Table className="premium-table">
               <TableHeader>

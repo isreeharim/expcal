@@ -109,7 +109,7 @@ export function BackupSyncCard({
   return (
     <div className="space-y-6 animate-fade-in w-full max-w-full overflow-hidden">
       {/* Top Status & Sync Banner */}
-      <div className="glass-card p-5 sm:p-7 lg:p-8 relative overflow-hidden border border-border/80 shadow-2xl rounded-3xl">
+      <div className="card-elevated p-5 sm:p-7 lg:p-8 relative overflow-hidden border border-border/80 shadow-2xl rounded-3xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div className="flex items-start gap-3.5 sm:gap-4">
             <div
@@ -192,7 +192,7 @@ export function BackupSyncCard({
       )}
 
       {/* Webhook Configuration Card */}
-      <div className="glass-card p-5 sm:p-7 lg:p-8 rounded-3xl border border-border/80 shadow-xl space-y-5">
+      <div className="card-elevated p-5 sm:p-7 lg:p-8 rounded-3xl border border-border/80 shadow-xl space-y-5">
         <div>
           <h3 className="text-base sm:text-lg font-bold text-foreground">Google Apps Script Webhook URL</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -261,7 +261,7 @@ export function BackupSyncCard({
 
       {/* Apps Script Code Viewer Modal / Accordion */}
       {showScriptModal && (
-        <div className="glass-card p-4 sm:p-6 rounded-3xl border border-primary/30 shadow-2xl space-y-3.5 animate-fade-in max-w-full overflow-hidden">
+        <div className="card-elevated p-4 sm:p-6 rounded-3xl border border-primary/30 shadow-2xl space-y-3.5 animate-fade-in max-w-full overflow-hidden">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
@@ -291,7 +291,7 @@ export function BackupSyncCard({
       )}
 
       {/* Step-by-Step Setup Guide */}
-      <div className="glass-card rounded-3xl border border-border/80 shadow-xl overflow-hidden">
+      <div className="card-elevated rounded-3xl border border-border/80 shadow-xl overflow-hidden">
         <button
           onClick={() => setShowSetupGuide(!showSetupGuide)}
           className="w-full p-5 sm:p-7 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"
@@ -364,7 +364,7 @@ export function BackupSyncCard({
       </div>
 
       {/* Offline Backup & Export Card */}
-      <div className="glass-card p-5 sm:p-7 lg:p-8 rounded-3xl border border-border/80 shadow-xl space-y-3.5">
+      <div className="card-elevated p-5 sm:p-7 lg:p-8 rounded-3xl border border-border/80 shadow-xl space-y-3.5">
         <h3 className="text-base sm:text-lg font-bold text-foreground">Offline Database Export</h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
           Download a complete raw backup of your Supabase database directly to your device.

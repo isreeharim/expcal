@@ -107,16 +107,16 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
       {/* Hero Section */}
       <section className="relative z-10 pt-16 sm:pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary/10 border border-primary/20 text-primary mb-6 animate-pulse">
-          <Sparkles className="w-3.5 h-3.5" /> Next-Gen PWA Expense & Time Tracker
+          <Sparkles className="w-3.5 h-3.5" /> Next-Gen Personal Financial Control Center
         </div>
 
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-foreground tracking-tight leading-[1.15] max-w-4xl mx-auto">
-          Master Your Project{' '}
-          <span className="gradient-text">Expenses & Income</span> with Ease
+          Take Control of Your{' '}
+          <span className="gradient-text">Personal Wealth & Cash Flow</span>
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          The modern, high-speed expense manager built for freelancers, contractors, and teams. Log work hours, itemize costs, compress receipt photos, and track cash flow in real-time.
+          The intelligent, high-speed financial control center built for professionals and freelancers. Log work hours, itemize expenses, analyze multi-project trends, and manage cash flow in real time.
         </p>
 
         {/* Hero Action Buttons */}
@@ -146,11 +146,11 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
 
       {/* Interactive Income & Cash Flow Estimator Widget */}
       <section className="relative z-10 py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="glass-card p-6 sm:p-10 relative overflow-hidden border border-border/60 shadow-2xl">
+        <div className="card-elevated p-6 sm:p-10 relative overflow-hidden border border-border/60 shadow-2xl">
           <div className="mb-8 text-center sm:text-left">
             <span className="text-xs font-semibold text-primary uppercase tracking-wider">Interactive Simulator</span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">Estimate Your Net Profit</h2>
-            <p className="text-sm text-muted-foreground mt-1">Slide hours, rate, and expenses to simulate your project return instantly.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mt-1">Estimate Your Net Cash Flow</h2>
+            <p className="text-sm text-muted-foreground mt-1">Adjust hours, rate, and expenses to simulate your project return instantly.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -276,7 +276,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           ].map((feature) => {
             const Icon = feature.icon
             return (
-              <div key={feature.title} className="glass-card p-6 flex flex-col justify-between hover:border-primary/50 transition-all group">
+              <div key={feature.title} className="card-elevated p-6 flex flex-col justify-between hover:border-primary/50 transition-all group">
                 <div>
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform" style={{ background: feature.color }}>
                     <Icon className="w-6 h-6 text-white" />
@@ -303,7 +303,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           {faqs.map((faq, idx) => (
             <div
               key={faq.q}
-              className="glass-card overflow-hidden transition-colors border border-border/60"
+              className="card-elevated overflow-hidden transition-colors border border-border/60"
             >
               <button
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -324,7 +324,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
 
       {/* High-Converting Bottom CTA */}
       <section className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="glass-card p-10 sm:p-16 text-center relative overflow-hidden border border-border/80 shadow-2xl">
+        <div className="card-elevated p-10 sm:p-16 text-center relative overflow-hidden border border-border/80 shadow-2xl">
           <div
             className="absolute inset-0 opacity-10 pointer-events-none"
             style={{ background: 'radial-gradient(circle at center, oklch(0.65 0.22 280), transparent 70%)' }}

@@ -10,7 +10,6 @@ import {
   Shield,
   LogOut,
   TrendingUp,
-  ChevronRight,
   BarChart2,
   FileSpreadsheet
 } from 'lucide-react'
@@ -69,15 +68,12 @@ function NavLink({
       className={cn(
         'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative select-none outline-none',
         isActive
-          ? 'text-white font-semibold bg-primary/20 border border-primary/40 shadow-sm shadow-primary/20'
-          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+          ? 'text-white font-semibold bg-primary/10 before:absolute before:left-0 before:top-1/4 before:bottom-1/4 before:w-[3px] before:rounded-full before:bg-primary'
+          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/30'
       )}
     >
       <Icon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-white' : 'text-muted-foreground')} />
       <span className="flex-1 truncate">{item.label}</span>
-      {isActive && (
-        <ChevronRight className="w-3.5 h-3.5 opacity-80 flex-shrink-0" />
-      )}
     </Link>
   )
 }
@@ -109,7 +105,7 @@ function SidebarContent({
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-base gradient-text tracking-tight leading-none">ExpCal</h1>
+            <h1 className="font-bold text-base gradient-text tracking-tighter leading-none">ExpCal</h1>
             <p className="text-[10px] text-muted-foreground/80 font-medium tracking-wide mt-0.5">Smart Expense Manager</p>
           </div>
         </Link>
@@ -155,8 +151,8 @@ function SidebarContent({
       </nav>
 
       {/* User info + sign out (Fixed at bottom) */}
-      <div className="p-3 border-t border-sidebar-border/80 flex-shrink-0 bg-sidebar">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40 hover:bg-muted/60 transition-colors duration-200 mb-3">
+      <div className="p-2 border-t border-sidebar-border/80 flex-shrink-0 bg-sidebar">
+        <div className="flex items-center gap-2.5 p-2 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/50 transition-colors duration-200 mb-2">
           <Avatar className="w-8 h-8 ring-2 ring-primary/20 flex-shrink-0">
             <AvatarImage src={profile.avatar_url ?? undefined} />
             <AvatarFallback className="text-xs font-semibold" style={{ background: 'var(--gradient-primary)', color: 'white' }}>
@@ -172,7 +168,7 @@ function SidebarContent({
           <Button
             type="submit"
             variant="ghost"
-            className="w-full justify-start gap-2 text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition-all duration-200 rounded-xl font-medium active:scale-[0.98] cursor-pointer group text-sm h-10"
+            className="w-full justify-start gap-2 text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition-all duration-200 rounded-xl font-medium active:scale-[0.98] cursor-pointer group text-xs h-9"
           >
             <LogOut className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
             Sign Out
@@ -194,7 +190,7 @@ export function AppSidebar({ profile }: AppSidebarProps) {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex flex-col w-60 flex-shrink-0 border-r border-sidebar-border h-screen sticky top-0"
+        className="hidden md:flex flex-col w-56 flex-shrink-0 border-r border-sidebar-border h-screen sticky top-0"
         style={{ background: 'var(--sidebar)' }}
       >
         <SidebarContent profile={profile} pathname={pathname} />

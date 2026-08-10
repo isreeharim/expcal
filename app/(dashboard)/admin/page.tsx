@@ -39,6 +39,14 @@ export default async function AdminPage() {
 
   const allProfiles = profiles ?? []
 
+  // Precompute Map to turn O(N^2) .filter() operations into O(1) lookups
+  const projectsByUserId = new Map<string, typeof projects>()
+  projects.forEach((proj) => {
+    const list = projectsByUserId.get(proj.user_id) || []
+    list.push(proj)
+    projectsByUserId.set(proj.user_id, list)
+  })
+
   // Compute global stats
   const totalIncome = entries.reduce((s, e) => s + Number(e.income || 0), 0)
   const totalExpense = entries.reduce((s, e) => s + totalExpenses(e.expenses || []), 0)
@@ -134,7 +142,7 @@ export default async function AdminPage() {
               </TableHeader>
               <TableBody>
                 {allProfiles.map((p) => {
-                  const userProjects = projects.filter((proj) => proj.user_id === p.id)
+                  const userProjects = projectsByUserId.get(p.id) || []
                   return (
                     <TableRow key={p.id} className="border-border group hover:bg-muted/30 transition-colors">
                       <TableCell>

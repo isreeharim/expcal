@@ -11,6 +11,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Security guard: Only administrators can export full platform backup
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (profile?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Administrator privileges required' }, { status: 403 })
+    }
+
     const { searchParams } = new URL(req.url)
     const format = searchParams.get('format') || 'json'
 

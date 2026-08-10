@@ -257,6 +257,16 @@ export async function saveGoogleSheetsWebhookUrl(url: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (profile?.role !== 'admin') {
+    throw new Error('Forbidden: Administrator privileges required')
+  }
+
   const cleanUrl = url.trim()
   if (cleanUrl && !cleanUrl.startsWith('https://script.google.com/macros/s/')) {
     throw new Error('Invalid Google Apps Script URL. It must start with https://script.google.com/macros/s/')
@@ -290,6 +300,10 @@ export async function syncGoogleSheetsBackup(customWebhookUrl?: string) {
     .select('full_name, role')
     .eq('id', user.id)
     .maybeSingle()
+
+  if (profile?.role !== 'admin') {
+    throw new Error('Forbidden: Administrator privileges required')
+  }
 
   const settings = await getBackupSettings()
   const targetUrl = (customWebhookUrl || settings.webhookUrl || '').trim()

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Entry } from '@/lib/types'
 import { deleteEntry } from '@/lib/actions/entries'
 import { EntryForm } from './entry-form'
@@ -20,7 +22,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { MoreVertical, Pencil, Trash2, Eye, Image as ImageIcon, Clock, Plus } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useRouter } from 'next/navigation'
 
 interface EntriesTableProps {
   entries: Entry[]
@@ -97,9 +98,9 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
                   {entry.photo_url && (
                     <button
                       onClick={() => setPhotoEntry(entry)}
-                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg overflow-hidden border border-border flex-shrink-0"
+                      className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg overflow-hidden border border-border flex-shrink-0 relative"
                     >
-                      <img src={entry.photo_url} alt="receipt" className="w-full h-full object-cover" />
+                      <Image src={entry.photo_url} alt="receipt" width={40} height={40} unoptimized className="w-full h-full object-cover" />
                     </button>
                   )}
                   <DropdownMenu>
@@ -221,10 +222,10 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
                       {entry.photo_url ? (
                         <button
                           onClick={() => setPhotoEntry(entry)}
-                          className="w-8 h-8 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors"
+                          className="w-8 h-8 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors relative block"
                           id={`view-photo-${entry.id}`}
                         >
-                          <img src={entry.photo_url} alt="receipt" className="w-full h-full object-cover" />
+                          <Image src={entry.photo_url} alt="receipt" width={32} height={32} unoptimized className="w-full h-full object-cover" />
                         </button>
                       ) : (
                         <div className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center">
@@ -297,7 +298,9 @@ export function EntriesTable({ entries, projectId, userId }: EntriesTableProps) 
             <DialogTitle>Receipt Photo</DialogTitle>
           </DialogHeader>
           {photoEntry?.photo_url && (
-            <img src={photoEntry.photo_url} alt="Receipt" className="w-full rounded-xl" />
+            <div className="relative w-full aspect-video max-h-[70vh] rounded-xl overflow-hidden bg-black/40">
+              <Image src={photoEntry.photo_url} alt="Receipt" fill unoptimized className="object-contain" />
+            </div>
           )}
         </DialogContent>
       </Dialog>

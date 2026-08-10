@@ -24,6 +24,18 @@ async function handleSync(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    if (user && !isCronAuthorized) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (profile?.role !== 'admin') {
+        return NextResponse.json({ error: 'Forbidden: Administrator privileges required' }, { status: 403 })
+      }
+    }
+
     const settings = await getBackupSettings()
     const targetUrl = settings.webhookUrl
 

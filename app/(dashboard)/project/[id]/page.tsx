@@ -51,6 +51,12 @@ export default async function ProjectPage({ params }: PageProps) {
 
   const isAdmin = viewerProfile?.role === 'admin'
   const isOwner = project.user_id === user.id
+
+  // Security guard: Non-admin users cannot access another user's project
+  if (!isOwner && !isAdmin) {
+    notFound()
+  }
+
   const ownerName = ownerProfile?.full_name || 'User'
 
   return (

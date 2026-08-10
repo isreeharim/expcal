@@ -6,6 +6,25 @@ import { ExpenseCategory } from '@/lib/types'
 
 export async function getEntries(projectId: string, limit: number = 100) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return []
+
+  // Verify project ownership or admin status
+  const { data: project } = await supabase
+    .from('projects')
+    .select('id, user_id')
+    .eq('id', projectId)
+    .maybeSingle()
+
+  if (!project) return []
+
+  if (project.user_id !== user.id) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+    if (profile?.role !== 'admin') {
+      return []
+    }
+  }
+
   const { data, error } = await supabase
     .from('entries')
     .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at, updated_at')
@@ -19,6 +38,14 @@ export async function getEntries(projectId: string, limit: number = 100) {
 
 export async function getAllEntries(limit: number = 200) {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (profile?.role !== 'admin') {
+    throw new Error('Forbidden: Administrator privileges required')
+  }
+
   const { data, error } = await supabase
     .from('entries')
     .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at, projects(title), profiles(full_name)')
@@ -158,12 +185,39 @@ export async function deleteEntry(id: string, projectId: string) {
 
 export async function uploadPhoto(file: File, userId: string): Promise<string> {
   const supabase = await createClient()
-  const ext = file.name.split('.').pop()
-  const path = `${userId}/${Date.now()}.${ext}`
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  // Security guard: User can only upload into their own folder unless they are admin
+  if (user.id !== userId) {
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+    if (profile?.role !== 'admin') {
+      throw new Error('Forbidden: Cannot upload photos for another user')
+    }
+  }
+
+  // Security guard: Validate file size (max 5MB)
+  const MAX_FILE_SIZE = 5 * 1024 * 1024
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('File size exceeds the 5MB limit')
+  }
+
+  // Security guard: Validate allowed MIME types
+  const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    throw new Error('Invalid file type. Allowed formats: JPEG, PNG, WebP, GIF')
+  }
+
+  const rawExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+  const safeExt = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg'
+  const path = `${userId}/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${safeExt}`
 
   const { error } = await supabase.storage
     .from('entry-photos')
-    .upload(path, file, { upsert: false })
+    .upload(path, file, {
+      upsert: false,
+      contentType: file.type,
+    })
 
   if (error) throw error
 

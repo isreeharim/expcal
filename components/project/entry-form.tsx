@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
+import Image from 'next/image'
 import { createEntry, updateEntry } from '@/lib/actions/entries'
 import { Entry, ExpenseCategory, EXPENSE_CATEGORIES } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -292,9 +293,12 @@ export function EntryForm({ projectId, userId, entry, open, onOpenChange, onSucc
 
             {photoPreview ? (
               <div className="relative inline-block">
-                <img
+                <Image
                   src={photoPreview}
                   alt="Receipt preview"
+                  width={128}
+                  height={128}
+                  unoptimized
                   className="w-32 h-32 object-cover rounded-xl border border-border"
                 />
                 <button

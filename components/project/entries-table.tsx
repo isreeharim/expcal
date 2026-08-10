@@ -122,7 +122,7 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
                       className="w-8 h-8 rounded-lg overflow-hidden border border-border hover:border-primary transition-colors relative block"
                       aria-label="View receipt photo"
                     >
-                      <Image src={entry.photo_url} alt="Receipt thumbnail" width={32} height={32} unoptimized className="w-full h-full object-cover" />
+                      <Image src={entry.photo_url} alt="Receipt thumbnail" width={32} height={32} className="w-full h-full object-cover" />
                     </button>
                   )}
 
@@ -276,7 +276,7 @@ export function EntriesTable({ entries, projectId, userId, pageSize = 25 }: Entr
                           id={`view-photo-${entry.id}`}
                           aria-label="View receipt photo thumbnail"
                         >
-                          <Image src={entry.photo_url} alt="Receipt thumbnail" width={32} height={32} unoptimized className="w-full h-full object-cover" />
+                          <Image src={entry.photo_url} alt="Receipt thumbnail" width={32} height={32} className="w-full h-full object-cover" />
                         </button>
                       ) : (
                         <div className="w-8 h-8 rounded-lg bg-muted/30 flex items-center justify-center">

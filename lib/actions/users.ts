@@ -2,22 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth-guards'
 
 export async function updateUserRole(userId: string, newRole: 'admin' | 'user') {
+  const { user } = await requireAdmin()
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
-
-  // Verify caller is admin
-  const { data: callerProfile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (callerProfile?.role !== 'admin') {
-    throw new Error('Only administrators can change user roles')
-  }
 
   // Prevent admin from demoting themselves if they are the only admin
   if (user.id === userId && newRole !== 'admin') {

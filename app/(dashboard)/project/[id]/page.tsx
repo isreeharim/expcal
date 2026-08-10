@@ -158,12 +158,11 @@ export default async function ProjectPage({ params }: PageProps) {
 
       {/* Entries Table */}
       <div>
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">
             Entries
             <span className="ml-2 text-sm font-normal text-muted-foreground">({entries?.length || 0} total)</span>
           </h2>
-          <AddEntryButton projectId={id} userId={user.id} compact />
         </div>
         <EntriesTable entries={entries || []} projectId={id} userId={user.id} />
       </div>

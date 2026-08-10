@@ -117,6 +117,24 @@ export async function updateEntry(id: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
+  // Security guard: Fetch actual entry from database to verify ownership and trusted project_id
+  const { data: existingEntry, error: fetchErr } = await supabase
+    .from('entries')
+    .select('id, project_id, user_id')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (fetchErr || !existingEntry) {
+    throw new Error('Entry not found')
+  }
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = profile?.role === 'admin'
+
+  if (existingEntry.user_id !== user.id && !isAdmin) {
+    throw new Error('Forbidden: Cannot modify another user entry')
+  }
+
   const date = formData.get('date') as string
   const startTime = formData.get('start_time') as string
   const endTime = formData.get('end_time') as string
@@ -124,15 +142,11 @@ export async function updateEntry(id: string, formData: FormData) {
   const expensesJson = formData.get('expenses') as string
   const notes = formData.get('notes') as string
   const photoUrl = formData.get('photo_url') as string
-  const projectId = formData.get('project_id') as string
 
   let expenses: ExpenseCategory[] = []
   try { expenses = JSON.parse(expensesJson) } catch { expenses = [] }
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
-  const isAdmin = profile?.role === 'admin'
-
-  let query = supabase
+  const { error } = await supabase
     .from('entries')
     .update({
       date,
@@ -146,41 +160,77 @@ export async function updateEntry(id: string, formData: FormData) {
     })
     .eq('id', id)
 
-  if (!isAdmin) {
-    query = query.eq('user_id', user.id)
-  }
-
-  const { error } = await query
   if (error) throw error
 
-  revalidatePath(`/project/${projectId}`)
+  // Revalidate using the TRUSTED project_id from the database record
+  revalidatePath(`/project/${existingEntry.project_id}`)
   revalidatePath('/dashboard')
   revalidatePath('/admin')
 }
 
-export async function deleteEntry(id: string, projectId: string) {
+export async function deleteEntry(id: string, _unusedProjectId?: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
+  // Security guard: Fetch actual entry from database to verify ownership and trusted project_id
+  const { data: existingEntry, error: fetchErr } = await supabase
+    .from('entries')
+    .select('id, project_id, user_id')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (fetchErr || !existingEntry) {
+    throw new Error('Entry not found')
+  }
+
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
   const isAdmin = profile?.role === 'admin'
 
-  let query = supabase
+  if (existingEntry.user_id !== user.id && !isAdmin) {
+    throw new Error('Forbidden: Cannot delete another user entry')
+  }
+
+  const { error } = await supabase
     .from('entries')
     .delete()
     .eq('id', id)
 
-  if (!isAdmin) {
-    query = query.eq('user_id', user.id)
-  }
-
-  const { error } = await query
   if (error) throw error
 
-  revalidatePath(`/project/${projectId}`)
+  revalidatePath(`/project/${existingEntry.project_id}`)
   revalidatePath('/dashboard')
   revalidatePath('/admin')
+}
+
+function validateImageMagicBytes(buffer: Uint8Array): { isValid: boolean; detectedExt: string } {
+  if (buffer.length < 4) return { isValid: false, detectedExt: '' }
+
+  // JPEG: FF D8 FF
+  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+    return { isValid: true, detectedExt: 'jpg' }
+  }
+
+  // PNG: 89 50 4E 47
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+    return { isValid: true, detectedExt: 'png' }
+  }
+
+  // GIF: 47 49 46 38 ('GIF8')
+  if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38) {
+    return { isValid: true, detectedExt: 'gif' }
+  }
+
+  // WebP: RIFF (bytes 0-3) ... WEBP (bytes 8-11)
+  if (
+    buffer.length >= 12 &&
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) {
+    return { isValid: true, detectedExt: 'webp' }
+  }
+
+  return { isValid: false, detectedExt: '' }
 }
 
 export async function uploadPhoto(file: File, userId: string): Promise<string> {
@@ -202,21 +252,31 @@ export async function uploadPhoto(file: File, userId: string): Promise<string> {
     throw new Error('File size exceeds the 5MB limit')
   }
 
-  // Security guard: Validate allowed MIME types
+  // Security guard: Validate MIME type header
   const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
   if (!ALLOWED_MIME_TYPES.includes(file.type)) {
     throw new Error('Invalid file type. Allowed formats: JPEG, PNG, WebP, GIF')
   }
 
-  const rawExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
-  const safeExt = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg'
-  const path = `${userId}/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${safeExt}`
+  // Security guard: Validate actual binary content magic bytes (prevents disguised executables / HTML scripts)
+  const arrayBuffer = await file.arrayBuffer()
+  const headerBytes = new Uint8Array(arrayBuffer.slice(0, 16))
+  const { isValid, detectedExt } = validateImageMagicBytes(headerBytes)
+  if (!isValid) {
+    throw new Error('Security Error: Uploaded file is not a valid image format')
+  }
+
+  // Security guard: Sanitize userId and generate safe random UUID filename (prevents path traversal)
+  const safeUserId = userId.replace(/[^a-zA-Z0-9_-]/g, '')
+  const safeExt = detectedExt || 'jpg'
+  const randomFileName = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+  const path = `${safeUserId}/${randomFileName}.${safeExt}`
 
   const { error } = await supabase.storage
     .from('entry-photos')
-    .upload(path, file, {
+    .upload(path, Buffer.from(arrayBuffer), {
       upsert: false,
-      contentType: file.type,
+      contentType: file.type || `image/${safeExt}`,
     })
 
   if (error) throw error

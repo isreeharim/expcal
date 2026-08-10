@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { calculateHours } from '@/lib/utils'
+import { requireAdmin } from '@/lib/auth-guards'
 
 export interface BackupPayload {
   action: 'sync_backup'
@@ -55,9 +56,15 @@ export interface BackupPayload {
 }
 
 /**
- * Fetch and construct the complete backup snapshot payload from Supabase
+ * Fetch and construct the complete backup snapshot payload from Supabase.
+ * Strictly enforces server-side administrator authorization.
+ * Uses batched pagination for entries to scale across large datasets.
  */
-export async function getBackupSnapshot(userEmailOrName?: string): Promise<BackupPayload> {
+export async function getBackupSnapshot(userEmailOrName?: string, isInternalCron = false): Promise<BackupPayload> {
+  if (!isInternalCron) {
+    await requireAdmin()
+  }
+
   const supabase = await createClient()
 
   // 1. Fetch profiles
@@ -80,15 +87,45 @@ export async function getBackupSnapshot(userEmailOrName?: string): Promise<Backu
   const projects = rawProjects ?? []
   const projectMap = new Map(projects.map(p => [p.id, p.title]))
 
-  // 3. Fetch all entries
-  const { data: rawEntries, error: eErr } = await supabase
-    .from('entries')
-    .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at')
-    .order('date', { ascending: false })
-    .order('created_at', { ascending: false })
+  // 3. Batched fetching of entries (500 items per batch to preserve memory)
+  const BATCH_SIZE = 500
+  let allRawEntries: Array<{
+    id: string
+    project_id: string
+    user_id: string
+    date: string
+    start_time: string | null
+    end_time: string | null
+    income: number
+    expenses: unknown
+    photo_url: string | null
+    notes: string | null
+    created_at: string
+  }> = []
 
-  if (eErr) throw new Error(`Failed to fetch entries: ${eErr.message}`)
-  const entries = rawEntries ?? []
+  let from = 0
+  let hasMore = true
+
+  while (hasMore) {
+    const { data: batch, error: eErr } = await supabase
+      .from('entries')
+      .select('id, project_id, user_id, date, start_time, end_time, income, expenses, photo_url, notes, created_at')
+      .order('date', { ascending: false })
+      .range(from, from + BATCH_SIZE - 1)
+
+    if (eErr) throw new Error(`Failed to fetch entries: ${eErr.message}`)
+
+    if (!batch || batch.length === 0) {
+      hasMore = false
+    } else {
+      allRawEntries = allRawEntries.concat(batch)
+      if (batch.length < BATCH_SIZE) {
+        hasMore = false
+      } else {
+        from += BATCH_SIZE
+      }
+    }
+  }
 
   // 4. Compute per-project statistics
   const projectStatsMap = new Map<string, {
@@ -110,7 +147,7 @@ export async function getBackupSnapshot(userEmailOrName?: string): Promise<Backu
   })
 
   // Format and process entries
-  const formattedEntries = entries.map(entry => {
+  const formattedEntries = allRawEntries.map(entry => {
     const hours = calculateHours(entry.start_time, entry.end_time)
     const inc = Number(entry.income) || 0
 
@@ -189,7 +226,7 @@ export async function getBackupSnapshot(userEmailOrName?: string): Promise<Backu
     triggered_by: userEmailOrName || 'System Admin',
     summary: {
       total_projects: projects.length,
-      total_entries: entries.length,
+      total_entries: formattedEntries.length,
       total_users: profiles.length,
       total_income,
       total_expenses,
@@ -208,9 +245,14 @@ export async function getBackupSnapshot(userEmailOrName?: string): Promise<Backu
 }
 
 /**
- * Get the saved Google Sheets Webhook URL and backup metadata
+ * Get the saved Google Sheets Webhook URL and backup metadata.
+ * Enforces admin authorization. Returns sanitized configuration.
  */
-export async function getBackupSettings() {
+export async function getBackupSettings(isInternalCron = false) {
+  if (!isInternalCron) {
+    await requireAdmin()
+  }
+
   const supabase = await createClient()
 
   let webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || ''
@@ -238,7 +280,7 @@ export async function getBackupSettings() {
       })
     }
   } catch {
-    // If settings table not accessible, fallback gracefully
+    // Fail gracefully if settings table is temporarily unreachable
   }
 
   return {
@@ -250,22 +292,12 @@ export async function getBackupSettings() {
 }
 
 /**
- * Save Google Sheets Webhook URL
+ * Save Google Sheets Webhook URL.
+ * Strictly verifies admin role and validates domain URL prefix.
  */
 export async function saveGoogleSheetsWebhookUrl(url: string) {
+  await requireAdmin()
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (profile?.role !== 'admin') {
-    throw new Error('Forbidden: Administrator privileges required')
-  }
 
   const cleanUrl = url.trim()
   if (cleanUrl && !cleanUrl.startsWith('https://script.google.com/macros/s/')) {
@@ -288,78 +320,82 @@ export async function saveGoogleSheetsWebhookUrl(url: string) {
 }
 
 /**
- * Execute Sync to Google Sheets Webhook
+ * Execute Sync to Google Sheets Webhook with timeout, error handling, and security guards.
  */
-export async function syncGoogleSheetsBackup(customWebhookUrl?: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, role')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (profile?.role !== 'admin') {
-    throw new Error('Forbidden: Administrator privileges required')
+export async function syncGoogleSheetsBackup(customWebhookUrl?: string, isInternalCron = false) {
+  let callerName = 'Automated Cron'
+  if (!isInternalCron) {
+    const auth = await requireAdmin()
+    callerName = auth.user.email || 'Admin'
   }
 
-  const settings = await getBackupSettings()
+  const supabase = await createClient()
+  const settings = await getBackupSettings(true)
   const targetUrl = (customWebhookUrl || settings.webhookUrl || '').trim()
 
   if (!targetUrl) {
-    throw new Error('No Google Sheets Webhook URL configured. Please paste your Google Apps Script URL in the settings.')
+    throw new Error('No Google Sheets Webhook URL configured. Please set your Google Apps Script URL in Admin Backup Settings.')
   }
 
   if (!targetUrl.startsWith('https://script.google.com/macros/s/')) {
     throw new Error('Invalid Google Apps Script URL for security reasons. It must start with https://script.google.com/macros/s/')
   }
 
-  const payload = await getBackupSnapshot(profile?.full_name || user.email || 'Admin')
+  const payload = await getBackupSnapshot(callerName, true)
 
-  // Send POST request to Google Apps Script Web App
-  const response = await fetch(targetUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload),
-    redirect: 'follow'
-  })
+  // Send POST request with 30s timeout
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 30000)
 
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => '')
-    const errMsg = `Google Sheets sync failed with HTTP ${response.status}: ${errorText || response.statusText}`
+  try {
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      redirect: 'follow',
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      const errMsg = `Google Sheets sync failed with HTTP status ${response.status}`
+      try {
+        await supabase.from('app_settings').upsert([
+          { key: 'last_backup_at', value: new Date().toISOString(), updated_at: new Date().toISOString() },
+          { key: 'last_backup_status', value: `Error: HTTP ${response.status}`, updated_at: new Date().toISOString() }
+        ])
+      } catch {}
+
+      throw new Error(errMsg)
+    }
+
+    const result = await response.json().catch(() => ({ status: 'success' }))
+    const statsSummary = `${payload.summary.total_projects} projects, ${payload.summary.total_entries} entries, ₹${payload.summary.total_income.toLocaleString('en-IN')} income`
+
     try {
       await supabase.from('app_settings').upsert([
         { key: 'last_backup_at', value: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { key: 'last_backup_status', value: `Error: ${errMsg.slice(0, 150)}`, updated_at: new Date().toISOString() }
+        { key: 'last_backup_status', value: 'Success', updated_at: new Date().toISOString() },
+        { key: 'last_backup_stats', value: statsSummary, updated_at: new Date().toISOString() }
       ])
     } catch {}
 
-    throw new Error(errMsg)
-  }
+    revalidatePath('/admin')
+    revalidatePath('/admin/backup')
 
-  const result = await response.json().catch(() => ({ status: 'success' }))
-
-  const statsSummary = `${payload.summary.total_projects} projects, ${payload.summary.total_entries} entries, ₹${payload.summary.total_income.toLocaleString('en-IN')} income`
-
-  try {
-    await supabase.from('app_settings').upsert([
-      { key: 'last_backup_at', value: new Date().toISOString(), updated_at: new Date().toISOString() },
-      { key: 'last_backup_status', value: 'Success', updated_at: new Date().toISOString() },
-      { key: 'last_backup_stats', value: statsSummary, updated_at: new Date().toISOString() }
-    ])
-  } catch {}
-
-  revalidatePath('/admin')
-  revalidatePath('/admin/backup')
-
-  return {
-    success: true,
-    timestamp: payload.timestamp,
-    summary: payload.summary,
-    result
+    return {
+      success: true,
+      timestamp: payload.timestamp,
+      summary: payload.summary,
+      result
+    }
+  } catch (err: unknown) {
+    clearTimeout(timeoutId)
+    const error = err as Error
+    const safeError = error.name === 'AbortError' ? 'Google Sheets request timed out after 30 seconds' : error.message
+    throw new Error(safeError)
   }
 }

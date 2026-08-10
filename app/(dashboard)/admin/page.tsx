@@ -39,12 +39,17 @@ export default async function AdminPage() {
 
   const allProfiles = profiles ?? []
 
-  // Precompute Map to turn O(N^2) .filter() operations into O(1) lookups
+  // Precompute Maps to turn O(N^2) .filter() operations into O(1) lookups
   const projectsByUserId = new Map<string, typeof projects>()
   projects.forEach((proj) => {
     const list = projectsByUserId.get(proj.user_id) || []
     list.push(proj)
     projectsByUserId.set(proj.user_id, list)
+  })
+
+  const entriesCountByProjectId = new Map<string, number>()
+  entries.forEach((e) => {
+    entriesCountByProjectId.set(e.project_id, (entriesCountByProjectId.get(e.project_id) || 0) + 1)
   })
 
   // Compute global stats
@@ -53,20 +58,30 @@ export default async function AdminPage() {
   const totalHours = entries.reduce((s, e) => s + calculateHours(e.start_time, e.end_time), 0)
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6 sm:mb-8 animate-fade-in">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-          <Shield className="w-6 h-6 text-white" />
+      <div className="flex items-center justify-between gap-4 animate-fade-in">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 text-primary border border-primary/20">
+            <Shield className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">Admin Workspace</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Platform overview, database management, and system access</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-0.5">Full control over all users and data</p>
-        </div>
+
+        {/* Secondary Clean Backup Link */}
+        <Link
+          href="/admin/backup"
+          className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/60 hover:bg-muted text-foreground border border-border transition-colors shadow-sm"
+        >
+          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" /> Google Sheets Backup
+        </Link>
       </div>
 
-      {/* Global Stats — Compact 2x2 Grid on Mobile, 4 Cols on Desktop */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-6 sm:mb-8 stagger-children">
+      {/* Primary Financial Overview — 4 Cards with Net Cash Prominence */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 stagger-children">
         <StatCard type="hours" value={totalHours} label="Total Hours" subLabel="All users combined" />
         <StatCard type="income" value={totalIncome} label="Total Income" subLabel="Platform-wide" />
         <StatCard type="expense" value={totalExpense} label="Total Expenses" subLabel="Platform-wide" />
@@ -74,42 +89,22 @@ export default async function AdminPage() {
       </div>
 
       {/* Quick counters */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
         {[
-          { icon: Users, label: 'Total Users', value: allProfiles.length, color: 'var(--gradient-hours)' },
-          { icon: FolderOpen, label: 'Total Projects', value: projects.length, color: 'var(--gradient-income)' },
-          { icon: Receipt, label: 'Total Entries', value: entries.length, color: 'var(--gradient-expense)' },
-        ].map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="glass-card p-4 flex items-center gap-4 animate-fade-in">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: color }}>
-              <Icon className="w-5 h-5 text-white" />
+          { icon: Users, label: 'Total Users', value: allProfiles.length },
+          { icon: FolderOpen, label: 'Total Projects', value: projects.length },
+          { icon: Receipt, label: 'Total Entries', value: entries.length },
+        ].map(({ icon: Icon, label, value }) => (
+          <div key={label} className="bg-card border border-border/60 p-3.5 sm:p-4 rounded-xl flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
+              <Icon className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{value}</p>
-              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground font-mono">{value}</p>
+              <p className="text-[11px] text-muted-foreground">{label}</p>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Google Sheets Backup Quick Banner */}
-      <div className="glass-card p-5 sm:p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/10 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-500/20 text-emerald-400">
-            <FileSpreadsheet className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-bold text-foreground text-base">Google Sheets Live Backup</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Automated sync of all Supabase projects, entries, and users to Google Sheets</p>
-          </div>
-        </div>
-        <Link
-          href="/admin/backup"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white transition-all duration-200 hover:opacity-95 shadow-md flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}
-        >
-          Manage & Sync Sheets <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
       </div>
 
       {/* Data Tabs */}
@@ -207,7 +202,7 @@ export default async function AdminPage() {
                 </TableHeader>
                 <TableBody>
                   {projects.map((proj) => {
-                    const projEntries = entries.filter(e => e.project_id === proj.id)
+                    const entryCount = entriesCountByProjectId.get(proj.id) || 0
                     const ownerName = (proj as { profiles?: { full_name?: string } }).profiles?.full_name || 'Unknown'
                     return (
                       <TableRow key={proj.id} className="border-border group hover:bg-muted/30 transition-colors">
@@ -221,7 +216,7 @@ export default async function AdminPage() {
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">{ownerName}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">{formatDate(proj.created_at)}</TableCell>
-                        <TableCell className="text-sm font-medium text-foreground">{projEntries.length}</TableCell>
+                        <TableCell className="text-sm font-medium text-foreground font-mono">{entryCount}</TableCell>
                         <TableCell className="text-right">
                           <Link
                             href={`/project/${proj.id}`}

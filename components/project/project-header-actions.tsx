@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Project, Entry } from '@/lib/types'
+import { Project } from '@/lib/types'
 import { updateProject, deleteProject } from '@/lib/actions/projects'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,16 +19,15 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { BillCustomizerModal } from '@/components/project/bill-customizer-modal'
-import { Pencil, Trash2, FileSpreadsheet, FileText } from 'lucide-react'
+import { Pencil, Trash2, FileText } from 'lucide-react'
 
 interface ProjectHeaderActionsProps {
   project: Project
-  entries: Entry[]
   isAdmin: boolean
   isOwner: boolean
 }
 
-export function ProjectHeaderActions({ project, entries, isAdmin, isOwner }: ProjectHeaderActionsProps) {
+export function ProjectHeaderActions({ project, isAdmin, isOwner }: ProjectHeaderActionsProps) {
   const router = useRouter()
   const [billModalOpen, setBillModalOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)

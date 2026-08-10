@@ -1,16 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { TrendingUp, Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle, Inbox, AlertTriangle, ArrowLeft, MailCheck } from 'lucide-react'
+import { TrendingUp, Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle, AlertTriangle, ArrowLeft, MailCheck } from 'lucide-react'
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

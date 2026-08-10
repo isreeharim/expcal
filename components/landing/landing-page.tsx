@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
-  TrendingUp, ArrowRight, CheckCircle, Clock, DollarSign, PieChart,
-  Smartphone, Shield, Zap, Camera, BarChart2, Layers, HelpCircle,
-  Sparkles, Check, ChevronDown
+  TrendingUp, ArrowRight, CheckCircle, Clock,
+  Smartphone, Shield, Camera, BarChart2, Layers, HelpCircle,
+  Sparkles, ChevronDown
 } from 'lucide-react'
 
 interface LandingPageProps {

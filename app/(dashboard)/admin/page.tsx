@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getInitials, formatCurrency, formatDate, formatHours, calculateHours, totalExpenses } from '@/lib/utils'
-import { Shield, Users, FolderOpen, Receipt, FileSpreadsheet, ArrowRight } from 'lucide-react'
+import { Shield, Users, FolderOpen, Receipt, FileSpreadsheet } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminPage() {

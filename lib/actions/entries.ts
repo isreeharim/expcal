@@ -168,7 +168,7 @@ export async function updateEntry(id: string, formData: FormData) {
   revalidatePath('/admin')
 }
 
-export async function deleteEntry(id: string, _unusedProjectId?: string) {
+export async function deleteEntry(id: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')

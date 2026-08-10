@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { getInitials, formatDate } from '@/lib/utils'
 import Link from 'next/link'
-import { ArrowLeft, User, Shield, Calendar, Mail, FolderKanban } from 'lucide-react'
+import { ArrowLeft, Calendar, FolderKanban } from 'lucide-react'
 import { Metadata } from 'next'
 
 type PageProps = { params: Promise<{ id: string }> }

@@ -9,15 +9,10 @@ import {
   FolderOpen,
   Search,
   SearchX,
-  SlidersHorizontal,
   ArrowUpDown,
   Plus,
   Trash2,
   Pencil,
-  Clock,
-  DollarSign,
-  TrendingUp,
-  Receipt,
   ExternalLink,
   FolderPlus
 } from 'lucide-react'
@@ -209,7 +204,6 @@ export function AdminUserProjects({
           {filteredProjects.map((project) => {
             const stats = statsMap[project.id]
             const income = Number(stats?.total_income || 0)
-            const expense = Number(stats?.total_expenses || 0)
             const net = Number(stats?.net_cash || 0)
             const hours = Number(stats?.total_hours || 0)
             const entryCount = Number(stats?.entry_count || 0)

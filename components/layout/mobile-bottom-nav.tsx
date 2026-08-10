@@ -11,7 +11,6 @@ import {
   BarChart2,
   Shield,
   Plus,
-  X,
   FolderPlus,
   Receipt,
   FileSpreadsheet,

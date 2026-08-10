@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getProjects, getUserDashboardStats } from '@/lib/actions/projects'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { DashboardChart } from '@/components/dashboard/dashboard-chart'
-import { BarChart2, TrendingUp, PieChart, DollarSign } from 'lucide-react'
+import { BarChart2, TrendingUp, PieChart } from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

@@ -116,7 +116,7 @@ export default async function ProjectPage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          <ProjectHeaderActions project={project} entries={entries || []} isAdmin={isAdmin} isOwner={isOwner} />
+          <ProjectHeaderActions project={project} isAdmin={isAdmin} isOwner={isOwner} />
           <AddEntryButton projectId={id} userId={user.id} />
         </div>
       </div>

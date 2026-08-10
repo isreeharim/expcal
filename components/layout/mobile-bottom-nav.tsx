@@ -6,9 +6,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Profile } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import {
-  LayoutDashboard,
-  FolderOpen,
-  BarChart2,
+  Home,
+  WalletCards,
   Shield,
   Plus,
   FolderPlus,
@@ -59,8 +58,8 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
   }
 
   const isHomeActive = pathname === '/dashboard'
-  const isProjectsActive = pathname === '/projects' || pathname.startsWith('/project/')
-  const isAnalysisActive = pathname === '/analysis'
+  const isMoneyActive = pathname === '/money' || pathname === '/projects' || pathname.startsWith('/project/')
+  const isTransactionsActive = pathname === '/transactions'
   const isAdminActive = pathname.startsWith('/admin')
 
   return (
@@ -87,7 +86,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
               isHomeActive && 'bg-primary/15 shadow-sm shadow-primary/30 scale-105'
             )}
           >
-            <LayoutDashboard className={cn('w-5 h-5', isHomeActive ? 'text-primary' : 'text-muted-foreground')} />
+            <Home className={cn('w-5 h-5', isHomeActive ? 'text-primary' : 'text-muted-foreground')} />
           </div>
           <span className="text-[10px] mt-0.5 tracking-tight font-medium">Home</span>
           {isHomeActive && (
@@ -97,10 +96,10 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
 
         {/* 2. Projects */}
         <Link
-          href="/projects"
+          href="/money"
           className={cn(
             'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
-            isProjectsActive
+            isMoneyActive
               ? 'text-primary font-bold'
               : 'text-muted-foreground hover:text-foreground active:scale-95'
           )}
@@ -108,13 +107,13 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           <div
             className={cn(
               'w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200',
-              isProjectsActive && 'bg-primary/15 shadow-sm shadow-primary/30 scale-105'
+              isMoneyActive && 'bg-primary/15 shadow-sm shadow-primary/30 scale-105'
             )}
           >
-            <FolderOpen className={cn('w-5 h-5', isProjectsActive ? 'text-primary' : 'text-muted-foreground')} />
+            <WalletCards className={cn('w-5 h-5', isMoneyActive ? 'text-primary' : 'text-muted-foreground')} />
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight font-medium">Projects</span>
-          {isProjectsActive && (
+          <span className="text-[10px] mt-0.5 tracking-tight font-medium">Money</span>
+          {isMoneyActive && (
             <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
           )}
         </Link>
@@ -138,10 +137,10 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
 
         {/* 4. Analysis */}
         <Link
-          href="/analysis"
+          href="/transactions"
           className={cn(
             'flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-200 relative group',
-            isAnalysisActive
+            isTransactionsActive
               ? 'text-primary font-bold'
               : 'text-muted-foreground hover:text-foreground active:scale-95'
           )}
@@ -149,13 +148,13 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
           <div
             className={cn(
               'w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200',
-              isAnalysisActive && 'bg-primary/15 shadow-sm shadow-primary/30 scale-105'
+              isTransactionsActive && 'bg-primary/15 shadow-sm shadow-primary/30 scale-105'
             )}
           >
-            <BarChart2 className={cn('w-5 h-5', isAnalysisActive ? 'text-primary' : 'text-muted-foreground')} />
+            <Receipt className={cn('w-5 h-5', isTransactionsActive ? 'text-primary' : 'text-muted-foreground')} />
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight font-medium">Analysis</span>
-          {isAnalysisActive && (
+          <span className="text-[10px] mt-0.5 tracking-tight font-medium">Activity</span>
+          {isTransactionsActive && (
             <span className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary" />
           )}
         </Link>
@@ -206,7 +205,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
             <div className="flex items-center justify-between">
               <div>
                 <DialogTitle className="text-foreground text-lg font-bold">Quick Actions</DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground">What would you like to do?</DialogDescription>
+                <DialogDescription className="text-xs text-muted-foreground">Record money movement or jump into analysis.</DialogDescription>
               </div>
             </div>
           </DialogHeader>
@@ -227,14 +226,14 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
                 <FolderPlus className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">New Project</p>
-                <p className="text-xs text-muted-foreground">Start a new client or freelance project</p>
+                <p className="text-sm font-semibold text-foreground">Expense / Income / Transfer</p>
+                <p className="text-xs text-muted-foreground">Create a financial source, then log activity fast</p>
               </div>
             </button>
 
-            {/* Jump to Projects for Entry */}
+            {/* Record financial activity */}
             <Link
-              href="/projects"
+              href="/dashboard"
               onClick={() => setQuickActionOpen(false)}
               className="flex items-center gap-3.5 p-3.5 rounded-2xl card-interactive text-left group"
             >
@@ -245,8 +244,26 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
                 <Receipt className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">Log Expense & Time</p>
-                <p className="text-xs text-muted-foreground">Select a project to add entries and receipts</p>
+                <p className="text-sm font-semibold text-foreground">Calculate</p>
+                <p className="text-xs text-muted-foreground">Use ExpCal, then save the result as activity</p>
+              </div>
+            </Link>
+
+
+            <Link
+              href="/analysis"
+              onClick={() => setQuickActionOpen(false)}
+              className="flex items-center gap-3.5 p-3.5 rounded-2xl card-interactive text-left group"
+            >
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}
+              >
+                <User className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Analytics & Goals</p>
+                <p className="text-xs text-muted-foreground">Review trends and milestone progress</p>
               </div>
             </Link>
 

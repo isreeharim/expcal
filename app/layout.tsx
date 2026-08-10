@@ -1,21 +1,14 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { PWAInstallPrompt } from '@/components/pwa/install-prompt'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
-
 export const metadata: Metadata = {
   title: {
-    default: 'ExpCal — Smart Expense Manager',
+    default: 'ExpCal — Personal Financial Control Center',
     template: '%s | ExpCal',
   },
-  description: 'Track your expenses, income, and projects in one place. Professional expense management for freelancers and teams.',
+  description: 'Understand balances, income, spending, savings, goals, and financial activity in one premium personal finance control center.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -23,11 +16,11 @@ export const metadata: Metadata = {
     title: 'ExpCal',
   },
   formatDetection: { telephone: false },
-  keywords: ['expense tracker', 'income tracker', 'project management', 'freelance', 'finance'],
+  keywords: ['personal finance', 'financial control center', 'expense tracker', 'income tracker', 'savings goals'],
   authors: [{ name: 'ExpCal' }],
   openGraph: {
-    title: 'ExpCal — Smart Expense Manager',
-    description: 'Track expenses, income, and time across all your projects.',
+    title: 'ExpCal — Personal Financial Control Center',
+    description: 'Track balances, income, expenses, savings, and goals across your financial life.',
     type: 'website',
   },
 }
@@ -41,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

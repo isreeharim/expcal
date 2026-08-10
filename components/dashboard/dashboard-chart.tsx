@@ -58,28 +58,28 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           labels: labels.map(formatLabel),
           datasets: [
             {
-              label: 'Income',
+              label: 'Gross Inflow',
               data: incomeData,
-              borderColor: 'oklch(0.78 0.15 155)',
-              backgroundColor: 'oklch(0.78 0.15 155 / 10%)',
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
               fill: true,
-              tension: 0.4,
+              tension: 0.35,
               pointRadius: 4,
               pointHoverRadius: 6,
-              pointBackgroundColor: 'oklch(0.78 0.15 155)',
-              borderWidth: 2,
+              pointBackgroundColor: '#10b981',
+              borderWidth: 2.5,
             },
             {
-              label: 'Expenses',
+              label: 'Total Outflow',
               data: expenseData,
-              borderColor: 'oklch(0.65 0.24 25)',
-              backgroundColor: 'oklch(0.65 0.24 25 / 10%)',
+              borderColor: '#f43f5e',
+              backgroundColor: 'rgba(244, 63, 94, 0.08)',
               fill: true,
-              tension: 0.4,
+              tension: 0.35,
               pointRadius: 4,
               pointHoverRadius: 6,
-              pointBackgroundColor: 'oklch(0.65 0.24 25)',
-              borderWidth: 2,
+              pointBackgroundColor: '#f43f5e',
+              borderWidth: 2.5,
             },
           ],
         },
@@ -89,20 +89,14 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              labels: {
-                color: 'oklch(0.85 0.005 260)',
-                font: { family: 'Inter', size: 12, weight: 500 },
-                usePointStyle: true,
-                pointStyle: 'circle',
-                padding: 16
-              }
+              display: false,
             },
             tooltip: {
-              backgroundColor: 'oklch(0.14 0.012 260 / 95%)',
-              borderColor: 'oklch(1 0 0 / 14%)',
+              backgroundColor: 'rgba(18, 22, 34, 0.96)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
               borderWidth: 1,
-              titleColor: 'oklch(0.98 0 0)',
-              bodyColor: 'oklch(0.85 0.005 260)',
+              titleColor: '#ffffff',
+              bodyColor: '#cbd5e1',
               padding: 12,
               boxPadding: 6,
               cornerRadius: 12,
@@ -113,13 +107,13 @@ export function DashboardChart({ userId }: DashboardChartProps) {
           },
           scales: {
             x: {
-              grid: { color: 'oklch(1 0 0 / 6%)' },
-              ticks: { color: 'oklch(0.65 0.01 260)', font: { size: 11, family: 'Inter' } }
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: { color: '#64748b', font: { size: 11, family: 'Inter' } }
             },
             y: {
-              grid: { color: 'oklch(1 0 0 / 6%)' },
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
               ticks: {
-                color: 'oklch(0.65 0.01 260)',
+                color: '#64748b',
                 font: { size: 11, family: 'Inter' },
                 callback: (v) => `₹${Number(v ?? 0).toLocaleString('en-IN')}`
               }
@@ -137,8 +131,21 @@ export function DashboardChart({ userId }: DashboardChartProps) {
   }, [userId])
 
   return (
-    <div className="glass-card p-6 shadow-xl backdrop-blur-2xl border border-white/10 rounded-3xl">
-      <h3 className="text-sm font-semibold text-foreground/90 tracking-tight mb-4">Income vs Expenses (Last 14 entries)</h3>
+    <div className="glass-card p-6 border border-white/10 rounded-3xl">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">Cash Flow Dynamics</h3>
+          <p className="text-xs text-muted-foreground">Inflow vs Outflow over recent transaction timeline</p>
+        </div>
+        <div className="flex items-center gap-3 text-xs font-semibold">
+          <span className="flex items-center gap-1.5 text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span> Inflow
+          </span>
+          <span className="flex items-center gap-1.5 text-rose-400">
+            <span className="w-2 h-2 rounded-full bg-rose-400 shadow-sm shadow-rose-400/50"></span> Outflow
+          </span>
+        </div>
+      </div>
       <div className="h-[220px] sm:h-[280px] relative">
         <canvas ref={canvasRef} />
       </div>

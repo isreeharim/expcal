@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock, TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
+import { Clock, TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { formatCurrency, formatHours, cn } from '@/lib/utils'
 
 interface StatCardProps {
@@ -15,36 +15,44 @@ interface StatCardProps {
 const config = {
   hours: {
     icon: Clock,
-    tone: 'bg-card border-border/70 text-foreground',
-    iconTone: 'bg-muted text-muted-foreground',
+    badge: 'Allocation',
+    badgeTone: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
+    tone: 'bg-card/90 border-border/70 text-foreground',
+    iconTone: 'bg-slate-800/80 text-slate-300 border border-slate-700/50',
     valueTone: 'text-foreground',
     format: (v: number) => formatHours(v),
   },
   income: {
     icon: TrendingUp,
-    tone: 'bg-card border-emerald-500/20 text-foreground',
-    iconTone: 'bg-emerald-500/10 text-emerald-400',
-    valueTone: 'text-foreground',
+    badge: '+ Inflow',
+    badgeTone: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+    tone: 'bg-card/90 border-emerald-500/20 text-foreground hover:border-emerald-500/35',
+    iconTone: 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30',
+    valueTone: 'text-emerald-400',
     format: (v: number) => formatCurrency(v),
   },
   expense: {
     icon: TrendingDown,
-    tone: 'bg-card border-red-500/20 text-foreground',
-    iconTone: 'bg-red-500/10 text-red-400',
-    valueTone: 'text-foreground',
+    badge: '- Outflow',
+    badgeTone: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
+    tone: 'bg-card/90 border-rose-500/20 text-foreground hover:border-rose-500/35',
+    iconTone: 'bg-rose-950/60 text-rose-400 border border-rose-500/30',
+    valueTone: 'text-rose-400',
     format: (v: number) => formatCurrency(v),
   },
   cash: {
-    icon: DollarSign,
-    tone: 'bg-primary/[0.08] border-primary/25 text-foreground shadow-sm shadow-primary/5',
-    iconTone: 'bg-primary/15 text-primary',
+    icon: Wallet,
+    badge: 'Net Capital',
+    badgeTone: 'bg-primary/15 text-primary-foreground border border-primary/30',
+    tone: 'fintech-card-hero text-foreground',
+    iconTone: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm shadow-emerald-500/20',
     valueTone: 'text-foreground',
     format: (v: number) => formatCurrency(v),
   },
 }
 
 export function StatCard({ type, value, label, subLabel, className, animate = true }: StatCardProps) {
-  const { icon: Icon, tone, iconTone, valueTone, format } = config[type]
+  const { icon: Icon, badge, badgeTone, tone, iconTone, valueTone, format } = config[type]
 
   // Dynamic status for net cash
   const isCash = type === 'cash'
@@ -54,41 +62,49 @@ export function StatCard({ type, value, label, subLabel, className, animate = tr
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border p-4 sm:p-5 transition-all duration-200 hover:border-border hover:bg-muted/20',
+        'relative overflow-hidden rounded-2xl border p-4 sm:p-5 transition-all duration-200 hover:translate-y-[-2px]',
         tone,
-        isCash && 'ring-1 ring-primary/20 bg-gradient-to-br from-primary/[0.08] to-primary/[0.02]',
         animate && 'animate-fade-in',
         className
       )}
     >
-      <div className="flex items-start justify-between gap-3">
+      {/* Top Row: Metric Icon & Status Pill */}
+      <div className="flex items-center justify-between gap-3">
         <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl', iconTone)}>
           <Icon className="h-4 w-4" />
         </div>
-        {isCash && (
+
+        {isCash ? (
           <span className={cn(
-            'inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase',
-            isPositiveCash ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' :
-            isNegativeCash ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
-            'bg-muted text-muted-foreground'
+            'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase font-mono',
+            isPositiveCash ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-500/10' :
+            isNegativeCash ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30' :
+            'bg-muted/80 text-muted-foreground border border-border/50'
           )}>
-            {isPositiveCash ? 'Profit' : isNegativeCash ? 'Deficit' : 'Balanced'}
+            {isPositiveCash ? <><ArrowUpRight className="w-3 h-3" /> Profit</> :
+             isNegativeCash ? <><ArrowDownRight className="w-3 h-3" /> Deficit</> :
+             'Balanced'}
+          </span>
+        ) : (
+          <span className={cn('inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wider uppercase', badgeTone)}>
+            {badge}
           </span>
         )}
       </div>
 
+      {/* Value & Label */}
       <div className="mt-4">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+        <p className="text-[11px] font-bold text-muted-foreground/90 uppercase tracking-widest">{label}</p>
         <p className={cn(
-          'mt-1.5 truncate text-xl font-extrabold tracking-tight sm:text-2xl font-mono',
+          'mt-1.5 truncate text-xl font-extrabold tracking-tight sm:text-2xl font-mono tabular-nums',
           isCash && isPositiveCash ? 'text-emerald-400' :
-          isCash && isNegativeCash ? 'text-red-400' :
+          isCash && isNegativeCash ? 'text-rose-400' :
           valueTone
         )}>
           {format(value)}
         </p>
         {subLabel && (
-          <p className="mt-1 truncate text-[11px] text-muted-foreground/80 sm:text-xs">{subLabel}</p>
+          <p className="mt-1 truncate text-[11px] text-muted-foreground/75 font-sans sm:text-xs">{subLabel}</p>
         )}
       </div>
     </div>

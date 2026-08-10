@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   EXPENSE TRACKER PWA — Premium Dark Design System
+   EXPCAL — Modern Financial Platform Theme Tokens
    ============================================================ */
 
 @theme inline {
@@ -51,108 +51,99 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* === LIGHT MODE (less used — dark is default) === */
+/* === FINANCIAL DARK THEME (Default) === */
 :root {
   color-scheme: dark;
 
-  /* Core palette — deep navy dark */
-  --background: oklch(0.10 0.01 260);
-  --foreground: oklch(0.95 0.005 260);
-  --card: oklch(0.13 0.012 260);
-  --card-foreground: oklch(0.95 0.005 260);
-  --popover: oklch(0.14 0.012 260);
-  --popover-foreground: oklch(0.95 0.005 260);
+  /* Deep Financial Obsidian */
+  --background: oklch(0.11 0.015 250);
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.14 0.018 250);
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.15 0.018 250);
+  --popover-foreground: oklch(0.96 0.005 250);
 
-  /* Violet primary accent */
-  --primary: oklch(0.65 0.22 280);
-  --primary-foreground: oklch(0.98 0 0);
+  /* Financial Brand Indigo/Sapphire */
+  --primary: oklch(0.58 0.24 265);
+  --primary-foreground: oklch(0.99 0 0);
 
-  --secondary: oklch(0.17 0.015 260);
-  --secondary-foreground: oklch(0.9 0.005 260);
+  --secondary: oklch(0.18 0.02 250);
+  --secondary-foreground: oklch(0.92 0.005 250);
 
-  --muted: oklch(0.17 0.012 260);
-  --muted-foreground: oklch(0.6 0.01 260);
+  --muted: oklch(0.17 0.016 250);
+  --muted-foreground: oklch(0.65 0.012 250);
 
-  --accent: oklch(0.65 0.22 280);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.58 0.24 265);
+  --accent-foreground: oklch(0.99 0 0);
 
+  /* Outflow / Deficit Coral */
   --destructive: oklch(0.65 0.23 25);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.65 0.22 280 / 60%);
+  --border: oklch(1 0 0 / 7%);
+  --input: oklch(1 0 0 / 9%);
+  --ring: oklch(0.58 0.24 265 / 50%);
 
-  /* Charts — vibrant */
-  --chart-1: oklch(0.65 0.22 280);  /* violet */
-  --chart-2: oklch(0.72 0.18 195);  /* cyan */
-  --chart-3: oklch(0.78 0.15 155);  /* green */
-  --chart-4: oklch(0.80 0.18 55);   /* amber */
-  --chart-5: oklch(0.65 0.24 25);   /* red */
+  /* Financial Charts */
+  --chart-1: oklch(0.58 0.24 265);  /* Sapphire */
+  --chart-2: oklch(0.72 0.19 155);  /* Inflow Emerald */
+  --chart-3: oklch(0.70 0.18 195);  /* Cyan Liquidity */
+  --chart-4: oklch(0.80 0.18 75);   /* Amber Pending */
+  --chart-5: oklch(0.65 0.23 25);   /* Outflow Coral */
 
   --radius: 0.75rem;
 
   /* Sidebar */
-  --sidebar: oklch(0.12 0.012 260);
-  --sidebar-foreground: oklch(0.85 0.005 260);
-  --sidebar-primary: oklch(0.65 0.22 280);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.17 0.015 260);
-  --sidebar-accent-foreground: oklch(0.9 0.005 260);
+  --sidebar: oklch(0.12 0.016 250);
+  --sidebar-foreground: oklch(0.88 0.005 250);
+  --sidebar-primary: oklch(0.58 0.24 265);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.17 0.018 250);
+  --sidebar-accent-foreground: oklch(0.92 0.005 250);
   --sidebar-border: oklch(1 0 0 / 6%);
-  --sidebar-ring: oklch(0.65 0.22 280 / 50%);
+  --sidebar-ring: oklch(0.58 0.24 265 / 50%);
 
-  /* Custom app tokens */
-  --gradient-primary: linear-gradient(135deg, oklch(0.55 0.25 280), oklch(0.65 0.20 200));
-  --gradient-income: linear-gradient(135deg, oklch(0.55 0.18 155), oklch(0.65 0.15 195));
-  --gradient-expense: linear-gradient(135deg, oklch(0.55 0.24 25), oklch(0.65 0.22 340));
-  --gradient-hours: linear-gradient(135deg, oklch(0.60 0.20 280), oklch(0.65 0.18 220));
-  --gradient-cash: linear-gradient(135deg, oklch(0.65 0.18 55), oklch(0.70 0.15 95));
-  --glass-bg: oklch(1 0 0 / 5%);
-  --glass-border: oklch(1 0 0 / 10%);
-  --shadow-glow: 0 0 40px oklch(0.65 0.22 280 / 20%);
+  /* High-End Financial Gradients */
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  --gradient-income: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --gradient-expense: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);
+  --gradient-hours: linear-gradient(135deg, #475569 0%, #64748b 100%);
+  --gradient-cash: linear-gradient(135deg, #0d9488 0%, #10b981 100%);
+
+  --glass-bg: rgba(14, 18, 29, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 0 35px rgba(79, 70, 229, 0.15);
+  --shadow-fintech: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 }
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.10 0.01 260);
-  --foreground: oklch(0.95 0.005 260);
-  --card: oklch(0.13 0.012 260);
-  --card-foreground: oklch(0.95 0.005 260);
-  --popover: oklch(0.14 0.012 260);
-  --popover-foreground: oklch(0.95 0.005 260);
-  --primary: oklch(0.65 0.22 280);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.17 0.015 260);
-  --secondary-foreground: oklch(0.9 0.005 260);
-  --muted: oklch(0.17 0.012 260);
-  --muted-foreground: oklch(0.6 0.01 260);
-  --accent: oklch(0.65 0.22 280);
-  --accent-foreground: oklch(0.98 0 0);
+  --background: oklch(0.11 0.015 250);
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.14 0.018 250);
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.15 0.018 250);
+  --popover-foreground: oklch(0.96 0.005 250);
+  --primary: oklch(0.58 0.24 265);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.18 0.02 250);
+  --secondary-foreground: oklch(0.92 0.005 250);
+  --muted: oklch(0.17 0.016 250);
+  --muted-foreground: oklch(0.65 0.012 250);
+  --accent: oklch(0.58 0.24 265);
+  --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.65 0.23 25);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.65 0.22 280 / 60%);
-  --chart-1: oklch(0.65 0.22 280);
-  --chart-2: oklch(0.72 0.18 195);
-  --chart-3: oklch(0.78 0.15 155);
-  --chart-4: oklch(0.80 0.18 55);
-  --chart-5: oklch(0.65 0.24 25);
-  --sidebar: oklch(0.12 0.012 260);
-  --sidebar-foreground: oklch(0.85 0.005 260);
-  --sidebar-primary: oklch(0.65 0.22 280);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.17 0.015 260);
-  --sidebar-accent-foreground: oklch(0.9 0.005 260);
-  --sidebar-border: oklch(1 0 0 / 6%);
-  --sidebar-ring: oklch(0.65 0.22 280 / 50%);
+  --border: oklch(1 0 0 / 7%);
+  --input: oklch(1 0 0 / 9%);
+  --ring: oklch(0.58 0.24 265 / 50%);
 }
 
 /* ============================================================
-   BASE STYLES
+   BASE FINANCIAL STYLES & TYPOGRAPHY
    ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
     box-sizing: border-box;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
   }
 
   html, body {
@@ -169,205 +160,166 @@
     min-height: 100vh;
   }
 
+  /* Force tabular numbers on all currency & metrics */
+  .font-mono, [data-financial], .tabular-nums {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
   }
 
   ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: oklch(1 0 0 / 15%);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(1 0 0 / 25%);
+    background: rgba(255, 255, 255, 0.22);
   }
 }
 
 /* ============================================================
-   GLASSMORPHISM UTILITY
+   FINTECH SURFACES & CARD SYSTEM
    ============================================================ */
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .glass-card {
-  background: oklch(1 0 0 / 4%);
-  border: 1px solid oklch(1 0 0 / 8%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(18, 22, 34, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-fintech);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: oklch(1 0 0 / 6%);
-  border-color: oklch(1 0 0 / 12%);
+  background: rgba(22, 27, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px oklch(0 0 0 / 30%), var(--shadow-glow);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(79, 70, 229, 0.08);
+}
+
+/* Financial Accent Cards */
+.fintech-card-hero {
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, rgba(18, 22, 34, 0.85) 60%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.15);
 }
 
 /* ============================================================
-   GRADIENT STAT CARDS
-   ============================================================ */
-.stat-card-hours {
-  background: var(--gradient-hours);
-}
-.stat-card-income {
-  background: var(--gradient-income);
-}
-.stat-card-expense {
-  background: var(--gradient-expense);
-}
-.stat-card-cash {
-  background: var(--gradient-cash);
-}
-
-/* ============================================================
-   ANIMATED GRADIENT BACKGROUND
+   FINTECH AMBIENT BACKGROUND
    ============================================================ */
 .gradient-bg {
   background:
-    radial-gradient(ellipse at 20% 50%, oklch(0.55 0.25 280 / 15%) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, oklch(0.65 0.20 200 / 10%) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 80%, oklch(0.55 0.18 155 / 8%) 0%, transparent 60%),
-    var(--background);
+    radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.09) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.05) 0%, transparent 55%),
+    #0b0e14;
+}
+
+.auth-bg {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(79, 70, 229, 0.14) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+    #0b0e14;
+}
+
+/* Gradient Text for Headlines */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-emerald {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS & TRANSITIONS
    ============================================================ */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 15px oklch(0.65 0.22 280 / 30%); }
-  50% { box-shadow: 0 0 30px oklch(0.65 0.22 280 / 60%); }
-}
-
-@keyframes count-up {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-slide-in-left {
-  animation: slideInLeft 0.4s ease-out forwards;
+.stagger-children > * {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+.stagger-children > *:nth-child(1) { animation-delay: 0.03s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.09s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.12s; }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.animate-count-up {
-  animation: count-up 0.6s ease-out forwards;
-}
-
-/* Staggered children */
-.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 80ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 160ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 320ms; }
-
-/* ============================================================
-   GRADIENT TEXT
-   ============================================================ */
-.gradient-text {
-  background: linear-gradient(135deg, oklch(0.75 0.22 280), oklch(0.78 0.18 195));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ============================================================
-   PREMIUM TABLE
-   ============================================================ */
-.premium-table tr:hover {
-  background: oklch(1 0 0 / 3%);
-  transition: background 0.15s ease;
-}
-
-/* ============================================================
-   AUTH PAGE
-   ============================================================ */
-.auth-bg {
-  background:
-    radial-gradient(ellipse at 30% 30%, oklch(0.55 0.25 280 / 20%) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 70%, oklch(0.65 0.20 200 / 15%) 0%, transparent 50%),
-    oklch(0.10 0.01 260);
-}
-
-/* ============================================================
-   PROJECT COLOR DOT
-   ============================================================ */
+/* Financial dot indicators */
 .color-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
 }
 
 /* ============================================================
-   PWA Install Button
+   FINANCIAL LEDGER & TABLE STYLES
    ============================================================ */
-.pwa-install-btn {
-  background: var(--gradient-primary);
-  border: none;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: opacity 0.2s, transform 0.2s;
+.premium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.pwa-install-btn:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
+.premium-table th {
+  background: rgba(18, 22, 34, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 12px 16px;
+}
+
+.premium-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 13px 16px;
+  font-size: 0.875rem;
+}
+
+.premium-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 /* ============================================================
-   PRINT / PDF EXPORT RULES
+   PRINT STYLES FOR INVOICE PDF GENERATION
    ============================================================ */
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 8mm;
-  }
-
-  /* Hide everything by default */
   body * {
-    visibility: hidden !important;
+    visibility: hidden;
   }
 
-  /* Only show the invoice container and its children */
   #printable-invoice-container,
   #printable-invoice-container * {
     visibility: visible !important;

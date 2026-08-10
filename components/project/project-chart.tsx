@@ -45,30 +45,30 @@ export function ProjectChart({ entries }: ProjectChartProps) {
           labels,
           datasets: [
             {
-              label: 'Income',
+              label: 'Gross Inflow',
               data: incomeData,
-              backgroundColor: 'oklch(0.78 0.15 155 / 70%)',
-              borderColor: 'oklch(0.78 0.15 155)',
+              backgroundColor: 'rgba(16, 185, 129, 0.75)',
+              borderColor: '#10b981',
               borderWidth: 1,
               borderRadius: 6,
             },
             {
-              label: 'Expenses',
+              label: 'Total Outflow',
               data: expenseData,
-              backgroundColor: 'oklch(0.65 0.24 25 / 70%)',
-              borderColor: 'oklch(0.65 0.24 25)',
+              backgroundColor: 'rgba(244, 63, 94, 0.75)',
+              borderColor: '#f43f5e',
               borderWidth: 1,
               borderRadius: 6,
             },
             {
-              label: 'Net',
+              label: 'Net Margin',
               data: netData,
               type: 'line',
-              borderColor: 'oklch(0.65 0.22 280)',
+              borderColor: '#6366f1',
               backgroundColor: 'transparent',
-              tension: 0.4,
+              tension: 0.35,
               pointRadius: 4,
-              borderWidth: 2,
+              borderWidth: 2.5,
               yAxisID: 'y',
             }
           ],
@@ -79,22 +79,38 @@ export function ProjectChart({ entries }: ProjectChartProps) {
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: {
-              labels: { color: 'oklch(0.75 0.01 260)', font: { family: 'Inter', size: 12 } }
+              labels: {
+                color: '#94a3b8',
+                font: { family: 'Inter', size: 11, weight: 600 },
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 14
+              }
             },
             tooltip: {
-              backgroundColor: 'oklch(0.16 0.012 260)',
-              borderColor: 'oklch(1 0 0 / 10%)',
+              backgroundColor: 'rgba(18, 22, 34, 0.96)',
+              borderColor: 'rgba(255, 255, 255, 0.12)',
               borderWidth: 1,
-              titleColor: 'oklch(0.95 0.005 260)',
-              bodyColor: 'oklch(0.75 0.01 260)',
+              titleColor: '#ffffff',
+              bodyColor: '#cbd5e1',
+              padding: 12,
+              boxPadding: 6,
+              cornerRadius: 12,
               callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y ?? 0)}` }
             }
           },
           scales: {
-            x: { grid: { color: 'oklch(1 0 0 / 5%)' }, ticks: { color: 'oklch(0.6 0.01 260)', font: { size: 11 } } },
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: { color: '#64748b', font: { size: 11, family: 'Inter' } }
+            },
             y: {
-              grid: { color: 'oklch(1 0 0 / 5%)' },
-              ticks: { color: 'oklch(0.6 0.01 260)', font: { size: 11 }, callback: (v) => `₹${Number(v ?? 0).toLocaleString('en-IN')}` }
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#64748b',
+                font: { size: 11, family: 'Inter' },
+                callback: (v) => `₹${Number(v ?? 0).toLocaleString('en-IN')}`
+              }
             }
           }
         }
@@ -109,8 +125,13 @@ export function ProjectChart({ entries }: ProjectChartProps) {
   }, [entries])
 
   return (
-    <div className="glass-card p-4 sm:p-5 overflow-hidden">
-      <h3 className="text-sm font-semibold text-foreground mb-4">Project Analysis</h3>
+    <div className="glass-card p-5 overflow-hidden border border-white/10 rounded-3xl">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">Financial Breakdown</h3>
+          <p className="text-xs text-muted-foreground">Inflow vs Outflow vs Net Margin</p>
+        </div>
+      </div>
       <div className="h-[220px] sm:h-[260px] relative w-full min-w-0">
         <canvas ref={canvasRef} />
       </div>

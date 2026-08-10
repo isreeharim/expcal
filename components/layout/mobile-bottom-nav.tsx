@@ -67,7 +67,7 @@ export function MobileBottomNav({ profile }: MobileBottomNavProps) {
     <>
       {/* Floating Bottom Navigation Bar for Mobile */}
       <nav
-        className="md:hidden fixed bottom-3 inset-x-3 z-40 bg-[#121422]/95 backdrop-blur-2xl border border-white/12 shadow-[0_8px_32px_rgba(0,0,0,0.5)] rounded-3xl px-1 py-1.5 grid grid-cols-5 items-center transition-all duration-300"
+        className="md:hidden fixed bottom-3 inset-x-3 z-40 bg-[#0e121d]/95 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)] rounded-3xl px-1 py-1.5 grid grid-cols-5 items-center transition-all duration-300"
         style={{ paddingBottom: 'calc(0.375rem + env(safe-area-inset-bottom, 0px))' }}
         aria-label="Mobile Navigation"
       >

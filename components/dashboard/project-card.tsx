@@ -61,7 +61,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Project actions</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 rounded-xl p-1.5 shadow-xl border border-border/80 backdrop-blur-xl" style={{ background: 'oklch(0.14 0.012 260 / 96%)' }}>
+            <DropdownMenuContent align="end" className="w-40 rounded-xl p-1.5 shadow-xl border border-white/10 backdrop-blur-xl" style={{ background: 'rgba(18, 22, 34, 0.96)' }}>
               <DropdownMenuItem onClick={() => setEditOpen(true)} className="gap-2 cursor-pointer rounded-lg text-xs font-medium focus:bg-muted/80">
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </DropdownMenuItem>

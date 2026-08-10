@@ -69,7 +69,7 @@ function NavLink({
       className={cn(
         'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative select-none outline-none',
         isActive
-          ? 'text-white font-semibold shadow-md bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-600'
+          ? 'text-white font-semibold bg-primary/20 border border-primary/40 shadow-sm shadow-primary/20'
           : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
       )}
     >

@@ -40,7 +40,5 @@ Thumbs.db
 # Vercel
 .vercel/
 
-# Agent scratch & temp files
+# Temporary files
 *.tmp
-.jules/
-*.jules

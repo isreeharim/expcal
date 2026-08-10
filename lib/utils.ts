@@ -35,10 +35,7 @@ export function formatTime(timeStr: string | null): string {
   }
 }
 
-// ⚡ Bolt Optimization: calculateHours
-// Replaced date-fns differenceInMinutes and Date parsing with direct string math.
-// Impact: ~2.5x faster execution, avoiding expensive Date object allocations and GC pauses
-// when rendering large tables.
+// Calculate duration in hours between two HH:mm time strings
 export function calculateHours(startTime: string | null, endTime: string | null): number {
   if (!startTime || !endTime) return 0
   try {

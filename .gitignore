@@ -42,3 +42,5 @@ Thumbs.db
 
 # Agent scratch & temp files
 *.tmp
+.jules/
+*.jules
